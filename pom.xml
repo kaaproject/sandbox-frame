@@ -38,6 +38,7 @@
         <httpcomponents.version>4.3.2</httpcomponents.version>
         <avro.version>1.7.5</avro.version>
         <avro-ui.version>0.1.2-SNAPSHOT</avro-ui.version>
+        <rat.version>0.10</rat.version>
     </properties>
 
     <modules>
@@ -85,6 +86,53 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+	<plugins>
+            <plugin>
+                <groupId>org.apache.rat</groupId>
+                <artifactId>apache-rat-plugin</artifactId>
+                <version>${rat.version}</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*.json</exclude>
+                        <exclude>**/*.properties</exclude>
+                        <exclude>**/.classpath</exclude>
+                        <exclude>**/.project</exclude>
+                        <exclude>**/.settings/**</exclude>
+                        <exclude>**/logs/**</exclude>
+                        <exclude>**/target/**</exclude>
+                        <exclude>suppressions.xml</exclude>
+                        <exclude>**/.gwt/**</exclude>
+                        <exclude>**/*.css</exclude>
+                        <exclude>**/*.avsc</exclude>
+                        <exclude>**/*.html</exclude>
+                        <exclude>**/*_bckp</exclude>
+                        <exclude>**/*.log</exclude>
+                        <exclude>**/*.template</exclude>
+                        <exclude>**/kaa-it.log.*</exclude>
+                        <exclude>**/_remote.repositories</exclude>
+                        <exclude>**/*client.log.*</exclude>
+                        <exclude>**/*server.log.*</exclude>
+                        <exclude>**/gcovr.log</exclude>
+                        <exclude>**/gcovr-report.xml</exclude>
+                        <exclude>**/unittest_result.xml</exclude>
+                        <exclude>**/build/**</exclude>
+                        <exclude>**/gcovr</exclude>
+                        <exclude>**/README.md</exclude>
+                        <exclude>**/gen/*.java</exclude>
+                        <exclude>**/gen/**/*.java</exclude>
+                        <exclude>**/*.avsc</exclude>
+                        <exclude>**/*.iml</exclude>
+                        <exclude>**/.idea/**</exclude>
+                        <exclude>**/*.readme</exclude>
+                        <exclude>**/bin/**</exclude>
+                        <exclude>**/security.policy</exclude>
+                        <exclude>**/*-transport.config</exclude>
+                        <exclude>**/akka.conf</exclude>
+                        <exclude>**/*.cql</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 
     <dependencyManagement>
