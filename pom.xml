@@ -19,7 +19,7 @@
   <modelVersion>4.0.0</modelVersion>
     <groupId>org.kaaproject.kaa</groupId>
     <artifactId>sandbox-frame</artifactId>
-    <version>0.7.2-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Kaa Sandbox Frame</name>
@@ -28,7 +28,7 @@
     <properties>
         <main.dir>${basedir}</main.dir>
         <kaa.version>[0.7.2-SNAPSHOT,)</kaa.version>
-        <kaa-sample-apps.version>[0.7.2-SNAPSHOT,)</kaa-sample-apps.version>
+        <kaa-sample-apps.version>[1.0.0-SNAPSHOT,)</kaa-sample-apps.version>
         <gwt.version>2.7.0</gwt.version>
         <spring.version>4.0.2.RELEASE</spring.version>
         <ehcache.version>2.8.1</ehcache.version>
