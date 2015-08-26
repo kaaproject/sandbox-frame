@@ -17,6 +17,7 @@
 package org.kaaproject.kaa.sandbox.web.client.layout;
 
 import org.kaaproject.avro.ui.gwt.client.AvroUiResources.AvroUiStyle;
+import org.kaaproject.kaa.sandbox.web.client.Sandbox;
 import org.kaaproject.kaa.sandbox.web.client.SandboxResources.SandboxStyle;
 import org.kaaproject.kaa.sandbox.web.client.util.Utils;
 import org.kaaproject.kaa.sandbox.web.shared.Version;
@@ -24,6 +25,7 @@ import org.kaaproject.kaa.sandbox.web.shared.Version;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -45,7 +47,16 @@ public class AppLayout extends Composite {
             avroUiStyle = Utils.avroUiStyle;
             sandboxStyle = Utils.sandboxStyle;
             initWidget(uiBinder.createAndBindUi(this));
-            footerPanel.getElement().setInnerHTML(Utils.messages.footerMessage(Version.PROJECT_VERSION));
+            Sandbox.getSandboxService().getKaaVersion(new AsyncCallback<String>() {
+				@Override
+				public void onSuccess(String result) {
+					footerPanel.getElement().setInnerHTML(Utils.messages.footerMessage(result));
+				}
+				
+				@Override
+				public void onFailure(Throwable caught) {
+				}
+			});
         }
 
         public SimplePanel getAppHeaderHolder() {

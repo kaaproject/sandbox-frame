@@ -27,6 +27,8 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 @RemoteServiceRelativePath("springGwtServices/sandboxService")
 public interface SandboxService extends RemoteService {
+	
+	public String getKaaVersion() throws SandboxServiceException;
 
     public boolean changeKaaHostEnabled() throws SandboxServiceException;
     
