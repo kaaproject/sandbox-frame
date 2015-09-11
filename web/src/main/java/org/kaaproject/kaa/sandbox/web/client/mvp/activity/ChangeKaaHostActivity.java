@@ -26,6 +26,7 @@ import org.kaaproject.kaa.sandbox.web.client.mvp.place.ChangeKaaHostPlace;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.ChangeKaaHostView;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.dialog.ConsoleDialog;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.dialog.ConsoleDialog.ConsoleDialogListener;
+import org.kaaproject.kaa.sandbox.web.client.util.Analytics;
 import org.kaaproject.kaa.sandbox.web.client.util.Utils;
 
 import com.google.gwt.activity.shared.AbstractActivity;
@@ -52,6 +53,7 @@ public class ChangeKaaHostActivity extends AbstractActivity {
 
     @Override
     public void start(AcceptsOneWidget containerWidget, EventBus eventBus) {
+    	Analytics.switchScreen(Analytics.CHANGE_KAA_HOST_SCREEN);
         view = clientFactory.getChangeKaaHostView();
         bind(eventBus);
         containerWidget.setWidget(view.asWidget());
@@ -86,7 +88,9 @@ public class ChangeKaaHostActivity extends AbstractActivity {
                 new BusyAsyncCallback<Boolean>() {
                     @Override
                     public void onFailureImpl(Throwable caught) {
-                        view.setErrorMessage(Utils.getErrorMessage(caught));
+                    	String message = Utils.getErrorMessage(caught);
+                        view.setErrorMessage(message);
+                        Analytics.sendException(message);
                     }
 
                     @Override
@@ -107,6 +111,7 @@ public class ChangeKaaHostActivity extends AbstractActivity {
 
     private void changeKaaHost() {
         final String host = view.getKaaHost().getValue();
+        Analytics.sendEvent(Analytics.CHANGE_KAA_HOST_ACTION, host);
         if (host != null && host.length() > 0) {
             view.clearError();
             ConsoleDialog.startConsoleDialog("Going to change kaa host to '"

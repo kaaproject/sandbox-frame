@@ -22,6 +22,7 @@ import org.kaaproject.kaa.sandbox.web.client.mvp.ClientFactory;
 import org.kaaproject.kaa.sandbox.web.client.mvp.place.ChangeKaaHostPlace;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.HeaderView;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.widget.ActionsLabel.ActionMenuItemListener;
+import org.kaaproject.kaa.sandbox.web.client.util.Analytics;
 import org.kaaproject.kaa.sandbox.web.client.util.Utils;
 
 import com.google.gwt.activity.shared.AbstractActivity;
@@ -90,10 +91,12 @@ public class HeaderActivity extends AbstractActivity {
     }
     
     private void gotoKaaAdminWeb() {
+    	Analytics.sendEvent(Analytics.GOTO_ADMIN_UI_ACTION);
         Sandbox.redirectToModule("kaaAdmin");
     }
     
     private void gotoAvroUiSandboxWeb() {
+    	Analytics.sendEvent(Analytics.GOTO_AVRO_UI_SANDBOX_ACTION);
         Sandbox.redirectToModule("avroUiSandbox");
     }
 

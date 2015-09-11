@@ -36,6 +36,7 @@ import org.kaaproject.kaa.sandbox.web.client.mvp.view.dialog.ChangeHostDialog.Li
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.dialog.ConsoleDialog;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.dialog.ConsoleDialog.ConsoleDialogListener;
 import org.kaaproject.kaa.sandbox.web.client.servlet.ServletHelper;
+import org.kaaproject.kaa.sandbox.web.client.util.Analytics;
 import org.kaaproject.kaa.sandbox.web.client.util.Utils;
 import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectDataType;
 
@@ -59,6 +60,7 @@ public class MainActivity extends AbstractActivity {
     
     @Override
     public void start(AcceptsOneWidget containerWidget, EventBus eventBus) {
+    	Analytics.switchScreen(Analytics.MAIN_SCREEN);
         view = clientFactory.getMainView();
         bind(eventBus);
         containerWidget.setWidget(view.asWidget());
@@ -109,7 +111,9 @@ public class MainActivity extends AbstractActivity {
         Sandbox.getSandboxService().getDemoProjects(new BusyAsyncCallback<List<Project>>() {
             @Override
             public void onFailureImpl(Throwable caught) {
-                view.setErrorMessage(Utils.getErrorMessage(caught));
+            	String message = Utils.getErrorMessage(caught);
+                view.setErrorMessage(message);
+                Analytics.sendException(message);
             }
 
             @Override
@@ -146,7 +150,9 @@ public class MainActivity extends AbstractActivity {
                                 }
                                 @Override
                                 public void onFailureImpl(Throwable caught) {
-                                    view.setErrorMessage(Utils.getErrorMessage(caught));
+                                	String message = Utils.getErrorMessage(caught);
+                                    view.setErrorMessage(message);
+                                    Analytics.sendException(message);
                                 }
                             });
                             
@@ -163,10 +169,12 @@ public class MainActivity extends AbstractActivity {
     }
     
     private void getProjectSourceCode(Project project) {
+    	Analytics.sendProjectEvent(project, Analytics.SOURCE_ACTION);
         getProjectData(project, ProjectDataType.SOURCE);
     }
     
     private void getProjectBinary(Project project) {
+    	Analytics.sendProjectEvent(project, Analytics.BINARY_ACTION);
         getProjectData(project, ProjectDataType.BINARY);
     }
     
@@ -176,7 +184,9 @@ public class MainActivity extends AbstractActivity {
 
             @Override
             public void onFailureImpl(Throwable caught) {
-                view.setErrorMessage(Utils.getErrorMessage(caught));
+            	String message = Utils.getErrorMessage(caught);
+                view.setErrorMessage(message);
+                Analytics.sendException(message);
             }
 
             @Override
