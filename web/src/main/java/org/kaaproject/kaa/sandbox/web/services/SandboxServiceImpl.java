@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -58,6 +59,7 @@ import org.kaaproject.kaa.examples.common.projects.Project;
 import org.kaaproject.kaa.examples.common.projects.ProjectsConfig;
 import org.kaaproject.kaa.sandbox.web.services.cache.CacheService;
 import org.kaaproject.kaa.sandbox.web.services.util.Utils;
+import org.kaaproject.kaa.sandbox.web.shared.dto.AnalyticsInfo;
 import org.kaaproject.kaa.sandbox.web.shared.dto.BuildOutputData;
 import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectDataKey;
 import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectDataType;
@@ -114,6 +116,8 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
     
     private static final int MESSAGE_BROADCAST_TIMEOUT = 10000; 
     
+    private static final String ANALYTICS_USER_ID_FILE = "analytics_user_id";
+    
     @Autowired
     private CacheService cacheService;
     
@@ -121,15 +125,23 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
     @Value("#{properties[sandbox_home]}")
     private String sandboxHome;
 
-    /** The thrift port. */
+    /** Change host enabled. */
     @Value("#{properties[gui_change_host_enabled]}")
     private boolean guiChangeHostEnabled;
+    
+    @Value("#{properties[enable_analytics]}")
+    private boolean enableAnalytics;
+    
+    @Value("#{properties[analytics_tracking_id]}")
+    private String analyticsTrackingId;
     
     private Map<String, Project> projectsMap = new HashMap<>();
     
     private static String[] sandboxEnv;
     
     private static AtmosphereResourceFactory atmosphereResourceFactory;
+    
+    private static String analyticsUserId;
     
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -138,6 +150,9 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
             LOG.info("Initializing Sandbox Service...");
             LOG.info("sandboxHome [{}]", sandboxHome);
             LOG.info("guiChangeHostEnabled [{}]", guiChangeHostEnabled);
+            LOG.info("enableAnalytics [{}]", enableAnalytics);
+            
+            prepareAnalytics();
             
             JAXBContext jc = JAXBContext.newInstance("org.kaaproject.kaa.examples.common.projects");
             Unmarshaller unmarshaller = jc.createUnmarshaller();
@@ -167,6 +182,27 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
             LOG.error("Unable to initialize Sandbox Service", e);
             throw e;
         }
+    }
+    
+    private void prepareAnalytics() throws IOException {
+    	if (enableAnalytics) {
+    		try {
+	            File f = new File(ANALYTICS_USER_ID_FILE);
+	            if (!f.exists()) {
+	            	f.createNewFile();
+	            }
+	            String uid = FileUtils.readFileToString(f, "UTF-8");
+	            if (uid == null || uid.isEmpty()) {
+	            	uid = UUID.randomUUID().toString();
+	            	FileUtils.write(f, uid);
+	            }
+	            analyticsUserId = uid;
+    		}
+    		catch (IOException e) {
+    			LOG.error("Unable to initialize analytics", e);
+    			throw e;
+    		}
+    	}
     }
     
     @Ready
@@ -233,6 +269,17 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
             }
         }
     }
+    
+	@Override
+	public AnalyticsInfo getAnalyticsInfo() throws SandboxServiceException {
+		AnalyticsInfo info = new AnalyticsInfo();
+		info.setEnableAnalytics(enableAnalytics);
+		if (enableAnalytics) {
+			info.setTrackingId(analyticsTrackingId);
+			info.setUserId(analyticsUserId);
+		}
+		return info;
+	}
     
     @Override
     public List<Project> getDemoProjects() throws SandboxServiceException {

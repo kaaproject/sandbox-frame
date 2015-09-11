@@ -27,6 +27,7 @@ import org.atmosphere.gwt20.client.AtmosphereResponse;
 import org.atmosphere.gwt20.client.managed.RPCEvent;
 import org.atmosphere.gwt20.client.managed.RPCSerializer;
 import org.kaaproject.avro.ui.gwt.client.widget.dialog.AvroUiDialog;
+import org.kaaproject.kaa.sandbox.web.client.util.Analytics;
 import org.kaaproject.kaa.sandbox.web.client.util.Utils;
 
 import com.google.gwt.core.client.GWT;
@@ -185,6 +186,7 @@ public class ConsoleDialog extends AvroUiDialog {
 	}
 	
 	private void onError(String error) {
+		Analytics.sendException(error);
 	    appendToConsole(error);
 	    atmosphere.unsubscribe();
 	    okButton.setEnabled(true);

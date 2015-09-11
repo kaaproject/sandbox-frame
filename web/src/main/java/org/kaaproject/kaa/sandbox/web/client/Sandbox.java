@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 CyberVision, Inc.
+ * Copyright 2014-2015 CyberVision, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,9 @@ import org.kaaproject.kaa.sandbox.web.client.mvp.activity.LeftPanelActivityMappe
 import org.kaaproject.kaa.sandbox.web.client.mvp.activity.SandboxActivityMapper;
 import org.kaaproject.kaa.sandbox.web.client.mvp.place.MainPlace;
 import org.kaaproject.kaa.sandbox.web.client.mvp.place.SandboxPlaceHistoryMapper;
+import org.kaaproject.kaa.sandbox.web.client.util.Analytics;
 import org.kaaproject.kaa.sandbox.web.client.util.Utils;
+import org.kaaproject.kaa.sandbox.web.shared.dto.AnalyticsInfo;
 import org.kaaproject.kaa.sandbox.web.shared.services.SandboxServiceAsync;
 
 import com.google.gwt.activity.shared.ActivityManager;
@@ -34,6 +36,7 @@ import com.google.gwt.place.shared.Place;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.place.shared.PlaceHistoryHandler;
 import com.google.gwt.place.shared.PlaceHistoryMapper;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.web.bindery.event.shared.EventBus;
 
@@ -45,7 +48,20 @@ public class Sandbox implements EntryPoint {
 
     @Override
     public void onModuleLoad() {
-        init();
+    	Utils.injectSandboxStyles();
+    	sandboxService.getAnalyticsInfo(new AsyncCallback<AnalyticsInfo>() {
+			@Override
+			public void onSuccess(AnalyticsInfo info) {
+				if (info.isEnableAnalytics()) {
+					Analytics.initGA(info.getTrackingId(), info.getUserId());
+				}
+				init();
+			}
+			@Override
+			public void onFailure(Throwable caught) {
+				init();
+			}
+		});    	
     }
     
     public static SandboxServiceAsync getSandboxService() {
@@ -53,9 +69,7 @@ public class Sandbox implements EntryPoint {
     }
 
     private void init() {
-        Utils.injectSandboxStyles();
-
-        ClientFactory clientFactory = GWT.create(ClientFactory.class);
+    	ClientFactory clientFactory = GWT.create(ClientFactory.class);
         EventBus eventBus = clientFactory.getEventBus();
 
         PlaceController placeController = clientFactory.getPlaceController();

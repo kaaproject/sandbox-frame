@@ -29,6 +29,7 @@ import org.kaaproject.kaa.sandbox.web.client.mvp.view.ProjectView;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.dialog.ConsoleDialog;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.dialog.ConsoleDialog.ConsoleDialogListener;
 import org.kaaproject.kaa.sandbox.web.client.servlet.ServletHelper;
+import org.kaaproject.kaa.sandbox.web.client.util.Analytics;
 import org.kaaproject.kaa.sandbox.web.client.util.Utils;
 import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectDataType;
 
@@ -103,7 +104,9 @@ public class ProjectActivity extends AbstractActivity {
         Sandbox.getSandboxService().getDemoProject(place.getProjectId(), new BusyAsyncCallback<Project>() {
             @Override
             public void onFailureImpl(Throwable caught) {
-                view.setErrorMessage(Utils.getErrorMessage(caught));
+            	String message = Utils.getErrorMessage(caught);
+                view.setErrorMessage(message);
+                Analytics.sendException(message);
             }
 
             @Override
@@ -121,15 +124,18 @@ public class ProjectActivity extends AbstractActivity {
                 view.getDetails().setHTML(project.getDetails());
                 view.setBinaryButtonVisible(project.getDestBinaryFile() != null && 
                         project.getDestBinaryFile().length() > 0);
+            	Analytics.switchProjectScreen(project);
             }
         });
     }
     
     private void getProjectSourceCode() {
+    	Analytics.sendProjectEvent(project, Analytics.SOURCE_ACTION);
         getProjectData(ProjectDataType.SOURCE);
     }
     
     private void getProjectBinary() {
+    	Analytics.sendProjectEvent(project, Analytics.BINARY_ACTION);
         getProjectData(ProjectDataType.BINARY);
     }
     
@@ -140,7 +146,9 @@ public class ProjectActivity extends AbstractActivity {
     
                 @Override
                 public void onFailureImpl(Throwable caught) {
+                    String message = Utils.getErrorMessage(caught);
                     view.setErrorMessage(Utils.getErrorMessage(caught));
+                    Analytics.sendException(message);
                 }
     
                 @Override
@@ -187,6 +195,7 @@ public class ProjectActivity extends AbstractActivity {
             });
         } else {
             view.setErrorMessage("Unable to retrieve project data!");
+            Analytics.sendException("Unable to retrieve project data!");
         }
     }
     

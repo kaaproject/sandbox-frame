@@ -19,6 +19,7 @@ package org.kaaproject.kaa.sandbox.web.shared.services;
 import java.util.List;
 
 import org.kaaproject.kaa.examples.common.projects.Project;
+import org.kaaproject.kaa.sandbox.web.shared.dto.AnalyticsInfo;
 import org.kaaproject.kaa.sandbox.web.shared.dto.BuildOutputData;
 import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectDataType;
 
@@ -37,6 +38,8 @@ public interface SandboxService extends RemoteService {
     public void changeKaaHostDialogShown() throws SandboxServiceException;
     
     public void changeKaaHost(String uuid, String host) throws SandboxServiceException;
+    
+    public AnalyticsInfo getAnalyticsInfo() throws SandboxServiceException;
     
     public List<Project> getDemoProjects() throws SandboxServiceException;
     
