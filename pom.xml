@@ -37,7 +37,7 @@
         <logback-ext-spring.version>0.1.2</logback-ext-spring.version>
         <httpcomponents.version>4.3.2</httpcomponents.version>
         <avro.version>1.7.5</avro.version>
-        <avro-ui.version>0.1.2-SNAPSHOT</avro-ui.version>
+        <avro-ui.version>0.1.2</avro-ui.version>
         <rat.version>0.10</rat.version>
     </properties>
 
