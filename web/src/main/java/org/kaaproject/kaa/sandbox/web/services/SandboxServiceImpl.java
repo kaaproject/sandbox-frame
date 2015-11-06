@@ -65,6 +65,7 @@ import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectDataKey;
 import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectDataType;
 import org.kaaproject.kaa.sandbox.web.shared.services.SandboxService;
 import org.kaaproject.kaa.sandbox.web.shared.services.SandboxServiceException;
+import org.kaaproject.kaa.server.common.Environment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -121,13 +122,12 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
     @Autowired
     private CacheService cacheService;
     
-    /** The thrift host. */
-    @Value("#{properties[sandbox_home]}")
-    private String sandboxHome;
-
     /** Change host enabled. */
     @Value("#{properties[gui_change_host_enabled]}")
     private boolean guiChangeHostEnabled;
+    
+    @Value("#{properties[kaa_node_web_port]}")
+    private int kaaNodeWebPort;
     
     @Value("#{properties[enable_analytics]}")
     private boolean enableAnalytics;
@@ -148,8 +148,9 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
         try {
             
             LOG.info("Initializing Sandbox Service...");
-            LOG.info("sandboxHome [{}]", sandboxHome);
+            LOG.info("sandboxHome [{}]", Environment.getServerHomeDir());
             LOG.info("guiChangeHostEnabled [{}]", guiChangeHostEnabled);
+            LOG.info("kaaNodeWebPort [{}]", kaaNodeWebPort);
             LOG.info("enableAnalytics [{}]", enableAnalytics);
             
             prepareAnalytics();
@@ -157,7 +158,7 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
             JAXBContext jc = JAXBContext.newInstance("org.kaaproject.kaa.examples.common.projects");
             Unmarshaller unmarshaller = jc.createUnmarshaller();
             
-            String demoProkectsXmlFile = sandboxHome + "/" + DEMO_PROJECTS_FOLDER + "/" + DEMO_PROJECTS_XML_FILE;
+            String demoProkectsXmlFile = Environment.getServerHomeDir() + "/" + DEMO_PROJECTS_FOLDER + "/" + DEMO_PROJECTS_XML_FILE;
             
             ProjectsConfig projectsConfig = (ProjectsConfig) unmarshaller.unmarshal(new File(demoProkectsXmlFile));
             for (Project project : projectsConfig.getProjects()) {
@@ -258,7 +259,7 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
         try {
         	ClientMessageOutputStream outStream = new ClientMessageOutputStream(uuid, null);
         	if (guiChangeHostEnabled) {
-        	    executeCommand(outStream, new String[]{"sudo",sandboxHome + "/change_kaa_host.sh",host}, null);
+        	    executeCommand(outStream, new String[]{"sudo",Environment.getServerHomeDir() + "/bin/change_kaa_host.sh",host}, null);
         	    cacheService.flushAllCaches();
         	} else {
         	    outStream.println("WARNING: change host from GUI is disabled!");
@@ -323,7 +324,7 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
                     File rootDir = createTempDirectory("demo-project");
                     try {
                         outStream.println("Processing project archive...");
-                        String sourceArchiveFile = sandboxHome + "/" + DEMO_PROJECTS_FOLDER + "/" + project.getSourceArchive();
+                        String sourceArchiveFile = Environment.getServerHomeDir() + "/" + DEMO_PROJECTS_FOLDER + "/" + project.getSourceArchive();
                         String rootProjectDir = rootDir.getAbsolutePath();
                         
                         executeCommand(outStream, new String[]{"tar","-C",rootProjectDir,"-xzvf", sourceArchiveFile}, null);
@@ -493,5 +494,10 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
 		}
 
     }
+
+	@Override
+	public int getKaaNodeWebPort() throws SandboxServiceException {
+		return kaaNodeWebPort;
+	}
 
 }

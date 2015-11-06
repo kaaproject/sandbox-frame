@@ -27,7 +27,7 @@
 
     <properties>
         <main.dir>${basedir}</main.dir>
-        <kaa.version>0.7.3</kaa.version>
+        <kaa.version>0.8.0-SNAPSHOT</kaa.version>
         <kaa-sample-apps.version>1.1.0</kaa-sample-apps.version>
         <gwt.version>2.7.0</gwt.version>
         <spring.version>4.0.2.RELEASE</spring.version>

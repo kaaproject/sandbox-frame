@@ -39,13 +39,13 @@
 	
 	<util:properties id="properties" location="classpath:/sandbox-server.properties" />
 	
-	<bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean" p:config-location="ehcache.xml" />
+	<bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean" p:config-location="/WEB-INF/ehcache.xml" />
 
-    <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager" p:cache-manager-ref="ehcache" />
+        <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager" p:cache-manager-ref="ehcache" />
     
-    <bean id="adminClientProvider" class="org.kaaproject.kaa.sandbox.web.services.rest.AdminClientProvider" />
+        <bean id="adminClientProvider" class="org.kaaproject.kaa.sandbox.web.services.rest.AdminClientProvider" />
     
-    <bean id="cacheService" class="org.kaaproject.kaa.sandbox.web.services.CacheServiceImpl" />
+        <bean id="cacheService" class="org.kaaproject.kaa.sandbox.web.services.CacheServiceImpl" />
 
 	<bean id="sandboxService" class="org.kaaproject.kaa.sandbox.web.services.SandboxServiceImpl"/>
     

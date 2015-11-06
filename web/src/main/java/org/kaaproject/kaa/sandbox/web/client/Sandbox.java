@@ -104,8 +104,16 @@ public class Sandbox implements EntryPoint {
         setWindowHref("/"+module);
     }
     
+    public static void redirectToUrl(String url) {
+        setWindowHref(url);
+    }
+    
     private static native void setWindowHref(String url) /*-{
         $wnd.location.href = url;
+    }-*/; 
+    
+    public static native String getWindowHost() /*-{
+    	return window.location.hostname;
     }-*/; 
 
 }

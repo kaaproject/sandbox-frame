@@ -32,14 +32,20 @@ import com.google.gwt.user.client.ui.AcceptsOneWidget;
 
 public class HeaderActivity extends AbstractActivity {
 
-    private final Place place;
+    private Place place;
     private final ClientFactory clientFactory;
     private final HeaderView headerView;
+    
+    private int kaaNodeWebPort;
 
     public HeaderActivity(Place place, ClientFactory clientFactory) {
         this.place = place;
         this.clientFactory = clientFactory;
         this.headerView = clientFactory.getHeaderView();
+    }
+    
+    public void setPlace(Place place) {
+    	this.place = place;
     }
 
     @Override
@@ -87,12 +93,27 @@ public class HeaderActivity extends AbstractActivity {
                     });
                 }
             }
-        });        
+        });      
+        
+        Sandbox.getSandboxService().getKaaNodeWebPort(new BusyAsyncCallback<Integer>() {
+
+			@Override
+			public void onFailureImpl(Throwable caught) {
+			}
+
+			@Override
+			public void onSuccessImpl(Integer result) {
+				if (result != null) {
+					kaaNodeWebPort = result.intValue();
+				}
+			}
+		});
     }
     
     private void gotoKaaAdminWeb() {
     	Analytics.sendEvent(Analytics.GOTO_ADMIN_UI_ACTION);
-        Sandbox.redirectToModule("kaaAdmin");
+    	String url = "http://" + Sandbox.getWindowHost() + ":" + kaaNodeWebPort + "/kaaAdmin";
+        Sandbox.redirectToUrl(url);
     }
     
     private void gotoAvroUiSandboxWeb() {

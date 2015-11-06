@@ -23,7 +23,7 @@
     </appender>
 
     <appender name="fileLogAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${server_log_dir}/sandbox-server.log</file>
+        <file>${server_log_dir:-./logs}/kaa-sandbox.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>logFile.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
@@ -33,12 +33,12 @@
         </encoder>
     </appender>
 
-    <logger name="org.kaaproject.kaa.sandbox.web" level="DEBUG"/>
-    <logger name="org.spring4gwt.server" level="DEBUG"/>
-    <logger name="org.springframework.core" level="DEBUG"/>
-    <logger name="org.springframework.beans" level="DEBUG"/>
-    <logger name="org.springframework.context" level="DEBUG"/>
-    <logger name="org.springframework.web" level="DEBUG"/>
+    <logger name="org.kaaproject.kaa.sandbox" level="INFO"/>
+    <logger name="org.spring4gwt.server" level="INFO"/>
+    <logger name="org.springframework.core" level="INFO"/>
+    <logger name="org.springframework.beans" level="INFO"/>
+    <logger name="org.springframework.context" level="INFO"/>
+    <logger name="org.springframework.web" level="INFO"/>
 
     <root level="INFO">
         <appender-ref ref="console"/>
