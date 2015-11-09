@@ -129,6 +129,7 @@
                         <exclude>**/*-transport.config</exclude>
                         <exclude>**/akka.conf</exclude>
                         <exclude>**/*.cql</exclude>
+                        <exclude>**/deb/control/control</exclude>
                     </excludes>
                 </configuration>
             </plugin>
