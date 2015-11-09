@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 
-package org.kaaproject.kaa.sandbox.web.shared;
+package org.kaaproject.kaa.sandbox.service.initialization;
 
-/*
- * This code is automatically generated. In order to change content of this class edit Version.template file 
- */
-
-/**
- * The Class Version provides access to useful project version information.
- * This information is populated during pre-compilation phase.
- */
-public final class Version {
-
-    /** The Constant PROJECT_VERSION. */
-    public static final String PROJECT_VERSION = "1.2.0-SNAPSHOT";
+public interface InitializationService {
+    
+    /**
+     * Start.
+     */
+    void start();
 
     /**
-     * Instantiates a new version.
+     * Stop.
      */
-    private Version(){
-    }
+    void stop();
+
 }

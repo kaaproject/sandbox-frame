@@ -25,6 +25,7 @@ import com.google.gwt.place.shared.Place;
 public class HeaderActivityMapper implements ActivityMapper {
 
     private final ClientFactory clientFactory;
+    private HeaderActivity headerActivity;
 
     public HeaderActivityMapper(ClientFactory clientFactory) {
         super();
@@ -33,7 +34,12 @@ public class HeaderActivityMapper implements ActivityMapper {
 
     @Override
     public Activity getActivity(Place place) {
-        return new HeaderActivity(place, clientFactory);
+    	if (headerActivity == null) {
+    		headerActivity = new HeaderActivity(place, clientFactory);
+    	} else {
+    		headerActivity.setPlace(place);
+    	}
+    	return headerActivity;
     }
 }
 

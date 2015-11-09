@@ -17,25 +17,23 @@
 package org.kaaproject.kaa.sandbox.web.services.rest;
 
 import org.kaaproject.kaa.server.common.admin.AdminClient;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
-public class AdminClientProvider implements InitializingBean {
+@Service
+public class AdminClientProvider {
 
-    //@Value("#{properties[admin_host]}")
-    private String adminHost = "localhost";
+    @Value("#{properties[kaa_node_host]}")
+    private String kaaNodeHost;
 
-    //@Value("#{properties[admin_port]}")
-    private int adminPort = 8080;
+    @Value("#{properties[kaa_node_web_port]}")
+    private int kaaNodeWebPort;
 
     public AdminClientProvider() {
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-    }
-
     public AdminClient getClient() {
-        return new AdminClient(adminHost, adminPort);
+        return new AdminClient(kaaNodeHost, kaaNodeWebPort);
     }
 
 }

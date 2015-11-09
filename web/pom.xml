@@ -18,12 +18,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.kaaproject.kaa</groupId>
-		<version>1.1.0</version>
+		<version>1.2.0-SNAPSHOT</version>
 		<artifactId>sandbox-frame</artifactId>
 	</parent>
 	<groupId>org.kaaproject.kaa.sandbox-frame</groupId>
-	<artifactId>sandbox-web</artifactId>
-	<packaging>war</packaging>
+	<artifactId>kaa-sandbox</artifactId>
+	<packaging>jar</packaging>
 
 	<name>Kaa Sandbox Web Server</name>
 	<url>http://kaaproject.org</url>
@@ -31,7 +31,9 @@
 	<properties>
 	    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	    <main.dir>${basedir}/..</main.dir>
-            <atmosphere-gwt20.version>2.3.0-GWT27</atmosphere-gwt20.version>
+        <atmosphere-gwt20.version>2.3.0-GWT27</atmosphere-gwt20.version>
+        <jetty.version>9.2.2.v20140723</jetty.version>
+        <javax.websocket.version>1.0</javax.websocket.version>
 	</properties>
 
 	<dependencies>
@@ -157,7 +159,40 @@
         <dependency>
             <groupId>org.kaaproject.kaa.examples</groupId>
             <artifactId>common</artifactId>
+        </dependency>
+                
+        <!-- Embedded Jetty server -->
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-webapp</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-annotations</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>javax-websocket-client-impl</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>javax-websocket-server-impl</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.websocket</groupId>
+            <artifactId>javax.websocket-api</artifactId>
+            <version>${javax.websocket.version}</version>
         </dependency>        
+                
 		<dependency>
 			<groupId>org.atmosphere.extensions</groupId>
 			<artifactId>atmosphere-gwt20-client</artifactId>
@@ -185,6 +220,13 @@
 			<type>war</type>
 			<scope>compile</scope>
 		</dependency>		
+        <dependency>
+            <groupId>org.kaaproject.avro-ui</groupId>
+            <artifactId>gwt-sandbox</artifactId>
+            <version>${avro-ui.version}</version>
+            <type>war</type>
+			<scope>compile</scope>
+        </dependency>   
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
@@ -193,59 +235,7 @@
 
 
 	<build>
-	    <finalName>sandbox</finalName>
-	    <resources>
-          <resource>
-            <directory>src/main/resources</directory>
-            <excludes>
-              <exclude>sandbox-log4j.xml</exclude>
-              <exclude>sandbox-server.properties</exclude>
-              <exclude>sandbox-env.properties</exclude>
-            </excludes>
-          </resource>
-        </resources>
 		<plugins>
-		     <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <descriptors>
-                        <descriptor>src/main/assembly/sandbox.xml</descriptor>
-                    </descriptors>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>       
-			<plugin>
-				<artifactId>maven-clean-plugin</artifactId>
-				<version>2.5</version>
-				<configuration>
-					<filesets>
-						<fileset>
-							<directory>src/main/gwt-unitCache</directory>
-							<followSymlinks>false</followSymlinks>
-						</fileset>
-						<fileset>
-							<directory>src/main/webapp/WEB-INF/classes</directory>
-							<followSymlinks>false</followSymlinks>
-						</fileset>
-						<fileset>
-							<directory>src/main/webapp/WEB-INF/deploy</directory>
-							<followSymlinks>false</followSymlinks>
-						</fileset>
-						<fileset>
-							<directory>src/main/webapp/sandbox</directory>
-							<followSymlinks>false</followSymlinks>
-						</fileset>
-					</filesets>
-				</configuration>
-			</plugin>
             <plugin>
                 <groupId>com.google.code.maven-replacer-plugin</groupId>
                 <artifactId>replacer</artifactId>
@@ -283,6 +273,9 @@
                     </compileSourcesArtifacts>
                     <gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
                     <runTarget>Sandbox.html</runTarget>
+                    <persistentunitcachedir>${project.build.directory}</persistentunitcachedir>
+                    <deploy>${project.build.directory}/gwt-deploy</deploy>
+                    <webappDirectory>${project.build.directory}/webapps/sandbox</webappDirectory>
                 </configuration>                    
 				<executions>
                     <execution>
@@ -324,6 +317,203 @@
 					</execution>
 				</executions>
 			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/logback.xml</exclude>
+                    </excludes> 
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>org.kaaproject.kaa.sandbox.KaaSandboxApplication</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>          			
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <id>copy-sandbox-web</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/webapps/sandbox</outputDirectory>
+                            <resources>          
+                                <resource>
+                                    <directory>src/main/sandbox-web</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>      
+                        </configuration>
+                    </execution>      
+                    <execution>
+                        <id>copy-conf</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/conf</outputDirectory>
+                            <resources>          
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                    <filtering>false</filtering>
+                                    <excludes>
+                                        <exclude>org/**</exclude>
+                                    </excludes>
+                                </resource>
+                            </resources>      
+                        </configuration>
+                    </execution>                                   
+                </executions>
+            </plugin>  
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+		           <execution>
+		             <id>unpack-atmosphere-javascript</id>
+		             <phase>process-classes</phase>
+		             <goals>
+		               <goal>unpack</goal>
+		             </goals>
+		             <configuration>
+		               <artifactItems>
+		                 <artifactItem>
+		                   <groupId>org.atmosphere.client</groupId>
+		                   <artifactId>javascript</artifactId>
+		                   <version>2.2.11</version>
+		                   <type>war</type>
+		                   <overWrite>false</overWrite>
+		                 </artifactItem>
+		               </artifactItems>
+		               <includes>javascript/**</includes>
+		               <outputDirectory>${project.build.directory}/webapps/sandbox</outputDirectory>
+		               <overWriteReleases>false</overWriteReleases>
+		               <overWriteSnapshots>false</overWriteSnapshots>
+		             </configuration>
+		            </execution>    
+		           <execution>
+		             <id>unpack-avroui-sandbox</id>
+		             <phase>process-classes</phase>
+		             <goals>
+		               <goal>unpack</goal>
+		             </goals>
+		             <configuration>
+		               <artifactItems>
+		                 <artifactItem>
+				           <groupId>org.kaaproject.avro-ui</groupId>
+				           <artifactId>gwt-sandbox</artifactId>
+				           <version>${avro-ui.version}</version>
+				           <type>war</type>
+		                   <overWrite>false</overWrite>
+		                 </artifactItem>
+		               </artifactItems>
+		               <outputDirectory>${project.build.directory}/webapps/avroUiSandbox</outputDirectory>
+		               <overWriteReleases>false</overWriteReleases>
+		               <overWriteSnapshots>false</overWriteSnapshots>
+		             </configuration>
+		            </execution>        		                        
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>false</overWriteSnapshots>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                            <excludeTypes>test-jar</excludeTypes>
+                            <includeScope>runtime</includeScope>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>                      
+            <plugin>
+                <artifactId>jdeb</artifactId>
+                <groupId>org.vafer</groupId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jdeb</goal>
+                        </goals>
+                        <configuration>
+                            <deb>${project.build.directory}/${project.artifactId}.deb</deb>
+                            <controlDir>${project.basedir}/src/deb/control/</controlDir>
+                            <dataSet>
+                                <data>
+                                    <src>${project.build.directory}/${project.build.finalName}.jar</src>
+                                    <type>file</type>
+                                    <mapper>
+                                        <type>perm</type>
+                                        <filemode>755</filemode>
+                                        <prefix>/usr/lib/kaa-sandbox/lib</prefix>
+                                    </mapper>
+                                </data>
+                                <data>
+                                    <src>${project.build.directory}/lib</src>
+                                    <type>directory</type>
+                                    <mapper>
+                                        <type>perm</type>
+                                        <filemode>755</filemode>
+                                        <prefix>/usr/lib/kaa-sandbox/lib</prefix>
+                                    </mapper>
+                                </data>
+                                <data>
+                                    <src>${project.build.directory}/webapps</src>
+                                    <type>directory</type>
+                                    <mapper>
+                                        <type>perm</type>
+                                        <filemode>755</filemode>
+                                        <prefix>/usr/lib/kaa-sandbox/webapps</prefix>
+                                    </mapper>
+                                </data>                                
+                                <data>
+                                    <src>${project.build.directory}/conf</src>
+                                    <type>directory</type>
+                                    <conffile>true</conffile>
+                                    <mapper>
+                                        <type>perm</type>
+                                        <filemode>755</filemode>
+                                        <prefix>/usr/lib/kaa-sandbox/conf</prefix>
+                                    </mapper>
+                                </data>
+                                <data>
+                                    <src>${project.basedir}/src/sh/bin</src>
+                                    <type>directory</type>
+                                    <mapper>
+                                        <type>perm</type>
+                                        <filemode>755</filemode>
+                                        <prefix>/usr/lib/kaa-sandbox/bin</prefix>
+                                    </mapper>
+                                </data>
+                                <data>
+                                    <src>${project.basedir}/src/sh/init.d/deb</src>
+                                    <type>directory</type>
+                                    <mapper>
+                                        <type>perm</type>
+                                        <filemode>755</filemode>
+                                        <prefix>/usr/lib/kaa-sandbox/bin</prefix>
+                                    </mapper>
+                                </data>
+                            </dataSet>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>            
+			
  	      </plugins>
 		<pluginManagement>
 		    <plugins>
@@ -372,9 +562,9 @@
 						<version>${gwt.version}</version>
 						<executions>
 							<execution>
+							    <phase>compile</phase>
 								<goals>
 									<goal>compile</goal>
-									<goal>test</goal>
 								</goals>
 							</execution>
 						</executions>
@@ -385,10 +575,117 @@
 							</compileSourcesArtifacts>
 							<gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
 							<runTarget>Sandbox.html</runTarget>
+                            <persistentunitcachedir>${project.build.directory}</persistentunitcachedir>
+                            <deploy>${project.build.directory}/gwt-deploy</deploy>
+                            <webappDirectory>${project.build.directory}/webapps/sandbox</webappDirectory>
 						</configuration>
 					</plugin>
 				</plugins>
 			</build>
 		</profile>
+        <profile>
+            <id>build-rpm</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>rpm-maven-plugin</artifactId>
+                        <version>2.1.3</version>
+                        <extensions>true</extensions>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>attached-rpm</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <name>${project.artifactId}</name>
+                            <copyright>Kaaproject</copyright>
+                            <distribution>development</distribution>
+                            <group>Applications/Kaa</group>
+                            <targetOS>linux</targetOS>
+                            <packager>${user.name}</packager>
+                            <changelogFile>CHANGELOG</changelogFile>
+                            <targetOS>linux</targetOS>
+                            <defaultDirmode>500</defaultDirmode>
+                            <defaultFilemode>400</defaultFilemode>
+                            <defaultUsername>kaa</defaultUsername>
+                            <defaultGroupname>kaa</defaultGroupname>
+                            <mappings>
+                                <mapping>
+                                    <directory>/usr/lib/kaa-sandbox/lib</directory>
+                                    <filemode>755</filemode>
+                                    <username>kaa</username>
+                                    <groupname>kaa</groupname>
+                                    <sources>
+                                        <source>
+                                            <location>target/lib</location>
+                                        </source>
+                                        <source>
+                                            <location>target/${project.build.finalName}.jar</location>
+                                        </source>
+                                    </sources>
+                                </mapping>
+                                <mapping>
+                                    <directory>/usr/lib/kaa-sandbox/webapps</directory>
+                                    <filemode>755</filemode>
+                                    <username>kaa</username>
+                                    <groupname>kaa</groupname>
+                                    <sources>
+                                        <source>
+                                            <location>target/webapps</location>
+                                        </source>
+                                    </sources>
+                                </mapping>                                
+                                <mapping>
+                                    <directory>/usr/lib/kaa-sandbox/conf</directory>
+                                    <configuration>true</configuration>
+                                    <filemode>755</filemode>
+                                    <username>kaa</username>
+                                    <groupname>kaa</groupname>
+                                    <sources>
+                                        <source>
+                                            <location>target/conf</location>
+                                        </source>
+                                    </sources>
+                                </mapping>
+                                <mapping>
+                                    <directory>/usr/lib/kaa-sandbox/bin</directory>
+                                    <filemode>755</filemode>
+                                    <username>kaa</username>
+                                    <groupname>kaa</groupname>
+                                    <sources>
+                                        <source>
+                                            <location>src/sh/bin</location>
+                                        </source>
+                                        <source>
+                                            <location>src/sh/init.d/rpm</location>
+                                        </source>
+                                    </sources>
+                                </mapping>
+                            </mappings>
+                            <preinstallScriptlet>
+                                <scriptFile>src/rpm/control/preinst</scriptFile>
+                                <fileEncoding>utf-8</fileEncoding>
+                            </preinstallScriptlet>
+                            <postinstallScriptlet>
+                                <scriptFile>src/rpm/control/postinst</scriptFile>
+                                <fileEncoding>utf-8</fileEncoding>
+                            </postinstallScriptlet>
+                            <preremoveScriptlet>
+                                <scriptFile>src/rpm/control/prerm</scriptFile>
+                                <fileEncoding>utf-8</fileEncoding>
+                            </preremoveScriptlet>
+                            <postremoveScriptlet>
+                                <scriptFile>src/rpm/control/postrm</scriptFile>
+                                <fileEncoding>utf-8</fileEncoding>
+                            </postremoveScriptlet>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>		
 	</profiles>
 </project>
