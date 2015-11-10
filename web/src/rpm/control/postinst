@@ -16,6 +16,11 @@
 
 set -e
 
+platform=
+if [ -f /virt_env ]; then
+    platform="$(cat /virt_env)"
+fi
+		
 if [ -e /etc/init.d/kaa_box_startup ]; then
     rm -f /etc/init.d/kaa_box_startup
 fi
@@ -39,8 +44,11 @@ fi
 chown -R kaa:kaa /var/log/kaa
 chmod 755 /var/log/kaa
 
-ln -s /usr/lib/kaa-sandbox/bin/kaa_box_startup /etc/init.d/kaa_box_startup
-ln -s /usr/lib/kaa-sandbox/bin/startup.sh /usr/lib/kaa-sandbox/startup.sh
+if [ $platform = "vbox" ]; then
+    ln -s /usr/lib/kaa-sandbox/bin/kaa_box_startup /etc/init.d/kaa_box_startup
+    ln -s /usr/lib/kaa-sandbox/bin/startup.sh /usr/lib/kaa-sandbox/startup.sh
+fi
+        
 ln -s /usr/lib/kaa-sandbox/conf /etc/kaa-sandbox/conf
 
 if [ -f /usr/lib/kaa-sandbox/bin/kaa-sandbox.default ]; then
@@ -61,4 +69,11 @@ if [ -x "/etc/init.d/kaa-sandbox" ]; then
 	fi
 fi
 
-
+if [ $platform = "vbox" ] && [ -x "/etc/init.d/kaa_box_startup" ]; then
+	    if ! chkconfig_loc="$(type -p "chkconfig")" || [ -z "$chkconfig_loc" ]; then
+            update-rc.d -f kaa_box_startup remove >/dev/null || exit 1
+            update-rc.d -f kaa_box_startup defaults 19 >/dev/null || exit 1
+        else
+            chkconfig --add kaa_box_startup >/dev/null || exit 1
+        fi
+fi

@@ -12,14 +12,8 @@ output/**
 .project
 .cache/**
 target/
-tmp_deb_control/
-tmp_rpm_control/
-tmp_dao_resources/
-tmp_sh/
 .gwt/
 .settings/
-/bin
-bin/
 **/dependency-reduced-pom.xml
 sandbox/web/src/main/java/org/kaaproject/kaa/sandbox/web/shared/Version.java
 pom.xml.versionsBackup
