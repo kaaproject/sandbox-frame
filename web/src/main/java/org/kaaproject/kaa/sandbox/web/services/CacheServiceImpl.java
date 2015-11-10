@@ -15,8 +15,9 @@
  */
 package org.kaaproject.kaa.sandbox.web.services;
 
-import org.kaaproject.kaa.common.dto.admin.SdkPropertiesDto;
+import org.kaaproject.kaa.common.dto.admin.SdkPlatform;
 import org.kaaproject.kaa.common.dto.file.FileData;
+import org.kaaproject.kaa.examples.common.projects.Platform;
 import org.kaaproject.kaa.sandbox.web.services.cache.CacheService;
 import org.kaaproject.kaa.sandbox.web.services.rest.AdminClientProvider;
 import org.kaaproject.kaa.sandbox.web.services.util.Utils;
@@ -54,13 +55,13 @@ public class CacheServiceImpl implements CacheService {
     private String tenantDeveloperPassword;
     
     @Override
-    @Cacheable(SDK_CACHE)
-    public FileData getSdk(SdkPropertiesDto key) throws SandboxServiceException {
+    @Cacheable(value = SDK_CACHE, key = "#p0.concat('-').concat(#p1.toString())")
+    public FileData getSdk(String sdkProfileId, Platform targetPlatform) throws SandboxServiceException {
         AdminClient client = clientProvider.getClient();
         client.login(tenantDeveloperUser, tenantDeveloperPassword);
         FileData fileData;
         try {
-            fileData = client.downloadSdk(key);
+            fileData = client.downloadSdk(sdkProfileId, toSdkPlatform(targetPlatform));
         } catch (Exception e) {
             throw Utils.handleException(e);
         }
@@ -107,5 +108,20 @@ public class CacheServiceImpl implements CacheService {
         }
 
         LOG.info("All caches have been completely flushed.");        
+    }
+    
+    private static SdkPlatform toSdkPlatform(Platform targetPlatform) {
+    	switch (targetPlatform) {
+		case ANDROID:
+			return SdkPlatform.ANDROID; 
+		case C:
+			return SdkPlatform.C; 
+		case CPP:
+			return SdkPlatform.CPP;
+		case JAVA:
+			return SdkPlatform.JAVA;
+		default:
+			throw new IllegalArgumentException("Unsupported platform " + targetPlatform);
+    	}
     }
 }
