@@ -32,8 +32,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import net.iharder.Base64;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -52,7 +50,6 @@ import org.atmosphere.gwt20.server.GwtRpcInterceptor;
 import org.atmosphere.interceptor.AtmosphereResourceLifecycleInterceptor;
 import org.atmosphere.interceptor.IdleResourceInterceptor;
 import org.atmosphere.interceptor.SuspendTrackerInterceptor;
-import org.kaaproject.kaa.common.dto.admin.SdkPropertiesDto;
 import org.kaaproject.kaa.common.dto.file.FileData;
 import org.kaaproject.kaa.examples.common.projects.Platform;
 import org.kaaproject.kaa.examples.common.projects.Project;
@@ -314,11 +311,10 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
             outStream = new ClientMessageOutputStream(uuid, outPrint);
             Project project = projectsMap.get(projectId);
             if (project != null) {
-                String sdkKeyBase64 = project.getSdkKeyBase64();
-                SdkPropertiesDto sdkPropertiesDto = (SdkPropertiesDto)Base64.decodeToObject(sdkKeyBase64, Base64.URL_SAFE, null);
-                outStream.println("SDK properties for project build: " + sdkPropertiesDto.toString());
+                String sdkProfileId = project.getSdkProfileId();
+                outStream.println("SDK profile id of project: " + sdkProfileId);
                 outStream.println("Getting SDK for requested project...");
-                FileData sdkFileData = cacheService.getSdk(sdkPropertiesDto);
+                FileData sdkFileData = cacheService.getSdk(sdkProfileId, project.getPlatform());
                 if (sdkFileData != null) {
                     outStream.println("Successfuly got SDK.");
                     File rootDir = createTempDirectory("demo-project");
