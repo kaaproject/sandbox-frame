@@ -135,6 +135,8 @@ public class Utils {
                 return constants.cpp();
             case JAVA:
                 return constants.java();
+            case OBJC:
+                return constants.objc();
         }
         return null;
     }
@@ -149,6 +151,8 @@ public class Utils {
                 return resources.cppPlatform();
             case JAVA:
                 return resources.javaPlatform();
+            case OBJC:
+                return resources.objcPlatform();
         }
         return null;
     }
@@ -176,6 +180,8 @@ public class Utils {
                 return resources.cpp();
             case JAVA:
                 return resources.java();
+            case OBJC:
+                return resources.objc();
         }
         return null;
     }
