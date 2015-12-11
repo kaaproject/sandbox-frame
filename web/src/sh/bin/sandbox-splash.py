@@ -7,6 +7,7 @@ DETAILS_SCREEN = 2
 screen_mode = None
 
 screen = None
+GREET_WIDTH = 8
 HINT_WIDTH = 3
 CHANGE_IP_WIDTH = 5
 platform = open("/virt_env").read().strip()
@@ -17,7 +18,7 @@ class DHCPMisconfiguration(Exception):
 
 def make_greet_window():
     H, W = screen.getmaxyx()
-    greet_win = screen.subwin(H / 2 - HINT_WIDTH, W, 0, 0)
+    greet_win = screen.subwin(GREET_WIDTH, W, 0, 0)
     greet_win.box()
     greet_win.addstr(1, 2, "Kaa Sandbox")
     greet_win.addstr(2, 2, "http://kaaproject.org")
@@ -25,7 +26,7 @@ def make_greet_window():
 
 def make_ip_window():
     H, W = screen.getmaxyx()
-    ip_win = screen.subwin(H / 2, W, H / 2 - HINT_WIDTH, 0)
+    ip_win = screen.subwin(H - GREET_WIDTH - HINT_WIDTH, W, GREET_WIDTH, 0)
     ip_win.box()
     try:
         import socket
@@ -47,17 +48,23 @@ def make_ip_window():
         ip_win.addstr(4, 2, "Check connection of network interface")
         ip_win.addstr(7, 2, "For details, see VM setup instructions")
     else:
-        ip_win.addstr(1, 2, "To initiate your Kaa Sandbox session,")
-        ip_win.addstr(2, 2, "please open a browser and enter this address ")
-        ip_win.addstr(3, 2, "in the browser's address field: ")
         if platform == "vbox" and ip == "10.0.2.15":
-        	ip_win.addstr(4, 2, "http://%s:%s/sandbox" % ("127.0.0.1",sandbox_port))
-        	ip_win.addstr(6, 2, "You can access SSH by $ ssh kaa@%s -p 2222" % "127.0.0.1")
+                ip_win.addstr(1, 2, "Warning: NAT networking mode detected!")
+                ip_win.addstr(2, 2, "The recommended and supported networking mode is bridged adapter.")
+                ip_win.addstr(3, 2, "Follow this short tutorial for instructions on setting it up:")
+                ip_win.addstr(4, 2, "https://youtu.be/ynbxcRdgXFU")
+                ip_win.addstr(6, 2, "If you prefer proceeding in the NAT mode, make sure all of the Kaa ports") 
+                ip_win.addstr(7, 2, "are properly forwarded (and do not conflict with other services on your") 
+                ip_win.addstr(8, 2, "machine).")
+                ip_win.addstr(10, 2, "The Kaa Sandbox web interface is available at:")
+                ip_win.addstr(11, 2, "http://%s:%s/sandbox" % ("127.0.0.1",sandbox_port))
+                ip_win.addstr(13, 2, "To SSH into this VM use $ ssh kaa@%s -p 2222" % "127.0.0.1")
+                ip_win.addstr(15, 2, "Type 'd' for more details.")
         else:
-        	ip_win.addstr(4, 2, "http://%s:%s/sandbox" % (ip,sandbox_port))
-        	ip_win.addstr(6, 2, "You can access SSH by $ ssh kaa@%s" % ip)
-        ip_win.addstr(8, 2, "Type 'd' for additional details.")
-
+                ip_win.addstr(1, 2, "The Kaa Sandbox web interface is available at:")
+                ip_win.addstr(2, 2, "http://%s:%s/sandbox" % (ip,sandbox_port))
+                ip_win.addstr(4, 2, "To SSH into this VM use $ ssh kaa@%s" % ip)
+                ip_win.addstr(6, 2, "Type 'd' for more details.")
 
 def make_hint_window():
     global screen_mode
