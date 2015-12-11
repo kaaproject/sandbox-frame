@@ -24,9 +24,8 @@ fi
 if [ "$platform" == "vbox" ] && \
    [ "$HOST" != "127.0.0.1" ] && \
    [ "$HOST" != "10.0.2.15" ] && \
-   [ ! -f $CONF_PATH/ip_changed ]; then
+   [ ! -f $CONF_PATH/ip_manually_changed ]; then
        sed -i "s/\(transport_public_interface=\).*\$/\1${HOST}/" /etc/kaa-node/conf/kaa-node.properties
-       touch $CONF_PATH/ip_changed
        sed -i "s/\(gui_show_change_host_dialog=\).*\$/\1false/" $CONF_PATH/sandbox-server.properties
 fi
 

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+CONF_PATH="/usr/lib/kaa-sandbox/conf"
+
 newHost=$1
 
 function setNewHost() {
@@ -20,6 +22,8 @@ echo "Services stopped!"
 echo "Setting services host/ip to ${newHost}"
 
 setNewHost /etc/kaa-node/conf/kaa-node.properties transport_public_interface
+
+touch $CONF_PATH/ip_manually_changed
 
 echo "Starting services..."
 
