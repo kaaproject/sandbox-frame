@@ -128,6 +128,10 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
     /** Change host enabled. */
     @Value("#{properties[gui_change_host_enabled]}")
     private boolean guiChangeHostEnabled;
+
+    /** Get sandbox logs enabled. */
+    @Value("#{properties[gui_get_logs_enabled]}")
+    private boolean guiGetLogsEnabled;
     
     @Value("#{properties[enable_analytics]}")
     private boolean enableAnalytics;
@@ -263,6 +267,27 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
         	} else {
         	    outStream.println("WARNING: change host from GUI is disabled!");
         	}
+        } finally {
+            if (uuid != null) {
+                broadcastMessage(uuid, uuid + " finished");
+            }
+        }
+    }
+
+    @Override
+    public boolean getLogsEnabled() throws SandboxServiceException {
+        return guiGetLogsEnabled;
+    }
+
+    @Override
+    public void getLogsArchive(String uuid) throws SandboxServiceException {
+        try {
+            ClientMessageOutputStream outStream = new ClientMessageOutputStream(uuid, null);
+            if (guiChangeHostEnabled) {
+                executeCommand(outStream, new String[]{"sudo", sandboxHome + "/create_logs_archive.sh"}, null);
+            } else {
+                outStream.println("WARNING: get logs from GUI is disabled!");
+            }
         } finally {
             if (uuid != null) {
                 broadcastMessage(uuid, uuid + " finished");

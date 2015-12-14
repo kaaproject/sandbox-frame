@@ -108,6 +108,16 @@
             <servlet-name>sandboxRestServlet</servlet-name>
             <url-pattern>/rest/*</url-pattern>
         </servlet-mapping>
+
+    <servlet>
+        <servlet-name>logsServlet</servlet-name>
+        <servlet-class>org.kaaproject.kaa.sandbox.web.servlet.LogsServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>logsServlet</servlet-name>
+        <url-pattern>/sandbox/servlet/logsServlet</url-pattern>
+    </servlet-mapping>
         
          <!-- Default page to serve -->
         <welcome-file-list>
