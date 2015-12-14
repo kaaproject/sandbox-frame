@@ -42,7 +42,9 @@ public interface SandboxService extends RemoteService {
     public boolean getLogsEnabled() throws SandboxServiceException;
 
     public void getLogsArchive(String uuid) throws SandboxServiceException;
-    
+
+    public void changeKaaLogLevel(String uuid, String logLevel) throws SandboxServiceException;
+
     public AnalyticsInfo getAnalyticsInfo() throws SandboxServiceException;
     
     public List<Project> getDemoProjects() throws SandboxServiceException;

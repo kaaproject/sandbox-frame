@@ -39,7 +39,10 @@ public class ChangeKaaHostViewImpl extends BaseViewImpl implements ChangeKaaHost
 
     private VerticalPanel logsPanel;
     private Button getLogsButton;
-    
+    private Button changeLogLevelToDebugButton;
+    private Button changeLogLevelToInfoButton;
+
+
     public ChangeKaaHostViewImpl() {
         super(true);
         setBackEnabled(true);
@@ -47,13 +50,14 @@ public class ChangeKaaHostViewImpl extends BaseViewImpl implements ChangeKaaHost
     
     @Override
     protected String getViewTitle() {
-        return Utils.constants.changeKaaHost();
+        return Utils.constants.sandboxManagement();
     }
 
     @Override
     protected void initCenterPanel() {
 
         VerticalPanel mainPanel = new VerticalPanel();
+        mainPanel.getElement().getStyle().setWidth(400, Unit.PX);
 
         changeHostPanel = new VerticalPanel();
         HTML changeKaaHostLabel = new HTML(Utils.messages.changeKaaHostMessage());
@@ -84,6 +88,21 @@ public class ChangeKaaHostViewImpl extends BaseViewImpl implements ChangeKaaHost
 
         mainPanel.add(logsPanel);
 
+        HTML changeLogLevelLabel = new HTML(Utils.messages.changeLogLevelMessage());
+        changeLogLevelLabel.addStyleName(Utils.sandboxStyle.descriptionLabel());
+        changeLogLevelLabel.getElement().getStyle().setPaddingBottom(20, Style.Unit.PX);
+        changeLogLevelLabel.getElement().getStyle().setPaddingTop(20, Style.Unit.PX);
+
+        logsPanel.add(changeLogLevelLabel);
+
+        HorizontalPanel logLevelButtonsPanel = new HorizontalPanel();
+        changeLogLevelToDebugButton = new Button(Utils.constants.setDebug());
+        changeLogLevelToInfoButton = new Button(Utils.constants.setInfo());
+        changeLogLevelToInfoButton.getElement().getStyle().setMarginLeft(20, Unit.PX);
+        logLevelButtonsPanel.add(changeLogLevelToDebugButton);
+        logLevelButtonsPanel.add(changeLogLevelToInfoButton);
+        logsPanel.add(logLevelButtonsPanel);
+
         detailsPanel.add(mainPanel);
     }
 
@@ -113,6 +132,16 @@ public class ChangeKaaHostViewImpl extends BaseViewImpl implements ChangeKaaHost
     @Override
     public HasClickHandlers getGetLogsButton() {
         return getLogsButton;
+    }
+
+    @Override
+    public HasClickHandlers getChangeLogLevelToDebugButton() {
+        return changeLogLevelToDebugButton;
+    }
+
+    @Override
+    public HasClickHandlers getChangeLogLevelToInfoButton() {
+        return changeLogLevelToInfoButton;
     }
 
     @Override

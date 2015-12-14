@@ -30,4 +30,8 @@ public interface ChangeKaaHostView extends BaseView {
     HasClickHandlers getGetLogsButton();
 
     void setGetLogsEnabled(Boolean enabled);
+
+    HasClickHandlers getChangeLogLevelToDebugButton();
+
+    HasClickHandlers getChangeLogLevelToInfoButton();
 }

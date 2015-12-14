@@ -128,6 +128,20 @@ public class ChangeKaaHostActivity extends AbstractActivity {
                             getLogs();
                         }
                     }));
+
+                    registrations.add(view.getChangeLogLevelToDebugButton().addClickHandler(new ClickHandler() {
+                        @Override
+                        public void onClick(ClickEvent clickEvent) {
+                            changeLogLevel("DEBUG");
+                        }
+                    }));
+
+                    registrations.add(view.getChangeLogLevelToInfoButton().addClickHandler(new ClickHandler() {
+                        @Override
+                        public void onClick(ClickEvent clickEvent) {
+                            changeLogLevel("INFO");
+                        }
+                    }));
                 }
 
             }
@@ -190,6 +204,30 @@ public class ChangeKaaHostActivity extends AbstractActivity {
                     @Override
                     public void onSuccess(Void result) {
                         dialog.appendToConsoleAtFinish("Archive successfully created.\n");
+                        callback.onSuccess(result);
+                    }
+                });
+            }
+        });
+    }
+
+    private void changeLogLevel(final String logLevel) {
+        ConsoleDialog.startConsoleDialog("Going to change kaa log level to '" + logLevel + "'",
+                new ConsoleDialog.ConsoleDialogListener() {
+            @Override
+            public void onOk(boolean success) {}
+
+            @Override
+            public void onStart(String uuid, final ConsoleDialog dialog, final AsyncCallback<Void> callback) {
+                Sandbox.getSandboxService().changeKaaLogLevel(uuid, logLevel, new AsyncCallback<Void>() {
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                        callback.onFailure(throwable);
+                    }
+
+                    @Override
+                    public void onSuccess(Void result) {
+                        dialog.appendToConsoleAtFinish("Successfully changed kaa log level to '" + logLevel + "'\n");
                         callback.onSuccess(result);
                     }
                 });

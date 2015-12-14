@@ -36,7 +36,7 @@ public class ChangeKaaHostPlace extends Place {
         return previousPlace;
     }
 
-    @Prefix(value = "changeKaaHost")
+    @Prefix(value = "management")
     public static class Tokenizer implements PlaceTokenizer<ChangeKaaHostPlace> {
 
         @Override

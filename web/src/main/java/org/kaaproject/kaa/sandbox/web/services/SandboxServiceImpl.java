@@ -294,6 +294,28 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
             }
         }
     }
+
+    @Override
+    public void changeKaaLogLevel(String uuid, String logLevel) throws SandboxServiceException {
+        try {
+            ClientMessageOutputStream outStream = new ClientMessageOutputStream(uuid, null);
+            if (guiGetLogsEnabled) {
+                String bashScriptName = null;
+                if (logLevel.equalsIgnoreCase("DEBUG")) {
+                    bashScriptName = "/change_kaa_log_level_to_debug.sh";
+                } else {
+                    bashScriptName = "/change_kaa_log_level_to_info.sh";
+                }
+                executeCommand(outStream, new String[]{"sudo", sandboxHome + bashScriptName}, null);
+            } else {
+                outStream.println("WARNING: change log level from GUI is disabled!");
+            }
+        } finally {
+            if (uuid != null) {
+                broadcastMessage(uuid, uuid + " finished");
+            }
+        }
+    }
     
 	@Override
 	public AnalyticsInfo getAnalyticsInfo() throws SandboxServiceException {
