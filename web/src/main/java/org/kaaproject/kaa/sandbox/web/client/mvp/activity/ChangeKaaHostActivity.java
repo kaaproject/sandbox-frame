@@ -16,9 +16,13 @@
 
 package org.kaaproject.kaa.sandbox.web.client.mvp.activity;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.gwt.activity.shared.AbstractActivity;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import org.kaaproject.avro.ui.gwt.client.util.BusyAsyncCallback;
 import org.kaaproject.kaa.sandbox.web.client.Sandbox;
 import org.kaaproject.kaa.sandbox.web.client.mvp.ClientFactory;
@@ -29,17 +33,12 @@ import org.kaaproject.kaa.sandbox.web.client.mvp.view.dialog.ConsoleDialog.Conso
 import org.kaaproject.kaa.sandbox.web.client.util.Analytics;
 import org.kaaproject.kaa.sandbox.web.client.util.Utils;
 
-import com.google.gwt.activity.shared.AbstractActivity;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.shared.EventBus;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.AcceptsOneWidget;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ChangeKaaHostActivity extends AbstractActivity {
 
-    private static final String LOGS_SERVLET_URL = /*GWT.getModuleBaseURL() +*/ "servlet/logsServlet";
+    private static final String LOGS_SERVLET_URL = "sandbox/servlet/logsServlet";
 
     private final ChangeKaaHostPlace place;
     private final ClientFactory clientFactory;
