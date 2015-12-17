@@ -14,22 +14,8 @@
  * limitations under the License.
  */
 
-package org.kaaproject.kaa.sandbox.web.client.mvp.view;
+package org.kaaproject.kaa.sandbox.web.client.util;
 
-import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.user.client.ui.HasValue;
-
-public interface ChangeKaaHostView extends BaseView {
-    
-    HasClickHandlers getChangeKaaHostButton();
-
-    void setChangeKaaHostEnabled(boolean enabled);
-    
-    HasValue<String> getKaaHost();
-
-    HasClickHandlers getGetLogsButton();
-
-    void setGetLogsEnabled(Boolean enabled);
-
-    HasClickHandlers getChangeLogLevelButton();
+public enum LogLevel {
+    OFF, ERROR, WARN, INFO, DEBUG, TRACE, ALL
 }

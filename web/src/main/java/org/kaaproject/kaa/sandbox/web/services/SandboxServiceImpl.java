@@ -292,13 +292,12 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
         try {
             ClientMessageOutputStream outStream = new ClientMessageOutputStream(uuid, null);
             if (guiGetLogsEnabled) {
-                String bashScriptName = null;
-                if (logLevel.equalsIgnoreCase("DEBUG")) {
-                    bashScriptName = "/change_kaa_log_level_to_debug.sh";
+                String script = "/change_kaa_log_level.sh";
+                if (logLevel != null && !logLevel.isEmpty()) {
+                    executeCommand(outStream, new String[]{"sudo", sandboxHome + script, logLevel}, null);
                 } else {
-                    bashScriptName = "/change_kaa_log_level_to_info.sh";
+                    throw new SandboxServiceException("Empty logLevel argument");
                 }
-                executeCommand(outStream, new String[]{"sudo", sandboxHome + bashScriptName}, null);
             } else {
                 outStream.println("WARNING: change log level from GUI is disabled!");
             }

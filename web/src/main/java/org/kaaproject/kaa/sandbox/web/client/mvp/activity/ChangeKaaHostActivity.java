@@ -30,6 +30,7 @@ import org.kaaproject.kaa.sandbox.web.client.mvp.place.ChangeKaaHostPlace;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.ChangeKaaHostView;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.dialog.ConsoleDialog;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.dialog.ConsoleDialog.ConsoleDialogListener;
+import org.kaaproject.kaa.sandbox.web.client.mvp.view.settings.LogLevelDialog;
 import org.kaaproject.kaa.sandbox.web.client.util.Analytics;
 import org.kaaproject.kaa.sandbox.web.client.util.Utils;
 
@@ -128,17 +129,18 @@ public class ChangeKaaHostActivity extends AbstractActivity {
                         }
                     }));
 
-                    registrations.add(view.getChangeLogLevelToDebugButton().addClickHandler(new ClickHandler() {
+                    registrations.add(view.getChangeLogLevelButton().addClickHandler(new ClickHandler() {
                         @Override
                         public void onClick(ClickEvent clickEvent) {
-                            changeLogLevel("DEBUG");
-                        }
-                    }));
+                            LogLevelDialog.show(new LogLevelDialog.Listener() {
+                                @Override
+                                public void onChangeLogLevel(String value) {
+                                    changeLogLevel(value);
+                                }
 
-                    registrations.add(view.getChangeLogLevelToInfoButton().addClickHandler(new ClickHandler() {
-                        @Override
-                        public void onClick(ClickEvent clickEvent) {
-                            changeLogLevel("INFO");
+                                @Override
+                                public void onCancel() {}
+                            });
                         }
                     }));
                 }

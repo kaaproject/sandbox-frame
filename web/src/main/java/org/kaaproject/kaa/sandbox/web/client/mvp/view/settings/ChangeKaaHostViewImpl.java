@@ -39,9 +39,7 @@ public class ChangeKaaHostViewImpl extends BaseViewImpl implements ChangeKaaHost
 
     private VerticalPanel logsPanel;
     private Button getLogsButton;
-    private Button changeLogLevelToDebugButton;
-    private Button changeLogLevelToInfoButton;
-
+    private Button changeLogLevelButton;
 
     public ChangeKaaHostViewImpl() {
         super(true);
@@ -78,31 +76,21 @@ public class ChangeKaaHostViewImpl extends BaseViewImpl implements ChangeKaaHost
 
         logsPanel = new VerticalPanel();
         logsPanel.getElement().getStyle().setPaddingTop(20, Style.Unit.PX);
-        HTML getLogsLabel = new HTML(Utils.messages.getLogsMessage());
+        HTML getLogsLabel = new HTML(Utils.messages.logsMessage());
         getLogsLabel.addStyleName(Utils.sandboxStyle.descriptionLabel());
         getLogsLabel.getElement().getStyle().setPaddingBottom(20, Style.Unit.PX);
         logsPanel.add(getLogsLabel);
 
+        HorizontalPanel logButtonsPanel = new HorizontalPanel();
         getLogsButton = new Button(Utils.constants.getLogs());
-        logsPanel.add(getLogsButton);
+        changeLogLevelButton = new Button(Utils.constants.changeLogLevel());
+        changeLogLevelButton.getElement().getStyle().setMarginLeft(20, Unit.PX);
+
+        logButtonsPanel.add(getLogsButton);
+        logButtonsPanel.add(changeLogLevelButton);
+        logsPanel.add(logButtonsPanel);
 
         mainPanel.add(logsPanel);
-
-        HTML changeLogLevelLabel = new HTML(Utils.messages.changeLogLevelMessage());
-        changeLogLevelLabel.addStyleName(Utils.sandboxStyle.descriptionLabel());
-        changeLogLevelLabel.getElement().getStyle().setPaddingBottom(20, Style.Unit.PX);
-        changeLogLevelLabel.getElement().getStyle().setPaddingTop(20, Style.Unit.PX);
-
-        logsPanel.add(changeLogLevelLabel);
-
-        HorizontalPanel logLevelButtonsPanel = new HorizontalPanel();
-        changeLogLevelToDebugButton = new Button(Utils.constants.setDebug());
-        changeLogLevelToInfoButton = new Button(Utils.constants.setInfo());
-        changeLogLevelToInfoButton.getElement().getStyle().setMarginLeft(20, Unit.PX);
-        logLevelButtonsPanel.add(changeLogLevelToDebugButton);
-        logLevelButtonsPanel.add(changeLogLevelToInfoButton);
-        logsPanel.add(logLevelButtonsPanel);
-
         detailsPanel.add(mainPanel);
     }
 
@@ -134,14 +122,8 @@ public class ChangeKaaHostViewImpl extends BaseViewImpl implements ChangeKaaHost
         return getLogsButton;
     }
 
-    @Override
-    public HasClickHandlers getChangeLogLevelToDebugButton() {
-        return changeLogLevelToDebugButton;
-    }
-
-    @Override
-    public HasClickHandlers getChangeLogLevelToInfoButton() {
-        return changeLogLevelToInfoButton;
+    public HasClickHandlers getChangeLogLevelButton() {
+        return changeLogLevelButton;
     }
 
     @Override
