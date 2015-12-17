@@ -16,15 +16,14 @@
 
 package org.kaaproject.kaa.sandbox.web.shared.services;
 
-import java.util.List;
-
+import com.google.gwt.user.client.rpc.RemoteService;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import org.kaaproject.kaa.examples.common.projects.Project;
 import org.kaaproject.kaa.sandbox.web.shared.dto.AnalyticsInfo;
 import org.kaaproject.kaa.sandbox.web.shared.dto.BuildOutputData;
 import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectDataType;
 
-import com.google.gwt.user.client.rpc.RemoteService;
-import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import java.util.List;
 
 @RemoteServiceRelativePath("springGwtServices/sandboxService")
 public interface SandboxService extends RemoteService {
@@ -41,7 +40,7 @@ public interface SandboxService extends RemoteService {
 
     public boolean getLogsEnabled() throws SandboxServiceException;
 
-    public void getLogsArchive(String uuid) throws SandboxServiceException;
+    public void getLogsArchive() throws SandboxServiceException;
 
     public void changeKaaLogLevel(String uuid, String logLevel) throws SandboxServiceException;
 
