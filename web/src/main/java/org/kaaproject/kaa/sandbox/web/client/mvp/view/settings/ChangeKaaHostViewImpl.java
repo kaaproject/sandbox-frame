@@ -16,6 +16,7 @@
 
 package org.kaaproject.kaa.sandbox.web.client.mvp.view.settings;
 
+import com.google.gwt.dom.client.Style;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.ChangeKaaHostView;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.base.BaseViewImpl;
 import org.kaaproject.kaa.sandbox.web.client.util.Utils;
@@ -35,6 +36,9 @@ public class ChangeKaaHostViewImpl extends BaseViewImpl implements ChangeKaaHost
     private VerticalPanel changeHostPanel;
     private TextBox kaaHost;
     private Button changeKaaHostButton;
+
+    private VerticalPanel logsPanel;
+    private Button getLogsButton;
     
     public ChangeKaaHostViewImpl() {
         super(true);
@@ -48,6 +52,9 @@ public class ChangeKaaHostViewImpl extends BaseViewImpl implements ChangeKaaHost
 
     @Override
     protected void initCenterPanel() {
+
+        VerticalPanel mainPanel = new VerticalPanel();
+
         changeHostPanel = new VerticalPanel();
         HTML changeKaaHostLabel = new HTML(Utils.messages.changeKaaHostMessage());
         changeKaaHostLabel.addStyleName(Utils.sandboxStyle.descriptionLabel());
@@ -61,14 +68,30 @@ public class ChangeKaaHostViewImpl extends BaseViewImpl implements ChangeKaaHost
         kaaHost.getElement().getStyle().setMarginRight(20, Unit.PX);
         changeHostInputPanel.add(kaaHost);
         changeKaaHostButton = new Button(Utils.constants.change());
-        changeHostInputPanel.add(changeKaaHostButton);        
-        detailsPanel.add(changeHostPanel);
+        changeHostInputPanel.add(changeKaaHostButton);
+
+        mainPanel.add(changeHostPanel);
+
+        logsPanel = new VerticalPanel();
+        logsPanel.getElement().getStyle().setPaddingTop(20, Style.Unit.PX);
+        HTML getLogsLabel = new HTML(Utils.messages.getLogsMessage());
+        getLogsLabel.addStyleName(Utils.sandboxStyle.descriptionLabel());
+        getLogsLabel.getElement().getStyle().setPaddingBottom(20, Style.Unit.PX);
+        logsPanel.add(getLogsLabel);
+
+        getLogsButton = new Button(Utils.constants.getLogs());
+        logsPanel.add(getLogsButton);
+
+        mainPanel.add(logsPanel);
+
+        detailsPanel.add(mainPanel);
     }
 
     @Override
     protected void resetImpl() {
         setChangeKaaHostEnabled(false);
         kaaHost.setText("");
+        setGetLogsEnabled(false);
     }
 
     @Override
@@ -85,6 +108,17 @@ public class ChangeKaaHostViewImpl extends BaseViewImpl implements ChangeKaaHost
     @Override
     public HasValue<String> getKaaHost() {
         return kaaHost;
+    }
+
+    @Override
+    public HasClickHandlers getGetLogsButton() {
+        return getLogsButton;
+    }
+
+    @Override
+    public void setGetLogsEnabled(Boolean enabled) {
+        logsPanel.setVisible(enabled);
+        updateHeaderHeight();
     }
 
 }

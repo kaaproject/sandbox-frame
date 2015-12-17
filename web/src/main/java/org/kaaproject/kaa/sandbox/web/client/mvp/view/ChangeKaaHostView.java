@@ -26,5 +26,8 @@ public interface ChangeKaaHostView extends BaseView {
     void setChangeKaaHostEnabled(boolean enabled);
     
     HasValue<String> getKaaHost();
-    
+
+    HasClickHandlers getGetLogsButton();
+
+    void setGetLogsEnabled(Boolean enabled);
 }
