@@ -33,7 +33,6 @@ public class LogsServlet extends HttpServlet {
 
     private static final int BYTES_DOWNLOAD = 1024;
 
-    private static final String LOG_DIR = "/var/log/kaa/";
     private static final String ARCHIVE_NAME = "sandbox_logs.tar.gz";
     private static final String ARCHIVE_LOCATION = "/home/kaa/" + ARCHIVE_NAME;
 
@@ -61,8 +60,8 @@ public class LogsServlet extends HttpServlet {
                 throw new RuntimeException(ex);
             }
         } else {
-            logger.error("Unexpected error in LogsServlet.doGet: log directory " + LOG_DIR + "doesn't exists.");
-            throw new RuntimeException("Unexpected error in LogsServlet.doGet: log directory " + LOG_DIR + "doesn't exists.");
+            logger.error("Unexpected error in LogsServlet.doGet: log directory " + ARCHIVE_LOCATION + " doesn't exists.");
+            throw new RuntimeException("Unexpected error in LogsServlet.doGet: log directory " + ARCHIVE_LOCATION + " doesn't exists.");
         }
     }
 }
