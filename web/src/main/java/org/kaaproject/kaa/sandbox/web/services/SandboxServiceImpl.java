@@ -15,25 +15,7 @@
  */
 package org.kaaproject.kaa.sandbox.web.services;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.UUID;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
 import net.iharder.Base64;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -71,6 +53,22 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.UUID;
 
 @Service("sandboxService")
 @ManagedService(path = "/sandbox/atmosphere/rpc",
@@ -280,18 +278,12 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
     }
 
     @Override
-    public void getLogsArchive(String uuid) throws SandboxServiceException {
-        try {
-            ClientMessageOutputStream outStream = new ClientMessageOutputStream(uuid, null);
-            if (guiChangeHostEnabled) {
-                executeCommand(outStream, new String[]{"sudo", sandboxHome + "/create_logs_archive.sh"}, null);
-            } else {
-                outStream.println("WARNING: get logs from GUI is disabled!");
-            }
-        } finally {
-            if (uuid != null) {
-                broadcastMessage(uuid, uuid + " finished");
-            }
+    public void getLogsArchive() throws SandboxServiceException {
+
+        if (guiChangeHostEnabled) {
+            executeCommand(null, new String[]{"sudo", sandboxHome + "/create_logs_archive.sh"}, null);
+        } else {
+            throw new SandboxServiceException("Get logs from GUI is disabled!" );
         }
     }
     
@@ -434,7 +426,12 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
             String[] command, 
             File workingDir) throws SandboxServiceException {
         try {
-            Execute exec = new Execute(new PumpStreamHandler(outStream));
+            Execute exec = null;
+            if (outStream != null) {
+                exec = new Execute(new PumpStreamHandler(outStream));
+            } else {
+                exec = new Execute();
+            }
             exec.setEnvironment(sandboxEnv);
             if (workingDir != null) {
                 exec.setWorkingDirectory(workingDir);
@@ -448,7 +445,7 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
             throw Utils.handleException(e);
         }
     }
-    
+
     private static File createTempDirectory(String prefix) throws IOException {
         final File temp = File.createTempFile(prefix, Long.toString(System.nanoTime()));
         if (!temp.delete()) {
