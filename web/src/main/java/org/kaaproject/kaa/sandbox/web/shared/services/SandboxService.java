@@ -19,6 +19,7 @@ package org.kaaproject.kaa.sandbox.web.shared.services;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import org.kaaproject.kaa.examples.common.projects.Project;
+import org.kaaproject.kaa.sandbox.web.client.util.LogLevel;
 import org.kaaproject.kaa.sandbox.web.shared.dto.AnalyticsInfo;
 import org.kaaproject.kaa.sandbox.web.shared.dto.BuildOutputData;
 import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectDataType;
@@ -42,7 +43,11 @@ public interface SandboxService extends RemoteService {
 
     public void getLogsArchive() throws SandboxServiceException;
 
-    public void changeKaaLogLevel(String uuid, String logLevel) throws SandboxServiceException;
+    public void changeKaaLogLevel(String uuid, String logLevel, Boolean removeOldLogs) throws SandboxServiceException;
+
+    public String getKaaCurrentHost() throws SandboxServiceException;
+
+    public LogLevel getKaaCurrentLogLevel() throws SandboxServiceException;
 
     public AnalyticsInfo getAnalyticsInfo() throws SandboxServiceException;
     

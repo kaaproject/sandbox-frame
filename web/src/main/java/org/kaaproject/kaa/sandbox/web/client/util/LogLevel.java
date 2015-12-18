@@ -17,5 +17,5 @@
 package org.kaaproject.kaa.sandbox.web.client.util;
 
 public enum LogLevel {
-    OFF, ERROR, WARN, INFO, DEBUG, TRACE, ALL
+    INFO, WARN, ERROR, DEBUG, TRACE
 }

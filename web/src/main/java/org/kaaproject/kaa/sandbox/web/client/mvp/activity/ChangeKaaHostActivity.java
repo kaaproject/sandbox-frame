@@ -30,8 +30,8 @@ import org.kaaproject.kaa.sandbox.web.client.mvp.place.ChangeKaaHostPlace;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.ChangeKaaHostView;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.dialog.ConsoleDialog;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.dialog.ConsoleDialog.ConsoleDialogListener;
-import org.kaaproject.kaa.sandbox.web.client.mvp.view.settings.LogLevelDialog;
 import org.kaaproject.kaa.sandbox.web.client.util.Analytics;
+import org.kaaproject.kaa.sandbox.web.client.util.LogLevel;
 import org.kaaproject.kaa.sandbox.web.client.util.Utils;
 
 import java.util.ArrayList;
@@ -132,19 +132,33 @@ public class ChangeKaaHostActivity extends AbstractActivity {
                     registrations.add(view.getChangeLogLevelButton().addClickHandler(new ClickHandler() {
                         @Override
                         public void onClick(ClickEvent clickEvent) {
-                            LogLevelDialog.show(new LogLevelDialog.Listener() {
-                                @Override
-                                public void onChangeLogLevel(String value) {
-                                    changeLogLevel(value);
-                                }
-
-                                @Override
-                                public void onCancel() {}
-                            });
+                            changeLogLevel(view.getLevelListBox().getValue().toString(),
+                                    view.getOldLogsCheckBox().getValue());
                         }
                     }));
                 }
+            }
+        });
 
+        Sandbox.getSandboxService().getKaaCurrentHost(new AsyncCallback<String>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+            }
+
+            @Override
+            public void onSuccess(String s) {
+                view.getIpSpan().setInnerText(s);
+            }
+        });
+
+        Sandbox.getSandboxService().getKaaCurrentLogLevel(new AsyncCallback<LogLevel>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+            }
+
+            @Override
+            public void onSuccess(LogLevel level) {
+                view.getLevelListBox().setValue(level);
             }
         });
     }
@@ -202,7 +216,7 @@ public class ChangeKaaHostActivity extends AbstractActivity {
         });
     }
 
-    private void changeLogLevel(final String logLevel) {
+    private void changeLogLevel(final String logLevel, final boolean removeOldLogs) {
         ConsoleDialog.startConsoleDialog("Going to change kaa log level to '" + logLevel + "'",
                 new ConsoleDialog.ConsoleDialogListener() {
             @Override
@@ -210,7 +224,7 @@ public class ChangeKaaHostActivity extends AbstractActivity {
 
             @Override
             public void onStart(String uuid, final ConsoleDialog dialog, final AsyncCallback<Void> callback) {
-                Sandbox.getSandboxService().changeKaaLogLevel(uuid, logLevel, new AsyncCallback<Void>() {
+                Sandbox.getSandboxService().changeKaaLogLevel(uuid, logLevel, removeOldLogs, new AsyncCallback<Void>() {
                     @Override
                     public void onFailure(Throwable throwable) {
                         callback.onFailure(throwable);

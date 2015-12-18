@@ -39,6 +39,7 @@ import org.kaaproject.kaa.common.dto.file.FileData;
 import org.kaaproject.kaa.examples.common.projects.Platform;
 import org.kaaproject.kaa.examples.common.projects.Project;
 import org.kaaproject.kaa.examples.common.projects.ProjectsConfig;
+import org.kaaproject.kaa.sandbox.web.client.util.LogLevel;
 import org.kaaproject.kaa.sandbox.web.services.cache.CacheService;
 import org.kaaproject.kaa.sandbox.web.services.util.Utils;
 import org.kaaproject.kaa.sandbox.web.shared.dto.AnalyticsInfo;
@@ -57,10 +58,12 @@ import org.springframework.stereotype.Service;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -288,13 +291,13 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
     }
 
     @Override
-    public void changeKaaLogLevel(String uuid, String logLevel) throws SandboxServiceException {
+    public void changeKaaLogLevel(String uuid, String logLevel, Boolean removeOldLogs) throws SandboxServiceException {
         try {
             ClientMessageOutputStream outStream = new ClientMessageOutputStream(uuid, null);
             if (guiGetLogsEnabled) {
                 String script = "/change_kaa_log_level.sh";
                 if (logLevel != null && !logLevel.isEmpty()) {
-                    executeCommand(outStream, new String[]{"sudo", sandboxHome + script, logLevel}, null);
+                    executeCommand(outStream, new String[]{"sudo", sandboxHome + script, logLevel, removeOldLogs ? "1": "0"}, null);
                 } else {
                     throw new SandboxServiceException("Empty logLevel argument");
                 }
@@ -305,6 +308,33 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
             if (uuid != null) {
                 broadcastMessage(uuid, uuid + " finished");
             }
+        }
+    }
+
+    @Override
+    public String getKaaCurrentHost() throws SandboxServiceException {
+        try {
+            String script = "/bin/get_current_kaa_host_ip.sh";
+            return executeCommand("sudo", sandboxHome + script);
+        } catch (Exception e) {
+            throw Utils.handleException(e);
+        }
+    }
+
+    @Override
+    public LogLevel getKaaCurrentLogLevel() throws SandboxServiceException {
+        try {
+            LogLevel currentLevel = null;
+            String script = "/bin/get_kaa_current_log_level.sh";
+            String logLevel =  executeCommand("sudo", sandboxHome + script);
+            for (LogLevel level : LogLevel.values()) {
+                if (logLevel.contains(level.toString())) {
+                    currentLevel = level;
+                }
+            }
+            return currentLevel;
+        } catch (Exception e) {
+            throw Utils.handleException(e);
         }
     }
     
@@ -465,6 +495,26 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
         } catch (Exception e) {
             throw Utils.handleException(e);
         }
+    }
+
+    private static String executeCommand(String ... command) throws SandboxServiceException {
+
+        StringBuilder output = new StringBuilder();
+        Process process;
+
+        try {
+            process = Runtime.getRuntime().exec(command);
+            process.waitFor();
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                String line = "";
+                while ((line = reader.readLine()) != null) {
+                    output.append(line).append("\n");
+                }
+            }
+        } catch (Exception ex) {
+            throw Utils.handleException(ex);
+        }
+        return output.toString();
     }
 
     private static File createTempDirectory(String prefix) throws IOException {
