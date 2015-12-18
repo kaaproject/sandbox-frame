@@ -314,7 +314,7 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
     @Override
     public String getKaaCurrentHost() throws SandboxServiceException {
         try {
-            String script = "/bin/get_current_kaa_host_ip.sh";
+            String script = "/get_current_kaa_host_ip.sh";
             return executeCommand("sudo", sandboxHome + script);
         } catch (Exception e) {
             throw Utils.handleException(e);
@@ -325,7 +325,7 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
     public LogLevel getKaaCurrentLogLevel() throws SandboxServiceException {
         try {
             LogLevel currentLevel = null;
-            String script = "/bin/get_kaa_current_log_level.sh";
+            String script = "/get_kaa_current_log_level.sh";
             String logLevel =  executeCommand("sudo", sandboxHome + script);
             for (LogLevel level : LogLevel.values()) {
                 if (logLevel.contains(level.toString())) {
