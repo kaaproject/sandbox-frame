@@ -88,7 +88,7 @@ public class ChangeKaaHostViewImpl extends BaseViewImpl implements ChangeKaaHost
         ipSpan = changeKaaHostHtmlPanel.getElementById("ip");
 
         changeKaaHostHtmlPanel.addStyleName(Utils.sandboxStyle.descriptionLabel());
-        changeKaaHostHtmlPanel.getElement().getStyle().setProperty("text-align", "justify");
+        changeKaaHostHtmlPanel.getElement().getStyle().setProperty("textAlign", "justify");
         changeKaaHostHtmlPanel.getElement().getStyle().setMarginBottom(20, Unit.PX);
         changeHostPanel.setWidget(row, 0, changeKaaHostHtmlPanel);
         changeHostPanel.getFlexCellFormatter().setColSpan(row++, 0, 3);
@@ -115,7 +115,7 @@ public class ChangeKaaHostViewImpl extends BaseViewImpl implements ChangeKaaHost
         row = 0;
         HTML getLogsLabel = new HTML(Utils.messages.logsMessage());
         getLogsLabel.addStyleName(Utils.sandboxStyle.descriptionLabel());
-        getLogsLabel.getElement().getStyle().setProperty("text-align", "justify");
+        getLogsLabel.getElement().getStyle().setProperty("textAlign", "justify");
         getLogsLabel.getElement().getStyle().setPaddingBottom(20, Style.Unit.PX);
         logsPanel.setWidget(row, 0, getLogsLabel);
         logsPanel.getFlexCellFormatter().setColSpan(row++, 0, 5);

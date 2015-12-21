@@ -283,7 +283,7 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
     @Override
     public void getLogsArchive() throws SandboxServiceException {
 
-        if (guiChangeHostEnabled) {
+        if (guiGetLogsEnabled) {
             executeCommand(null, new String[]{"sudo", sandboxHome + "/create_logs_archive.sh"}, null);
         } else {
             throw new SandboxServiceException("Get logs from GUI is disabled!" );
