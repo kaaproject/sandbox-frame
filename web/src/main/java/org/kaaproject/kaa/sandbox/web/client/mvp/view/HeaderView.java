@@ -18,10 +18,13 @@ package org.kaaproject.kaa.sandbox.web.client.mvp.view;
 
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.widget.HeaderMenuItems;
 
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
 
 public interface HeaderView extends IsWidget {
 
     HeaderMenuItems getHeaderMenuItems();
+    
+    Image getKaaLogoImage();
 
 }

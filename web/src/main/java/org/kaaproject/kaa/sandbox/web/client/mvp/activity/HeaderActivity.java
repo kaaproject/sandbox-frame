@@ -26,15 +26,23 @@ import org.kaaproject.kaa.sandbox.web.client.util.Analytics;
 import org.kaaproject.kaa.sandbox.web.client.util.Utils;
 
 import com.google.gwt.activity.shared.AbstractActivity;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.place.shared.Place;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 
 public class HeaderActivity extends AbstractActivity {
 
-    private final Place place;
+	private static final String KAA_PROJECT_URL = "http://www.kaaproject.org/";
+	
+	private final Place place;
     private final ClientFactory clientFactory;
     private final HeaderView headerView;
+    
+    private HandlerRegistration registration;
 
     public HeaderActivity(Place place, ClientFactory clientFactory) {
         this.place = place;
@@ -50,7 +58,7 @@ public class HeaderActivity extends AbstractActivity {
 
     @Override
     public void onStop() {
-        
+        registration.removeHandler();
     }
 
     private void bind(final HeaderView headerView, final EventBus eventBus) {
@@ -87,7 +95,14 @@ public class HeaderActivity extends AbstractActivity {
                     });
                 }
             }
-        });        
+        });
+         
+        registration = headerView.getKaaLogoImage().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent clickEvent) {
+            	goToKaaProjectSite();
+            }
+        });
     }
     
     private void gotoKaaAdminWeb() {
@@ -99,5 +114,10 @@ public class HeaderActivity extends AbstractActivity {
     	Analytics.sendEvent(Analytics.GOTO_AVRO_UI_SANDBOX_ACTION);
         Sandbox.redirectToModule("avroUiSandbox");
     }
-
+    
+    private void goToKaaProjectSite() {
+    	Analytics.sendEvent(Analytics.GOTO_KAA_PROJECT_SITE_ACTION);
+    	Window.open(KAA_PROJECT_URL, "", "");
+    }
+    
 }

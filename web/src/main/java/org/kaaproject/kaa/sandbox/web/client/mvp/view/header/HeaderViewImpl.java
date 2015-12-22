@@ -22,6 +22,7 @@ import org.kaaproject.kaa.sandbox.web.client.mvp.view.widget.HeaderMenuItems;
 import org.kaaproject.kaa.sandbox.web.client.util.Utils;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
@@ -54,6 +55,7 @@ public class HeaderViewImpl extends Composite implements HeaderView, ResizeHandl
 
         logoImage.setResource(Utils.resources.kaaLogo());
         logoImage.getElement().getStyle().setPaddingLeft(20, Unit.PX);
+        logoImage.getElement().getStyle().setCursor(Style.Cursor.POINTER);
         
         InlineLabel headerTitle = new InlineLabel(Utils.constants.sandboxHeaderTitle());
         headerTitlePanel.add(headerTitle);
@@ -84,6 +86,11 @@ public class HeaderViewImpl extends Composite implements HeaderView, ResizeHandl
     @Override
     public HeaderMenuItems getHeaderMenuItems() {
         return headerMenuItems;
+    }
+    
+    @Override
+    public Image getKaaLogoImage() {
+    	return logoImage;
     }
 
 }

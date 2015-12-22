@@ -29,6 +29,7 @@ public class Analytics {
 	
 	public static final String GOTO_ADMIN_UI_ACTION = "Goto Admin UI";
 	public static final String GOTO_AVRO_UI_SANDBOX_ACTION = "Goto Avro UI Sandbox";
+	public static final String GOTO_KAA_PROJECT_SITE_ACTION = "Goto Kaa project site";
 	
 	public static final String CHANGE_KAA_HOST_ACTION = "Change Kaa host/IP";
 	
