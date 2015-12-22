@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.kaaproject.kaa.examples.common.projects.Feature;
 import org.kaaproject.kaa.examples.common.projects.Platform;
+import org.kaaproject.kaa.examples.common.projects.Complexity;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.ProjectFilter;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.ProjectFilterEvent;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.ProjectFilterEventHandler;
@@ -42,6 +43,7 @@ public class FilterViewImpl extends LeftPanelWidget implements FilterView, Value
     private VerticalPanel filterPanel;
     private DemoProjectsFeatureFilter featureFilter;
     private DemoProjectsPlatformFilter platformFilter;
+    private DemoProjectsComplexityFilter complexityFilter;
     
     public FilterViewImpl() {
         super(Unit.PX);
@@ -59,6 +61,11 @@ public class FilterViewImpl extends LeftPanelWidget implements FilterView, Value
         filterPanel.add(platformFilter);
         platformFilter.addValueChangeHandler(this);
         
+        complexityFilter = new DemoProjectsComplexityFilter();
+        complexityFilter.getElement().getStyle().setPaddingTop(40, Unit.PX);
+        filterPanel.add(complexityFilter);
+        complexityFilter.addValueChangeHandler(this);
+        
         setContent(filterPanel);
         
     }
@@ -71,9 +78,11 @@ public class FilterViewImpl extends LeftPanelWidget implements FilterView, Value
     private void fireFilter() {
         Set<Feature> enabledFeatures = new HashSet<Feature>();
         Set<Platform> enabledPlatforms = new HashSet<Platform>();
+        Set<Complexity> enabledComplexity= new HashSet<Complexity>();
 
         List<FilterItem> featureFilterList = featureFilter.getFilterItems();
         List<FilterItem> platformFilterList = platformFilter.getFilterItems();
+        List<FilterItem> complexityFilterList = complexityFilter.getFilterItems();
 
         for (Feature feature : Feature.values()) {
             if (featureFilterList.get(feature.ordinal()).getValue()) {
@@ -87,7 +96,13 @@ public class FilterViewImpl extends LeftPanelWidget implements FilterView, Value
             }
         }
         
-        ProjectFilter projectFilter = new ProjectFilter(enabledFeatures, enabledPlatforms);
+        for (Complexity complexity : Complexity.values()) {
+            if (complexityFilterList.get(complexity.ordinal()).getValue()) {
+            	enabledComplexity.add(complexity);
+            }
+        }
+        
+        ProjectFilter projectFilter = new ProjectFilter(enabledFeatures, enabledPlatforms, enabledComplexity);
         ProjectFilterEvent filterEvent = new ProjectFilterEvent(projectFilter);
         fireEvent(filterEvent);
     }
@@ -117,6 +132,18 @@ public class FilterViewImpl extends LeftPanelWidget implements FilterView, Value
             setWidth("100%");
             for (Platform platform : Platform.values()) {
                 addItem(Utils.getFilterPlatformIcon(platform), Utils.getPlatformBackgroundClass(platform), Utils.getPlatformText(platform));
+            }
+        }
+        
+    }
+
+    private class DemoProjectsComplexityFilter extends FilterPanel {
+
+        public DemoProjectsComplexityFilter() {
+            super(Utils.constants.complexity());
+            setWidth("100%");
+            for (Complexity complexity : Complexity.values()) {
+                addItem(Utils.getFilterComplexitymIcon(complexity), Utils.getComplexityBackgroundClass(complexity), Utils.getComplexityText(complexity));
             }
         }
         

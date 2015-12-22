@@ -18,6 +18,7 @@ package org.kaaproject.kaa.sandbox.web.client.mvp.view.project;
 
 import java.util.List;
 
+import org.kaaproject.kaa.examples.common.projects.Complexity;
 import org.kaaproject.kaa.examples.common.projects.Feature;
 import org.kaaproject.kaa.examples.common.projects.Platform;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.ProjectView;
@@ -49,6 +50,7 @@ public class ProjectViewImpl extends BaseViewImpl implements ProjectView {
     private HTML projectDetailsPanel;
     private HorizontalPanel targetPlatformPanel;
     private HorizontalPanel featuresPanel;
+    private HorizontalPanel complexityPanel;
     private Button backButton;
     private Button getSourceButton;
     private Button getBinaryButton;
@@ -153,13 +155,24 @@ public class ProjectViewImpl extends BaseViewImpl implements ProjectView {
         appDetailsPanel.setWidget(2, 1, featuresPanel);
         appDetailsPanel.getFlexCellFormatter().getElement(2, 1).getStyle().setPaddingTop(10, Unit.PX);
         appDetailsPanel.getFlexCellFormatter().setVerticalAlignment(2, 1, HasVerticalAlignment.ALIGN_MIDDLE);
+        
+        Label complexityLabel = new Label(Utils.constants.complexity());
+        complexityLabel.addStyleName(Utils.sandboxStyle.contentLabel());
+        appDetailsPanel.setWidget(3, 0, complexityLabel);
+        appDetailsPanel.getFlexCellFormatter().getElement(3, 0).getStyle().setPaddingTop(10, Unit.PX);
+        appDetailsPanel.getFlexCellFormatter().setVerticalAlignment(3, 0, HasVerticalAlignment.ALIGN_MIDDLE);
+        
+        complexityPanel = new HorizontalPanel();
+        appDetailsPanel.setWidget(3, 1, complexityPanel);
+        appDetailsPanel.getFlexCellFormatter().getElement(3, 1).getStyle().setPaddingTop(10, Unit.PX);
+        appDetailsPanel.getFlexCellFormatter().setVerticalAlignment(3, 1, HasVerticalAlignment.ALIGN_MIDDLE);
 
         projectDetailsPanel = new HTML();
         projectDetailsPanel.addStyleName(Utils.sandboxStyle.projectDetails());
         projectDetailsPanel.getElement().getStyle().setPaddingTop(15, Unit.PX);
         
-        appDetailsPanel.setWidget(3, 0, projectDetailsPanel);
-        appDetailsPanel.getFlexCellFormatter().setColSpan(3, 0, 2);
+        appDetailsPanel.setWidget(4, 0, projectDetailsPanel);
+        appDetailsPanel.getFlexCellFormatter().setColSpan(4, 0, 2);
 
         flexTable.setWidget(1, 1, appDetailsPanel);
         flexTable.getFlexCellFormatter().setVerticalAlignment(1, 1, HasVerticalAlignment.ALIGN_TOP);
@@ -171,6 +184,7 @@ public class ProjectViewImpl extends BaseViewImpl implements ProjectView {
     protected void resetImpl() {
         targetPlatformPanel.clear();
         featuresPanel.clear();
+        complexityPanel.clear();
         descriptionLabel.setText("");
         projectDetailsPanel.setHTML("");
         projectTitleLabel.setText("");        
@@ -238,6 +252,21 @@ public class ProjectViewImpl extends BaseViewImpl implements ProjectView {
             
         }
     }
+    
+    @Override
+    public void setComplexity(Complexity complexity) {
+    	Image image = new Image(Utils.getFilterComplexitymIcon(complexity));
+    	image.setTitle(Utils.getComplexityText(complexity));
+    	image.getElement().getStyle().setVerticalAlign(VerticalAlign.MIDDLE);
+    	Label label = new Label(Utils.getComplexityText(complexity));
+    	complexityPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+    	complexityPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+    	complexityPanel.add(image);
+    	complexityPanel.setCellWidth(image, "32px");
+    	complexityPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
+    	complexityPanel.add(label);
+        label.getElement().getStyle().setPaddingLeft(8, Unit.PX);
+    };
 
     @Override
     public Image getApplicationImage() {

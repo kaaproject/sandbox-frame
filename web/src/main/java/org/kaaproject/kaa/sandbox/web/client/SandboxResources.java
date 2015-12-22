@@ -107,5 +107,17 @@ public interface SandboxResources extends ClientBundle {
     @ImageOptions(width = 25, height = 28)
     @Source("images/cpp_platform.png")
     ImageResource cppPlatform();
+    
+    @ImageOptions(width = 32, height = 32)
+    @Source("images/complexity_basic.png")
+    ImageResource basic();
+    
+    @ImageOptions(width = 32, height = 32)
+    @Source("images/complexity_regular.png")
+    ImageResource regular();
+    
+    @ImageOptions(width = 32, height = 32)
+    @Source("images/complexity_advanced.png")
+    ImageResource advanced();
 
 }

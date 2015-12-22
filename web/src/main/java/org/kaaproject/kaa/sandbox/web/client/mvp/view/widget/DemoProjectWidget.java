@@ -45,6 +45,7 @@ public class DemoProjectWidget extends VerticalPanel implements
         HasProjectActionEventHandlers {
 
     private Image applicationImage;
+    private Image complexityImage;
     private HorizontalPanel platformPanel;
     private HorizontalPanel featuresPanel;
     private Anchor projectTitle;
@@ -75,11 +76,17 @@ public class DemoProjectWidget extends VerticalPanel implements
         platformImagePanel.addStyleName(Utils.sandboxStyle.detailsInnerTop());
         platformImagePanel.setWidth("100%");
         applicationImage = new Image();
+        complexityImage = new Image();
+        applicationImage.getElement().getStyle().setHeight(128, Unit.PX);
+        applicationImage.getElement().getStyle().setZIndex(1000);
+        complexityImage.getElement().getStyle().setZIndex(2000);
         platformImagePanel
                 .setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+        
         platformImagePanel.add(applicationImage);
 
         layoutPanel.add(platformImagePanel);
+        layoutPanel.add(complexityImage, 10, 10);
         SimplePanel platformImageHoverPanel = new SimplePanel();
         platformImageHoverPanel.addStyleName(Utils.sandboxStyle
                 .platformImageHover());
@@ -172,6 +179,7 @@ public class DemoProjectWidget extends VerticalPanel implements
             applicationImage.setResource(Utils.getPlatformIconBig(project
                     .getPlatform()));
         }
+        complexityImage.setResource(Utils.getFilterComplexitymIcon(project.getComplexity()));
         projectTitle.setText(project.getName());
         projectTitle.setTitle(project.getName());
         Image platformImage = new Image(Utils.getPlatformIcon(project.getPlatform()));
