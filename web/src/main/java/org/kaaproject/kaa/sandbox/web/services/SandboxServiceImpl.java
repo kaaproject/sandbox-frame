@@ -15,25 +15,7 @@
  */
 package org.kaaproject.kaa.sandbox.web.services;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.UUID;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
 import net.iharder.Base64;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -57,6 +39,7 @@ import org.kaaproject.kaa.common.dto.file.FileData;
 import org.kaaproject.kaa.examples.common.projects.Platform;
 import org.kaaproject.kaa.examples.common.projects.Project;
 import org.kaaproject.kaa.examples.common.projects.ProjectsConfig;
+import org.kaaproject.kaa.sandbox.web.client.util.LogLevel;
 import org.kaaproject.kaa.sandbox.web.services.cache.CacheService;
 import org.kaaproject.kaa.sandbox.web.services.util.Utils;
 import org.kaaproject.kaa.sandbox.web.shared.dto.AnalyticsInfo;
@@ -71,6 +54,24 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.UUID;
 
 @Service("sandboxService")
 @ManagedService(path = "/sandbox/atmosphere/rpc",
@@ -128,6 +129,10 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
     /** Change host enabled. */
     @Value("#{properties[gui_change_host_enabled]}")
     private boolean guiChangeHostEnabled;
+
+    /** Get sandbox logs enabled. */
+    @Value("#{properties[gui_get_logs_enabled]}")
+    private boolean guiGetLogsEnabled;
     
     @Value("#{properties[enable_analytics]}")
     private boolean enableAnalytics;
@@ -267,6 +272,69 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
             if (uuid != null) {
                 broadcastMessage(uuid, uuid + " finished");
             }
+        }
+    }
+
+    @Override
+    public boolean getLogsEnabled() throws SandboxServiceException {
+        return guiGetLogsEnabled;
+    }
+
+    @Override
+    public void getLogsArchive() throws SandboxServiceException {
+
+        if (guiGetLogsEnabled) {
+            executeCommand(null, new String[]{"sudo", sandboxHome + "/create_logs_archive.sh"}, null);
+        } else {
+            throw new SandboxServiceException("Get logs from GUI is disabled!" );
+        }
+    }
+
+    @Override
+    public void changeKaaLogLevel(String uuid, String logLevel, Boolean removeOldLogs) throws SandboxServiceException {
+        try {
+            ClientMessageOutputStream outStream = new ClientMessageOutputStream(uuid, null);
+            if (guiGetLogsEnabled) {
+                String script = "/change_kaa_log_level.sh";
+                if (logLevel != null && !logLevel.isEmpty()) {
+                    executeCommand(outStream, new String[]{"sudo", sandboxHome + script, logLevel, removeOldLogs ? "1": "0"}, null);
+                } else {
+                    throw new SandboxServiceException("Empty logLevel argument");
+                }
+            } else {
+                outStream.println("WARNING: change log level from GUI is disabled!");
+            }
+        } finally {
+            if (uuid != null) {
+                broadcastMessage(uuid, uuid + " finished");
+            }
+        }
+    }
+
+    @Override
+    public String getKaaCurrentHost() throws SandboxServiceException {
+        try {
+            String script = "/get_current_kaa_host_ip.sh";
+            return executeCommand("sudo", sandboxHome + script);
+        } catch (Exception e) {
+            throw Utils.handleException(e);
+        }
+    }
+
+    @Override
+    public LogLevel getKaaCurrentLogLevel() throws SandboxServiceException {
+        try {
+            LogLevel currentLevel = null;
+            String script = "/get_kaa_current_log_level.sh";
+            String logLevel =  executeCommand("sudo", sandboxHome + script);
+            for (LogLevel level : LogLevel.values()) {
+                if (logLevel.contains(level.toString())) {
+                    currentLevel = level;
+                }
+            }
+            return currentLevel;
+        } catch (Exception e) {
+            throw Utils.handleException(e);
         }
     }
     
@@ -409,7 +477,12 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
             String[] command, 
             File workingDir) throws SandboxServiceException {
         try {
-            Execute exec = new Execute(new PumpStreamHandler(outStream));
+            Execute exec = null;
+            if (outStream != null) {
+                exec = new Execute(new PumpStreamHandler(outStream));
+            } else {
+                exec = new Execute();
+            }
             exec.setEnvironment(sandboxEnv);
             if (workingDir != null) {
                 exec.setWorkingDirectory(workingDir);
@@ -423,7 +496,27 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
             throw Utils.handleException(e);
         }
     }
-    
+
+    private static String executeCommand(String ... command) throws SandboxServiceException {
+
+        StringBuilder output = new StringBuilder();
+        Process process;
+
+        try {
+            process = Runtime.getRuntime().exec(command);
+            process.waitFor();
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                String line = "";
+                while ((line = reader.readLine()) != null) {
+                    output.append(line).append("\n");
+                }
+            }
+        } catch (Exception ex) {
+            throw Utils.handleException(ex);
+        }
+        return output.toString();
+    }
+
     private static File createTempDirectory(String prefix) throws IOException {
         final File temp = File.createTempFile(prefix, Long.toString(System.nanoTime()));
         if (!temp.delete()) {

@@ -17,7 +17,11 @@
 package org.kaaproject.kaa.sandbox.web.client.mvp.view;
 
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.ValueListBox;
+import org.kaaproject.kaa.sandbox.web.client.util.LogLevel;
 
 public interface ChangeKaaHostView extends BaseView {
     
@@ -26,5 +30,16 @@ public interface ChangeKaaHostView extends BaseView {
     void setChangeKaaHostEnabled(boolean enabled);
     
     HasValue<String> getKaaHost();
-    
+
+    HasClickHandlers getGetLogsButton();
+
+    void setGetLogsEnabled(Boolean enabled);
+
+    HasClickHandlers getChangeLogLevelButton();
+
+    ValueListBox<LogLevel> getLevelListBox();
+
+    CheckBox getOldLogsCheckBox();
+
+    Element getIpSpan();
 }

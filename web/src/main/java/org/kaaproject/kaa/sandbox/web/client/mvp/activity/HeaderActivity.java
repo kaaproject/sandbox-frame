@@ -79,7 +79,7 @@ public class HeaderActivity extends AbstractActivity {
             @Override
             public void onSuccessImpl(Boolean enabled) {
                 if (enabled) {
-                    headerView.getHeaderMenuItems().addMenuItem(Utils.constants.changeKaaHost(), new ActionMenuItemListener() {
+                    headerView.getHeaderMenuItems().addMenuItem(Utils.constants.management(), new ActionMenuItemListener() {
                         @Override
                         public void onMenuItemSelected() {
                             clientFactory.getPlaceController().goTo(new ChangeKaaHostPlace(place));
