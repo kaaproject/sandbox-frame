@@ -86,7 +86,7 @@ public class DemoProjectWidget extends VerticalPanel implements
         platformImagePanel.add(applicationImage);
 
         layoutPanel.add(platformImagePanel);
-        layoutPanel.add(complexityImage, 10, 10);
+        layoutPanel.add(complexityImage, 3, 3);
         SimplePanel platformImageHoverPanel = new SimplePanel();
         platformImageHoverPanel.addStyleName(Utils.sandboxStyle
                 .platformImageHover());
@@ -179,7 +179,7 @@ public class DemoProjectWidget extends VerticalPanel implements
             applicationImage.setResource(Utils.getPlatformIconBig(project
                     .getPlatform()));
         }
-        complexityImage.setResource(Utils.getFilterComplexitymIcon(project.getComplexity()));
+        complexityImage.setResource(Utils.getComplexityStarIcon(project.getComplexity()));
         projectTitle.setText(project.getName());
         projectTitle.setTitle(project.getName());
         Image platformImage = new Image(Utils.getPlatformIcon(project.getPlatform()));

@@ -255,7 +255,7 @@ public class ProjectViewImpl extends BaseViewImpl implements ProjectView {
     
     @Override
     public void setComplexity(Complexity complexity) {
-    	Image image = new Image(Utils.getFilterComplexitymIcon(complexity));
+    	Image image = new Image(Utils.getFilterComplexityIcon(complexity));
     	image.setTitle(Utils.getComplexityText(complexity));
     	image.getElement().getStyle().setVerticalAlign(VerticalAlign.MIDDLE);
     	Label label = new Label(Utils.getComplexityText(complexity));

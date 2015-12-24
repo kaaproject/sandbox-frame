@@ -181,7 +181,7 @@ public class Utils {
         return null;
     }
     
-    public static ImageResource getFilterComplexitymIcon(Complexity complexity) {
+    public static ImageResource getFilterComplexityIcon(Complexity complexity) {
     	switch(complexity) {
         case BASIC:
             return resources.basic();
@@ -189,6 +189,18 @@ public class Utils {
             return resources.regular();
         case ADVANCED:
             return resources.advanced();
+    	}
+    	return null;
+    }
+    
+    public static ImageResource getComplexityStarIcon(Complexity complexity) {
+    	switch(complexity) {
+        case BASIC:
+            return resources.basicStar();
+        case REGULAR:
+            return resources.regularStar();
+        case ADVANCED:
+            return resources.advancedStar();
     	}
     	return null;
     }

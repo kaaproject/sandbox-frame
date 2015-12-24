@@ -143,7 +143,7 @@ public class FilterViewImpl extends LeftPanelWidget implements FilterView, Value
             super(Utils.constants.complexity());
             setWidth("100%");
             for (Complexity complexity : Complexity.values()) {
-                addItem(Utils.getFilterComplexitymIcon(complexity), Utils.getComplexityBackgroundClass(complexity), Utils.getComplexityText(complexity));
+                addItem(Utils.getFilterComplexityIcon(complexity), Utils.getComplexityBackgroundClass(complexity), Utils.getComplexityText(complexity));
             }
         }
         
