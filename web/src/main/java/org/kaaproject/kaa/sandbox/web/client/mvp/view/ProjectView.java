@@ -18,6 +18,7 @@ package org.kaaproject.kaa.sandbox.web.client.mvp.view;
 
 import java.util.List;
 
+import org.kaaproject.kaa.examples.common.projects.Complexity;
 import org.kaaproject.kaa.examples.common.projects.Feature;
 import org.kaaproject.kaa.examples.common.projects.Platform;
 
@@ -31,6 +32,8 @@ public interface ProjectView extends BaseView {
     void setPlatform(Platform platform);
     
     void setFeatures(List<Feature> features);
+    
+    void setComplexity(Complexity complexity);
     
     void setProjectTitle(String title);
     

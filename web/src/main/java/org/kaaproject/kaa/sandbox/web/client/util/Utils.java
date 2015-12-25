@@ -18,6 +18,7 @@ package org.kaaproject.kaa.sandbox.web.client.util;
 
 import org.kaaproject.avro.ui.gwt.client.AvroUiResources;
 import org.kaaproject.avro.ui.gwt.client.AvroUiResources.AvroUiStyle;
+import org.kaaproject.kaa.examples.common.projects.Complexity;
 import org.kaaproject.kaa.examples.common.projects.Feature;
 import org.kaaproject.kaa.examples.common.projects.Platform;
 import org.kaaproject.kaa.sandbox.web.client.SandboxResources;
@@ -176,6 +177,46 @@ public class Utils {
                 return resources.cpp();
             case JAVA:
                 return resources.java();
+        }
+        return null;
+    }
+    
+    public static ImageResource getFilterComplexityIcon(Complexity complexity) {
+    	switch(complexity) {
+        case BASIC:
+            return resources.basic();
+        case REGULAR:
+            return resources.regular();
+        case ADVANCED:
+            return resources.advanced();
+    	}
+    	return null;
+    }
+    
+    public static ImageResource getComplexityStarIcon(Complexity complexity) {
+    	switch(complexity) {
+        case BASIC:
+            return resources.basicStar();
+        case REGULAR:
+            return resources.regularStar();
+        case ADVANCED:
+            return resources.advancedStar();
+    	}
+    	return null;
+    }
+    
+    public static String getComplexityBackgroundClass(Complexity complexity) {
+        return sandboxStyle.bgPlatformCommon();
+    }
+    
+    public static String getComplexityText(Complexity complexity) {
+        switch(complexity) {
+            case BASIC:
+                return constants.basic();
+            case REGULAR:
+                return constants.regular();
+            case ADVANCED:
+                return constants.advanced();
         }
         return null;
     }

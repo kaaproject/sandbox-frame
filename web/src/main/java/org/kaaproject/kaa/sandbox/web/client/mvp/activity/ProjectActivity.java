@@ -120,6 +120,7 @@ public class ProjectActivity extends AbstractActivity {
                 view.setProjectTitle(project.getName());
                 view.setPlatform(project.getPlatform());
                 view.setFeatures(project.getFeatures());
+                view.setComplexity(project.getComplexity());
                 view.getDescription().setText(project.getDescription());
                 view.getDetails().setHTML(project.getDetails());
                 view.setBinaryButtonVisible(project.getDestBinaryFile() != null && 
