@@ -31,7 +31,9 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 @Service
 public class CacheServiceImpl implements CacheService {
@@ -98,14 +100,52 @@ public class CacheServiceImpl implements CacheService {
             @CacheEvict(value=FILE_CACHE, allEntries=true)     
         })  
     public void flushAllCaches() throws SandboxServiceException {
-        AdminClient client = clientProvider.getClient();
+        final AdminClient client = clientProvider.getClient();
         client.login(tenantDeveloperUser, tenantDeveloperPassword);
         try {
-            client.flushSdkCache();
+        	retryRestCall(new RestCall() {
+				@Override
+				public void executeRestCall() throws Exception {
+					client.flushSdkCache();
+				}
+        	}, 3, 5000, HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
             throw Utils.handleException(e);
         }
-
         LOG.info("All caches have been completely flushed.");        
+    }
+    
+    private void retryRestCall(RestCall restCall, int maxRetries, 
+    		long retryInterval, HttpStatus... acceptedErrorStatuses) throws SandboxServiceException {
+    	int retryCount = 0;
+    	while (retryCount++ < maxRetries) {
+    		try {
+    			restCall.executeRestCall();
+    			return;
+    		} catch (HttpClientErrorException httpClientError) {
+    			boolean accepted = false;
+    			for (HttpStatus acceptedStatus : acceptedErrorStatuses) {
+    				if (httpClientError.getStatusCode() == acceptedStatus) {
+    					accepted = true;
+    					break;
+    				}
+    			}
+    			if (accepted) {
+    				try {
+    					Thread.sleep(retryInterval);
+    				} catch (InterruptedException e) {}
+    			} else {
+    				throw Utils.handleException(httpClientError);
+    			}
+    		} catch (Exception e) {
+    			throw Utils.handleException(e);
+    		}
+    	}
+    }
+    
+    private interface RestCall {
+
+        void executeRestCall() throws Exception;
+
     }
 }
