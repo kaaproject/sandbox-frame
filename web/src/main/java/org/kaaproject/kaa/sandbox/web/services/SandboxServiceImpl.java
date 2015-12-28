@@ -264,7 +264,14 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
         	ClientMessageOutputStream outStream = new ClientMessageOutputStream(uuid, null);
         	if (guiChangeHostEnabled) {
         	    executeCommand(outStream, new String[]{"sudo",sandboxHome + "/change_kaa_host.sh",host}, null);
-        	    cacheService.flushAllCaches();
+        	    try {
+        	    	outStream.println("Going to flush all SDK caches...");
+        	    	cacheService.flushAllCaches();
+        	    	outStream.println("All caches successfuly flushed!");
+        	    } catch (SandboxServiceException e) {
+        	    	outStream.println("Failed to flush SDK caches due to unexpected error: " + e.getMessage());
+        	    	throw e;
+        	    }
         	} else {
         	    outStream.println("WARNING: change host from GUI is disabled!");
         	}
