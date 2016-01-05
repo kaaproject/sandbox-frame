@@ -78,7 +78,7 @@ public class ProjectActivity extends AbstractActivity {
         registrations.add(view.getBackButton().addClickHandler(new ClickHandler() {
           @Override
           public void onClick(ClickEvent event) {
-              clientFactory.getPlaceController().goTo(new MainPlace());
+              clientFactory.getPlaceController().goTo(place.getPreviousPlace());
           }
         }));
         

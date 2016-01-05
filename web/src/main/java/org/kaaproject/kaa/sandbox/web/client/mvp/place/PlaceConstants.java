@@ -19,5 +19,6 @@ package org.kaaproject.kaa.sandbox.web.client.mvp.place;
 public interface PlaceConstants {
 
     public static final String PROJECT_ID = "projectId"; 
-    
+    public static final String BUNDLE_NAME = "bundleName";
+
 }

@@ -172,7 +172,8 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
             JAXBContext jc = JAXBContext.newInstance("org.kaaproject.kaa.examples.common.projects");
             Unmarshaller unmarshaller = jc.createUnmarshaller();
 
-            String demoProkectsXmlFile = Environment.getServerHomeDir() + "/" + DEMO_PROJECTS_FOLDER + "/" + DEMO_PROJECTS_XML_FILE;
+//            String demoProkectsXmlFile = Environment.getServerHomeDir() + "/" + DEMO_PROJECTS_FOLDER + "/" + DEMO_PROJECTS_XML_FILE;
+            String demoProkectsXmlFile = "/usr/lib/kaa-sandbox/demo_projects/demo_projects.xml";
 
             ProjectsConfig projectsConfig = (ProjectsConfig) unmarshaller.unmarshal(new File(demoProkectsXmlFile));
             for (Project project : projectsConfig.getProjects()) {
@@ -374,6 +375,19 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
     public Project getDemoProject(String projectId)
             throws SandboxServiceException {
         return projectsMap.get(projectId);
+    }
+
+    @Override
+    public List<Project> getDemoProjectsByBundleName(String bundleName) throws SandboxServiceException {
+        List<Project> all = getDemoProjects();
+        List<Project> bundleProjects = new ArrayList<>();
+        for (Project project : all) {
+            String bundle = project.getBundle();
+            if (bundle != null && !bundle.isEmpty() && bundle.equals(bundleName)) {
+                bundleProjects.add(project);
+            }
+        }
+        return bundleProjects;
     }
 
     @Override

@@ -16,14 +16,11 @@
 
 package org.kaaproject.kaa.sandbox.web.client.mvp;
 
-import org.kaaproject.kaa.sandbox.web.client.mvp.view.ChangeKaaHostView;
-import org.kaaproject.kaa.sandbox.web.client.mvp.view.FilterView;
-import org.kaaproject.kaa.sandbox.web.client.mvp.view.HeaderView;
-import org.kaaproject.kaa.sandbox.web.client.mvp.view.MainView;
-import org.kaaproject.kaa.sandbox.web.client.mvp.view.ProjectView;
+import org.kaaproject.kaa.sandbox.web.client.mvp.view.*;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.filter.FilterViewImpl;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.header.HeaderViewImpl;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.main.MainViewImpl;
+import org.kaaproject.kaa.sandbox.web.client.mvp.view.project.ProjectBundleViewImpl;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.project.ProjectViewImpl;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.settings.ChangeKaaHostViewImpl;
 
@@ -43,7 +40,9 @@ public class ClientFactoryImpl implements ClientFactory {
     private final MainView mainView = new MainViewImpl();
     
     private final ProjectView projectView = new ProjectViewImpl();
-    
+
+    private final ProjectBundleView projectBundleView = new ProjectBundleViewImpl();
+
     private final ChangeKaaHostView changeKaaHostView = new ChangeKaaHostViewImpl();
 
     @Override
@@ -81,5 +80,8 @@ public class ClientFactoryImpl implements ClientFactory {
         return changeKaaHostView;
     }
 
-
+    @Override
+    public ProjectBundleView getProjectsBundleView() {
+        return projectBundleView;
+    }
 }

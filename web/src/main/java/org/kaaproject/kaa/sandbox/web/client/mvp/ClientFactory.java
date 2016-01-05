@@ -16,11 +16,7 @@
 
 package org.kaaproject.kaa.sandbox.web.client.mvp;
 
-import org.kaaproject.kaa.sandbox.web.client.mvp.view.ChangeKaaHostView;
-import org.kaaproject.kaa.sandbox.web.client.mvp.view.FilterView;
-import org.kaaproject.kaa.sandbox.web.client.mvp.view.HeaderView;
-import org.kaaproject.kaa.sandbox.web.client.mvp.view.MainView;
-import org.kaaproject.kaa.sandbox.web.client.mvp.view.ProjectView;
+import org.kaaproject.kaa.sandbox.web.client.mvp.view.*;
 
 import com.google.gwt.place.shared.PlaceController;
 import com.google.web.bindery.event.shared.EventBus;
@@ -39,4 +35,5 @@ public interface ClientFactory {
     
     ChangeKaaHostView getChangeKaaHostView();
 
+    ProjectBundleView getProjectsBundleView();
 }

@@ -16,7 +16,9 @@
 package org.kaaproject.kaa.sandbox.web.client.mvp.view.widget;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.kaaproject.kaa.examples.common.projects.Project;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.HasProjectActionEventHandlers;
@@ -33,9 +35,11 @@ public class DemoProjectsWidget extends FlowPanel implements HasProjectActionEve
     
     private List<HandlerRegistration> registrations = new ArrayList<>();
     
-    private List<DemoProjectWidget> projectWidgets;
+    private List<AbstractDemoProjectWidget> projectWidgets;
     
     private ProjectFilter projectFilter;
+
+    private Map<String, AbstractDemoProjectWidget> bundles;
     
     public DemoProjectsWidget() {
         super();
@@ -64,19 +68,32 @@ public class DemoProjectsWidget extends FlowPanel implements HasProjectActionEve
     void loadProjects(List<Project> projects) {
         reset();
         projectWidgets = new ArrayList<>();
+        bundles = new HashMap<>();
         for (Project project : projects) {
-            DemoProjectWidget demoProjectWidget = new DemoProjectWidget();
-            demoProjectWidget.setProject(project);
-            add(demoProjectWidget);
-            registrations.add(demoProjectWidget.addProjectActionHandler(this));
-            setVisible(true);
-            projectWidgets.add(demoProjectWidget);
+            AbstractDemoProjectWidget demoProjectWidget = null;
+            String bundleName = project.getBundle();
+            if (bundleName != null && !bundleName.isEmpty()) {
+                if (!bundles.containsKey(bundleName)) {
+                    demoProjectWidget = new ProjectsBundleWidget();
+                    demoProjectWidget.setProject(project);
+                    bundles.put(bundleName, demoProjectWidget);
+                }
+            } else {
+                demoProjectWidget = new DemoProjectWidget();
+            }
+            if (demoProjectWidget != null) {
+                demoProjectWidget.setProject(project);
+                registrations.add(demoProjectWidget.addProjectActionHandler(this));
+                setVisible(true);
+                add(demoProjectWidget);
+                projectWidgets.add(demoProjectWidget);
+            }
         }
         updateProjects(true);
     }
 
     void updateProjects(boolean animate) {
-        for (DemoProjectWidget projectWidget : projectWidgets) {
+        for (AbstractDemoProjectWidget projectWidget : projectWidgets) {
             boolean show = projectFilter.filter(projectWidget.getProject());
             if (show) {
                 projectWidget.show(animate);

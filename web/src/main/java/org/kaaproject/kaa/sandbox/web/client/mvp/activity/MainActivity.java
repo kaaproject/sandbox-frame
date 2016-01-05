@@ -27,6 +27,7 @@ import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.ProjectActionEven
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.ProjectActionEventHandler;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.ProjectFilterEvent;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.ProjectFilterEventHandler;
+import org.kaaproject.kaa.sandbox.web.client.mvp.place.BundlePlace;
 import org.kaaproject.kaa.sandbox.web.client.mvp.place.ChangeKaaHostPlace;
 import org.kaaproject.kaa.sandbox.web.client.mvp.place.MainPlace;
 import org.kaaproject.kaa.sandbox.web.client.mvp.place.ProjectPlace;
@@ -50,11 +51,13 @@ public class MainActivity extends AbstractActivity {
 
     private final ClientFactory clientFactory;
     private MainView view;
+    private MainPlace place;
     
     private List<HandlerRegistration> registrations = new ArrayList<HandlerRegistration>();
     
     public MainActivity(MainPlace place,
             ClientFactory clientFactory) {
+        this.place = place;
         this.clientFactory = clientFactory;
     }
     
@@ -86,7 +89,12 @@ public class MainActivity extends AbstractActivity {
                     getProjectBinary(event.getProject());
                     break;
                 case OPEN_DETAILS:
-                    clientFactory.getPlaceController().goTo(new ProjectPlace(event.getProject().getId()));
+                    ProjectPlace projectPlace = new ProjectPlace(event.getProject().getId());
+                    projectPlace.setPreviousPlace(place);
+                    clientFactory.getPlaceController().goTo(projectPlace);
+                    break;
+                    case OPEN_BUNDLE_DETAILS:
+                    clientFactory.getPlaceController().goTo(new BundlePlace(event.getProject().getBundle()));
                     break;
                 default:
                     break;

@@ -41,85 +41,13 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class DemoProjectWidget extends VerticalPanel implements
-        HasProjectActionEventHandlers {
+public class DemoProjectWidget extends AbstractDemoProjectWidget {
 
-    private Image applicationImage;
-    private Image complexityImage;
-    private HorizontalPanel platformPanel;
-    private HorizontalPanel featuresPanel;
-    private Anchor projectTitle;
     private Button getSourceButton;
     private Button getBinaryButton;
 
-    private Project project;
-
-    private ProjectWidgetAnimation projectWidgetAnimation;
-
     public DemoProjectWidget() {
         super();
-
-        addStyleName(Utils.sandboxStyle.demoProjectWidget());
-        setVisible(false);
-
-        projectWidgetAnimation = new ProjectWidgetAnimation(this, 190, 10.0);
-
-        VerticalPanel detailsPanel = new VerticalPanel();
-        detailsPanel.addStyleName(Utils.sandboxStyle.details());
-        detailsPanel.sinkEvents(Event.ONCLICK);
-
-        detailsPanel.setWidth("100%");
-
-        AbsolutePanel layoutPanel = new AbsolutePanel();
-
-        VerticalPanel platformImagePanel = new VerticalPanel();
-        platformImagePanel.addStyleName(Utils.sandboxStyle.detailsInnerTop());
-        platformImagePanel.setWidth("100%");
-        applicationImage = new Image();
-        complexityImage = new Image();
-        applicationImage.getElement().getStyle().setHeight(128, Unit.PX);
-        applicationImage.getElement().getStyle().setZIndex(1000);
-        complexityImage.getElement().getStyle().setZIndex(2000);
-        platformImagePanel
-                .setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-        
-        platformImagePanel.add(applicationImage);
-
-        layoutPanel.add(platformImagePanel);
-        layoutPanel.add(complexityImage, 3, 3);
-        SimplePanel platformImageHoverPanel = new SimplePanel();
-        platformImageHoverPanel.addStyleName(Utils.sandboxStyle
-                .platformImageHover());
-        layoutPanel.add(platformImageHoverPanel);
-        platformImageHoverPanel.setSize("100%", "100%");
-        layoutPanel.setSize("100%", "100%");
-
-        detailsPanel.add(layoutPanel);
-        VerticalPanel titlePanel = new VerticalPanel();
-        titlePanel.addStyleName(Utils.sandboxStyle.detailsInnerCenter());
-        titlePanel.addStyleName(Utils.sandboxStyle.titlePanel());
-        projectTitle = new Anchor();
-        projectTitle.addStyleName(Utils.sandboxStyle.title());
-        titlePanel.add(projectTitle);
-        titlePanel.setCellVerticalAlignment(projectTitle, HasVerticalAlignment.ALIGN_MIDDLE);
-
-        detailsPanel.add(titlePanel);
-
-        add(detailsPanel);
-
-        HorizontalPanel iconsPanel = new HorizontalPanel();
-        iconsPanel.setWidth("100%");
-        iconsPanel.addStyleName(Utils.sandboxStyle.detailsInnerCenter());
-        iconsPanel.getElement().getStyle().setPaddingTop(10, Unit.PX);
-        platformPanel = new HorizontalPanel();
-        iconsPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
-        iconsPanel.add(platformPanel);
-        
-        featuresPanel = new HorizontalPanel();
-        iconsPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-        iconsPanel.add(featuresPanel);
-        
-        add(iconsPanel);
 
         HorizontalPanel buttonsPanel = new HorizontalPanel();
         buttonsPanel.setWidth("100%");
@@ -150,7 +78,7 @@ public class DemoProjectWidget extends VerticalPanel implements
             @Override
             public void onClick(ClickEvent event) {
                 if (project != null) {
-                    ProjectActionEvent action = new ProjectActionEvent(project, 
+                    ProjectActionEvent action = new ProjectActionEvent(project,
                                                     ProjectAction.GET_SOURCE_CODE);
                     fireEvent(action);
                 }
@@ -161,7 +89,7 @@ public class DemoProjectWidget extends VerticalPanel implements
             @Override
             public void onClick(ClickEvent event) {
                 if (project != null) {
-                    ProjectActionEvent action = new ProjectActionEvent(project, 
+                    ProjectActionEvent action = new ProjectActionEvent(project,
                                                     ProjectAction.GET_BINARY);
                     fireEvent(action);
                 }
@@ -169,17 +97,9 @@ public class DemoProjectWidget extends VerticalPanel implements
         });
     }
 
+    @Override
     public void setProject(Project project) {
-        this.project = project;
-        if (project.getIconBase64() != null
-                && project.getIconBase64().length() > 0) {
-            applicationImage.setUrl("data:image/png;base64,"
-                    + project.getIconBase64());
-        } else {
-            applicationImage.setResource(Utils.getPlatformIconBig(project
-                    .getPlatform()));
-        }
-        complexityImage.setResource(Utils.getComplexityStarIcon(project.getComplexity()));
+        super.setProject(project);
         projectTitle.setText(project.getName());
         projectTitle.setTitle(project.getName());
         Image platformImage = new Image(Utils.getPlatformIcon(project.getPlatform()));
@@ -191,7 +111,7 @@ public class DemoProjectWidget extends VerticalPanel implements
             image.getElement().getStyle().setPaddingRight(4, Unit.PX);
             featuresPanel.add(image);
         }
-        getBinaryButton.setVisible(project.getDestBinaryFile() != null && 
+        getBinaryButton.setVisible(project.getDestBinaryFile() != null &&
                 project.getDestBinaryFile().length() > 0);
     }
 
@@ -203,97 +123,6 @@ public class DemoProjectWidget extends VerticalPanel implements
     public HandlerRegistration addProjectActionHandler(
             ProjectActionEventHandler handler) {
         return this.addHandler(handler, ProjectActionEvent.getType());
-    }
-
-    public void show(boolean animate) {
-        projectWidgetAnimation.show(animate);
-    }
-
-    public void hide(boolean animate) {
-        projectWidgetAnimation.hide(animate);
-    }
-
-    static class ProjectWidgetAnimation extends Animation {
-        
-        private static final int ANIMATION_DURATION = 300;
-
-        private Widget widget;
-
-        private double opacityIncrement;
-        private double targetOpacity;
-        private double baseOpacity;
-
-        private double marginIncrement;
-        private double targetMargin;
-        private double baseMargin;
-
-        private int width;
-        private double rightMargin;
-
-        private boolean show;
-
-        public ProjectWidgetAnimation(Widget widget, int width,
-                double rightMargin) {
-            this.widget = widget;
-            this.show = widget.isVisible();
-            this.width = width;
-            this.rightMargin = rightMargin;
-        }
-
-        @Override
-        protected void onUpdate(double progress) {
-            widget.getElement().getStyle()
-                    .setOpacity(baseOpacity + progress * opacityIncrement);
-            widget.getElement()
-                    .getStyle()
-                    .setMarginRight(baseMargin + progress * marginIncrement,
-                            Unit.PX);
-        }
-
-        @Override
-        protected void onComplete() {
-            super.onComplete();
-            widget.getElement().getStyle().setOpacity(targetOpacity);
-            widget.getElement().getStyle()
-                    .setMarginRight(targetMargin, Unit.PX);
-            if (!show) {
-                widget.setVisible(false);
-            }
-        }
-
-        public void show(boolean animate) {
-            if (!show) {
-                show = true;
-                widget.setVisible(true);
-                animate(0.0, 1.0, -width, rightMargin, animate ? ANIMATION_DURATION : 0);
-            }
-        }
-
-        public void hide(boolean animate) {
-            if (show) {
-                show = false;
-                animate(1.0, 0.0, rightMargin, -width, animate ? ANIMATION_DURATION : 0);
-            }
-        }
-
-        private void animate(double baseOpacity, double targetOpacity, double baseMargin,
-                double targetMargin, int duration) {
-            this.baseOpacity = baseOpacity;
-            this.targetOpacity = targetOpacity;
-            this.baseMargin = baseMargin;
-            this.targetMargin = targetMargin;
-            widget.getElement().getStyle().setOpacity(this.baseOpacity);
-            widget.getElement().getStyle()
-                    .setMarginRight(this.baseMargin, Unit.PX);
-            this.opacityIncrement = this.targetOpacity - this.baseOpacity;
-            this.marginIncrement = this.targetMargin - this.baseMargin;
-            if (duration > 0) {
-                run(duration);
-            } else {
-                onComplete();
-            }
-        }
-
     }
 
 }

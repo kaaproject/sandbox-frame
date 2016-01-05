@@ -54,7 +54,9 @@ public interface SandboxService extends RemoteService {
     public AnalyticsInfo getAnalyticsInfo() throws SandboxServiceException;
     
     public List<Project> getDemoProjects() throws SandboxServiceException;
-    
+
+    public List<Project> getDemoProjectsByBundleName(String bundleName) throws SandboxServiceException;
+
     public Project getDemoProject(String projectId) throws SandboxServiceException;
     
     public boolean checkProjectDataExists(String projectId, ProjectDataType dataType) throws SandboxServiceException;
