@@ -26,8 +26,12 @@ import org.kaaproject.kaa.sandbox.web.client.util.Analytics;
 import org.kaaproject.kaa.sandbox.web.client.util.Utils;
 
 import com.google.gwt.activity.shared.AbstractActivity;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.place.shared.Place;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 
 public class HeaderActivity extends AbstractActivity {
@@ -35,17 +39,20 @@ public class HeaderActivity extends AbstractActivity {
     private Place place;
     private final ClientFactory clientFactory;
     private final HeaderView headerView;
-    
+
     private int kaaNodeWebPort;
+    private static final String KAA_PROJECT_URL = "http://www.kaaproject.org/";
+
+    private HandlerRegistration registration;
 
     public HeaderActivity(Place place, ClientFactory clientFactory) {
         this.place = place;
         this.clientFactory = clientFactory;
         this.headerView = clientFactory.getHeaderView();
     }
-    
+
     public void setPlace(Place place) {
-    	this.place = place;
+        this.place = place;
     }
 
     @Override
@@ -56,13 +63,13 @@ public class HeaderActivity extends AbstractActivity {
 
     @Override
     public void onStop() {
-        
+        registration.removeHandler();
     }
 
     private void bind(final HeaderView headerView, final EventBus eventBus) {
-        
+
         headerView.getHeaderMenuItems().reset();
-        
+
         headerView.getHeaderMenuItems().addMenuItem(Utils.constants.kaaAdminWeb(), new ActionMenuItemListener() {
             @Override
             public void onMenuItemSelected() {
@@ -76,7 +83,7 @@ public class HeaderActivity extends AbstractActivity {
                 gotoAvroUiSandboxWeb();
             }
         });
-        
+
         Sandbox.getSandboxService().changeKaaHostEnabled(new BusyAsyncCallback<Boolean>() {
             @Override
             public void onFailureImpl(Throwable caught) {
@@ -85,7 +92,7 @@ public class HeaderActivity extends AbstractActivity {
             @Override
             public void onSuccessImpl(Boolean enabled) {
                 if (enabled) {
-                    headerView.getHeaderMenuItems().addMenuItem(Utils.constants.changeKaaHost(), new ActionMenuItemListener() {
+                    headerView.getHeaderMenuItems().addMenuItem(Utils.constants.management(), new ActionMenuItemListener() {
                         @Override
                         public void onMenuItemSelected() {
                             clientFactory.getPlaceController().goTo(new ChangeKaaHostPlace(place));
@@ -93,32 +100,44 @@ public class HeaderActivity extends AbstractActivity {
                     });
                 }
             }
-        });      
-        
+        });
+
         Sandbox.getSandboxService().getKaaNodeWebPort(new BusyAsyncCallback<Integer>() {
 
-			@Override
-			public void onFailureImpl(Throwable caught) {
-			}
+            @Override
+            public void onFailureImpl(Throwable caught) {
+            }
 
-			@Override
-			public void onSuccessImpl(Integer result) {
-				if (result != null) {
-					kaaNodeWebPort = result.intValue();
-				}
-			}
-		});
+            @Override
+            public void onSuccessImpl(Integer result) {
+                if (result != null) {
+                    kaaNodeWebPort = result.intValue();
+                }
+            }
+        });
+
+        registration = headerView.getKaaLogoImage().addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent clickEvent) {
+                goToKaaProjectSite();
+            }
+        });
     }
-    
+
     private void gotoKaaAdminWeb() {
-    	Analytics.sendEvent(Analytics.GOTO_ADMIN_UI_ACTION);
-    	String url = "http://" + Sandbox.getWindowHost() + ":" + kaaNodeWebPort + "/kaaAdmin";
+        Analytics.sendEvent(Analytics.GOTO_ADMIN_UI_ACTION);
+        String url = "http://" + Sandbox.getWindowHost() + ":" + kaaNodeWebPort + "/kaaAdmin";
         Sandbox.redirectToUrl(url);
     }
-    
+
     private void gotoAvroUiSandboxWeb() {
-    	Analytics.sendEvent(Analytics.GOTO_AVRO_UI_SANDBOX_ACTION);
+        Analytics.sendEvent(Analytics.GOTO_AVRO_UI_SANDBOX_ACTION);
         Sandbox.redirectToModule("avroUiSandbox");
+    }
+
+    private void goToKaaProjectSite() {
+        Analytics.sendEvent(Analytics.GOTO_KAA_PROJECT_SITE_ACTION);
+        Window.open(KAA_PROJECT_URL, "", "");
     }
 
 }

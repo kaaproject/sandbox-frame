@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 CyberVision, Inc.
+ * Copyright 2014-2015 CyberVision, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,8 @@
  * limitations under the License.
  */
 
-package org.kaaproject.kaa.sandbox.web.client.mvp.view;
+package org.kaaproject.kaa.sandbox.web.client.util;
 
-import org.kaaproject.kaa.sandbox.web.client.mvp.view.widget.HeaderMenuItems;
-
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.IsWidget;
-
-public interface HeaderView extends IsWidget {
-
-    HeaderMenuItems getHeaderMenuItems();
-    
-    Image getKaaLogoImage();
-
+public enum LogLevel {
+    INFO, WARN, ERROR, DEBUG, TRACE
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 CyberVision, Inc.
+ * Copyright 2014-2015 CyberVision, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,7 @@ import org.kaaproject.kaa.common.dto.file.FileData;
 import org.kaaproject.kaa.examples.common.projects.Platform;
 import org.kaaproject.kaa.examples.common.projects.Project;
 import org.kaaproject.kaa.examples.common.projects.ProjectsConfig;
+import org.kaaproject.kaa.sandbox.web.client.util.LogLevel;
 import org.kaaproject.kaa.sandbox.web.services.cache.CacheService;
 import org.kaaproject.kaa.sandbox.web.services.util.Utils;
 import org.kaaproject.kaa.sandbox.web.shared.dto.AnalyticsInfo;
@@ -70,108 +71,121 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
 @Service("sandboxService")
 @ManagedService(path = "/sandbox/atmosphere/rpc",
-interceptors = {
-    /**
-* Handle lifecycle for us
-*/
-    AtmosphereResourceLifecycleInterceptor.class,
-    /**
-* Send to the client the size of the message to prevent serialization error.
-*/
-    TrackMessageSizeInterceptor.class,
-    /**
-* Serialize/Deserialize GWT message for us
-*/
-    GwtRpcInterceptor.class,
-    /**
-* Make sure our {@link AtmosphereResourceEventListener#onSuspend} is only called once for transport
-* that reconnect on every requests.
-*/
-    SuspendTrackerInterceptor.class,
-    /**
-* Deserialize the GWT message
-*/
-    AtmosphereMessageInterceptor.class,
-    /**
-* Discard idle AtmosphereResource in case the network didn't advise us the client disconnected
-*/
-    IdleResourceInterceptor.class
-})
+        interceptors = {
+                /**
+                 * Handle lifecycle for us
+                 */
+                AtmosphereResourceLifecycleInterceptor.class,
+                /**
+                 * Send to the client the size of the message to prevent serialization error.
+                 */
+                TrackMessageSizeInterceptor.class,
+                /**
+                 * Serialize/Deserialize GWT message for us
+                 */
+                GwtRpcInterceptor.class,
+                /**
+                 * Make sure our {@link AtmosphereResourceEventListener#onSuspend} is only called once for transport
+                 * that reconnect on every requests.
+                 */
+                SuspendTrackerInterceptor.class,
+                /**
+                 * Deserialize the GWT message
+                 */
+                AtmosphereMessageInterceptor.class,
+                /**
+                 * Discard idle AtmosphereResource in case the network didn't advise us the client disconnected
+                 */
+                IdleResourceInterceptor.class
+        })
 public class SandboxServiceImpl implements SandboxService, InitializingBean {
 
-    /** The Constant LOG. */
+    /**
+     * The Constant LOG.
+     */
     private static final Logger LOG = LoggerFactory.getLogger(SandboxServiceImpl.class);
-    
+
     private static final String DEMO_PROJECTS_FOLDER = "demo_projects";
-   
+
     private static final String DEMO_PROJECTS_XML_FILE = "demo_projects.xml";
-    
+
     private static final String SANDBOX_ENV_FILE = "sandbox-env.properties";
-    
+
     private static final String CHANGE_KAA_HOST_DIALOG_SHOWN_PROPERTY = "changeKaaHostDialogShown";
-    
-    private static final int MESSAGE_BROADCAST_TIMEOUT = 10000; 
-    
+
+    private static final int MESSAGE_BROADCAST_TIMEOUT = 10000;
+
     private static final String ANALYTICS_USER_ID_FILE = "analytics_user_id";
-    
+
     @Autowired
     private CacheService cacheService;
-    
-    /** Change host enabled. */
+
+    /**
+     * Change host enabled.
+     */
     @Value("#{properties[gui_change_host_enabled]}")
     private boolean guiChangeHostEnabled;
-    
+
+    /**
+     * Get sandbox logs enabled.
+     */
+    @Value("#{properties[gui_get_logs_enabled]}")
+    private boolean guiGetLogsEnabled;
+
     @Value("#{properties[gui_show_change_host_dialog]}")
     private boolean guiShowChangeHostDialog;
-    
+
     @Value("#{properties[kaa_node_web_port]}")
     private int kaaNodeWebPort;
-    
+
     @Value("#{properties[enable_analytics]}")
     private boolean enableAnalytics;
-    
+
     @Value("#{properties[analytics_tracking_id]}")
     private String analyticsTrackingId;
-    
+
     private Map<String, Project> projectsMap = new HashMap<>();
-    
+
     private static String[] sandboxEnv;
-    
+
     private static AtmosphereResourceFactory atmosphereResourceFactory;
-    
+
     private static String analyticsUserId;
-    
+
     @Override
     public void afterPropertiesSet() throws Exception {
         try {
-            
+
             LOG.info("Initializing Sandbox Service...");
             LOG.info("sandboxHome [{}]", Environment.getServerHomeDir());
             LOG.info("guiChangeHostEnabled [{}]", guiChangeHostEnabled);
             LOG.info("kaaNodeWebPort [{}]", kaaNodeWebPort);
             LOG.info("enableAnalytics [{}]", enableAnalytics);
-            
+
             prepareAnalytics();
-            
+
             JAXBContext jc = JAXBContext.newInstance("org.kaaproject.kaa.examples.common.projects");
             Unmarshaller unmarshaller = jc.createUnmarshaller();
-            
+
             String demoProkectsXmlFile = Environment.getServerHomeDir() + "/" + DEMO_PROJECTS_FOLDER + "/" + DEMO_PROJECTS_XML_FILE;
-            
+
             ProjectsConfig projectsConfig = (ProjectsConfig) unmarshaller.unmarshal(new File(demoProkectsXmlFile));
             for (Project project : projectsConfig.getProjects()) {
                 projectsMap.put(project.getId(), project);
                 LOG.info("Demo project: id [{}] name [{}]", project.getId(), project.getName());
             }
-            
+
             if (sandboxEnv == null) {
-                Properties sandboxEnvProperties = 
+                Properties sandboxEnvProperties =
                         org.kaaproject.kaa.server.common.utils.FileUtils.readResourceProperties(SANDBOX_ENV_FILE);
-                
+
                 sandboxEnv = new String[sandboxEnvProperties.size()];
-                int i=0;
+                int i = 0;
                 for (Object key : sandboxEnvProperties.keySet()) {
                     String keyValue = key + "=" + sandboxEnvProperties.getProperty(key.toString());
                     sandboxEnv[i++] = keyValue;
@@ -184,39 +198,38 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
             throw e;
         }
     }
-    
+
     private void prepareAnalytics() throws IOException {
-    	if (enableAnalytics) {
-    		try {
-	            File f = new File(ANALYTICS_USER_ID_FILE);
-	            if (!f.exists()) {
-	            	f.createNewFile();
-	            }
-	            String uid = FileUtils.readFileToString(f, "UTF-8");
-	            if (uid == null || uid.isEmpty()) {
-	            	uid = UUID.randomUUID().toString();
-	            	FileUtils.write(f, uid);
-	            }
-	            analyticsUserId = uid;
-    		}
-    		catch (IOException e) {
-    			LOG.error("Unable to initialize analytics", e);
-    			throw e;
-    		}
-    	}
+        if (enableAnalytics) {
+            try {
+                File f = new File(ANALYTICS_USER_ID_FILE);
+                if (!f.exists()) {
+                    f.createNewFile();
+                }
+                String uid = FileUtils.readFileToString(f, "UTF-8");
+                if (uid == null || uid.isEmpty()) {
+                    uid = UUID.randomUUID().toString();
+                    FileUtils.write(f, uid);
+                }
+                analyticsUserId = uid;
+            } catch (IOException e) {
+                LOG.error("Unable to initialize analytics", e);
+                throw e;
+            }
+        }
     }
-    
+
     @Ready
     public void onReady(final AtmosphereResource r) {
-    	LOG.debug("Received RPC GET, uuid: {}", r.uuid());
-    	if (atmosphereResourceFactory == null) {
-    	    atmosphereResourceFactory = r.getAtmosphereConfig().resourcesFactory();
-    	}
-    	r.getBroadcaster().broadcast(r.uuid(), r);
+        LOG.debug("Received RPC GET, uuid: {}", r.uuid());
+        if (atmosphereResourceFactory == null) {
+            atmosphereResourceFactory = r.getAtmosphereConfig().resourcesFactory();
+        }
+        r.getBroadcaster().broadcast(r.uuid(), r);
     }
-    
+
     @Disconnect
-    public void disconnected(AtmosphereResourceEvent event){
+    public void disconnected(AtmosphereResourceEvent event) {
         if (event.isCancelled()) {
             LOG.debug("User:" + event.getResource().uuid() + " unexpectedly disconnected");
         } else if (event.isClosedByClient()) {
@@ -228,17 +241,17 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
     public void post(AtmosphereResource r) {
         LOG.debug("POST received with transport + " + r.transport());
     }
-    
-	@Override
-	public String getKaaVersion() throws SandboxServiceException {
-		return org.kaaproject.kaa.server.common.Version.PROJECT_VERSION;
-	}
-	
+
+    @Override
+    public String getKaaVersion() throws SandboxServiceException {
+        return org.kaaproject.kaa.server.common.Version.PROJECT_VERSION;
+    }
+
     @Override
     public boolean changeKaaHostEnabled() throws SandboxServiceException {
         return guiChangeHostEnabled;
     }
-    
+
     @Override
     public boolean showChangeKaaHostDialog() throws SandboxServiceException {
         if (guiChangeHostEnabled && guiShowChangeHostDialog) {
@@ -253,35 +266,105 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
     public void changeKaaHostDialogShown() throws SandboxServiceException {
         cacheService.putProperty(CHANGE_KAA_HOST_DIALOG_SHOWN_PROPERTY, Boolean.TRUE);
     }
-    
+
     @Override
     public void changeKaaHost(String uuid, String host) throws SandboxServiceException {
         try {
-        	ClientMessageOutputStream outStream = new ClientMessageOutputStream(uuid, null);
-        	if (guiChangeHostEnabled) {
-        	    executeCommand(outStream, new String[]{"sudo",Environment.getServerHomeDir() + "/bin/change_kaa_host.sh",host}, null);
-        	    cacheService.flushAllCaches();
-        	} else {
-        	    outStream.println("WARNING: change host from GUI is disabled!");
-        	}
+            ClientMessageOutputStream outStream = new ClientMessageOutputStream(uuid, null);
+            if (guiChangeHostEnabled) {
+                executeCommand(outStream, new String[]{"sudo", Environment.getServerHomeDir() + "/bin/change_kaa_host.sh", host}, null);
+                try {
+                    outStream.println("Going to flush all SDK caches...");
+                    cacheService.flushAllCaches();
+                    outStream.println("All caches successfuly flushed!");
+                } catch (SandboxServiceException e) {
+                    outStream.println("Failed to flush SDK caches due to unexpected error: " + e.getMessage());
+                    throw e;
+                }
+            } else {
+                outStream.println("WARNING: change host from GUI is disabled!");
+            }
         } finally {
             if (uuid != null) {
                 broadcastMessage(uuid, uuid + " finished");
             }
         }
     }
-    
-	@Override
-	public AnalyticsInfo getAnalyticsInfo() throws SandboxServiceException {
-		AnalyticsInfo info = new AnalyticsInfo();
-		info.setEnableAnalytics(enableAnalytics);
-		if (enableAnalytics) {
-			info.setTrackingId(analyticsTrackingId);
-			info.setUserId(analyticsUserId);
-		}
-		return info;
-	}
-    
+
+    @Override
+    public boolean getLogsEnabled() throws SandboxServiceException {
+        return guiGetLogsEnabled;
+    }
+
+    @Override
+    public void getLogsArchive() throws SandboxServiceException {
+
+        if (guiGetLogsEnabled) {
+            executeCommand(null, new String[]{"sudo", Environment.getServerHomeDir() + "/bin/create_logs_archive.sh"}, null);
+        } else {
+            throw new SandboxServiceException("Get logs from GUI is disabled!");
+        }
+    }
+
+    @Override
+    public void changeKaaLogLevel(String uuid, String logLevel, Boolean removeOldLogs) throws SandboxServiceException {
+        try {
+            ClientMessageOutputStream outStream = new ClientMessageOutputStream(uuid, null);
+            if (guiGetLogsEnabled) {
+                String script = "/bin/change_kaa_log_level.sh";
+                if (logLevel != null && !logLevel.isEmpty()) {
+                    executeCommand(outStream, new String[]{"sudo", Environment.getServerHomeDir() + script, logLevel, removeOldLogs ? "1" : "0"}, null);
+                } else {
+                    throw new SandboxServiceException("Empty logLevel argument");
+                }
+            } else {
+                outStream.println("WARNING: change log level from GUI is disabled!");
+            }
+        } finally {
+            if (uuid != null) {
+                broadcastMessage(uuid, uuid + " finished");
+            }
+        }
+    }
+
+    @Override
+    public String getKaaCurrentHost() throws SandboxServiceException {
+        try {
+            String script = "/bin/get_kaa_current_host_ip.sh";
+            return executeCommand("sudo", Environment.getServerHomeDir() + script);
+        } catch (Exception e) {
+            throw Utils.handleException(e);
+        }
+    }
+
+    @Override
+    public LogLevel getKaaCurrentLogLevel() throws SandboxServiceException {
+        try {
+            LogLevel currentLevel = null;
+            String script = "/bin/get_kaa_current_log_level.sh";
+            String logLevel = executeCommand("sudo", Environment.getServerHomeDir() + script);
+            for (LogLevel level : LogLevel.values()) {
+                if (logLevel.contains(level.toString())) {
+                    currentLevel = level;
+                }
+            }
+            return currentLevel;
+        } catch (Exception e) {
+            throw Utils.handleException(e);
+        }
+    }
+
+    @Override
+    public AnalyticsInfo getAnalyticsInfo() throws SandboxServiceException {
+        AnalyticsInfo info = new AnalyticsInfo();
+        info.setEnableAnalytics(enableAnalytics);
+        if (enableAnalytics) {
+            info.setTrackingId(analyticsTrackingId);
+            info.setUserId(analyticsUserId);
+        }
+        return info;
+    }
+
     @Override
     public List<Project> getDemoProjects() throws SandboxServiceException {
         return new ArrayList<Project>(projectsMap.values());
@@ -295,7 +378,7 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
 
     @Override
     public boolean checkProjectDataExists(String projectId,
-            ProjectDataType dataType) throws SandboxServiceException {
+                                          ProjectDataType dataType) throws SandboxServiceException {
         ProjectDataKey dataKey = new ProjectDataKey(projectId, dataType);
         FileData data = cacheService.getProjectFile(dataKey);
         return data != null;
@@ -325,27 +408,27 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
                         outStream.println("Processing project archive...");
                         String sourceArchiveFile = Environment.getServerHomeDir() + "/" + DEMO_PROJECTS_FOLDER + "/" + project.getSourceArchive();
                         String rootProjectDir = rootDir.getAbsolutePath();
-                        
-                        executeCommand(outStream, new String[]{"tar","-C",rootProjectDir,"-xzvf", sourceArchiveFile}, null);
-                        
+
+                        executeCommand(outStream, new String[]{"tar", "-C", rootProjectDir, "-xzvf", sourceArchiveFile}, null);
+
                         File sdkFile = new File(rootProjectDir + "/" + project.getSdkLibDir() + "/" + sdkFileData.getFileName());
                         FileOutputStream fos = FileUtils.openOutputStream(sdkFile);
                         fos.write(sdkFileData.getFileData());
                         fos.flush();
                         fos.close();
-                        
+
                         ProjectDataKey dataKey = new ProjectDataKey(projectId, dataType);
-                        if (dataType==ProjectDataType.SOURCE) {
+                        if (dataType == ProjectDataType.SOURCE) {
                             String sourceArchiveName = FilenameUtils.getName(sourceArchiveFile);
                             outStream.println("Compressing source project archive...");
-                            
+
                             File sourceFile = new File(rootDir, sourceArchiveName);
-                            
+
                             String[] files = rootDir.list();
-                            String[] command = (String[]) ArrayUtils.addAll(new String[]{"tar","-czvf",sourceFile.getAbsolutePath(),"-C", rootProjectDir}, files);
-                            
+                            String[] command = (String[]) ArrayUtils.addAll(new String[]{"tar", "-czvf", sourceFile.getAbsolutePath(), "-C", rootProjectDir}, files);
+
                             executeCommand(outStream, command, null);
-                            
+
                             outStream.println("Source project archive compressed.");
                             byte[] sourceFileBytes = FileUtils.readFileToByteArray(sourceFile);
                             FileData sourceFileData = new FileData();
@@ -359,22 +442,22 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
                             if (project.getProjectFolder() != null && !project.getProjectFolder().trim().isEmpty()) {
                                 projectFolder = new File(rootDir, project.getProjectFolder());
                             }
-                            
+
                             executeCommand(outStream, new String[]{"ant"}, projectFolder);
-                            
+
                             outStream.println("Build finished.");
-                            
+
                             File binaryFile = new File(rootDir, project.getDestBinaryFile());
                             byte[] binaryFileBytes = FileUtils.readFileToByteArray(binaryFile);
                             FileData binaryFileData = new FileData();
-                            
+
                             String binaryFileName = FilenameUtils.getName(binaryFile.getAbsolutePath());
-                            
+
                             binaryFileData.setFileName(binaryFileName);
                             binaryFileData.setFileData(binaryFileBytes);
-                            if (project.getPlatform()==Platform.ANDROID) {
+                            if (project.getPlatform() == Platform.ANDROID) {
                                 binaryFileData.setContentType("application/vnd.android.package-archive");
-                            } else if (project.getPlatform()==Platform.JAVA) {
+                            } else if (project.getPlatform() == Platform.JAVA) {
                                 binaryFileData.setContentType("application/java-archive");
                             }
                             cacheService.putProjectFile(dataKey, binaryFileData);
@@ -404,12 +487,17 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
             }
         }
     }
-    
-    private static void executeCommand(ClientMessageOutputStream outStream, 
-            String[] command, 
-            File workingDir) throws SandboxServiceException {
+
+    private static void executeCommand(ClientMessageOutputStream outStream,
+                                       String[] command,
+                                       File workingDir) throws SandboxServiceException {
         try {
-            Execute exec = new Execute(new PumpStreamHandler(outStream));
+            Execute exec = null;
+            if (outStream != null) {
+                exec = new Execute(new PumpStreamHandler(outStream));
+            } else {
+                exec = new Execute();
+            }
             exec.setEnvironment(sandboxEnv);
             if (workingDir != null) {
                 exec.setWorkingDirectory(workingDir);
@@ -423,7 +511,27 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
             throw Utils.handleException(e);
         }
     }
-    
+
+    private static String executeCommand(String... command) throws SandboxServiceException {
+
+        StringBuilder output = new StringBuilder();
+        Process process;
+
+        try {
+            process = Runtime.getRuntime().exec(command);
+            process.waitFor();
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                String line = "";
+                while ((line = reader.readLine()) != null) {
+                    output.append(line).append("\n");
+                }
+            }
+        } catch (Exception ex) {
+            throw Utils.handleException(ex);
+        }
+        return output.toString();
+    }
+
     private static File createTempDirectory(String prefix) throws IOException {
         final File temp = File.createTempFile(prefix, Long.toString(System.nanoTime()));
         if (!temp.delete()) {
@@ -436,67 +544,68 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
         }
         return temp;
     }
-    
+
     private static void broadcastMessage(String uuid, Object message) {
         if (uuid != null) {
             AtmosphereResource res = null;
             int waitTime = 0;
-            while ((res = atmosphereResourceFactory.find(uuid)) == null 
+            while ((res = atmosphereResourceFactory.find(uuid)) == null
                     && waitTime < MESSAGE_BROADCAST_TIMEOUT) {
                 try {
                     Thread.sleep(500);
-                } catch (InterruptedException e) {}
+                } catch (InterruptedException e) {
+                }
                 waitTime += 500;
             }
             if (res == null) {
-                 LOG.warn("Unable to find atmosphere resource for uuid: {}", uuid);
+                LOG.warn("Unable to find atmosphere resource for uuid: {}", uuid);
             } else {
                 res.getBroadcaster().broadcast(message, res);
             }
         }
     }
-    
+
     class ClientMessageOutputStream extends OutputStream {
 
-    	private String resourceUuid;
-    	private PrintStream out;
-    	
-    	ClientMessageOutputStream(String resourceUuid, PrintStream out) {
-    		this.resourceUuid = resourceUuid;
-    		this.out = out;
-    	}
-    	
-		@Override
-		public void write(int b) throws IOException {
-		}
-		
-		@Override
-		public void write(byte b[], int off, int len) throws IOException {
-			byte[] data = new byte[len];
-			System.arraycopy(b, off, data, 0, len);
-			String message = new String(data);
-			if (resourceUuid != null) {
-			    broadcastMessage(resourceUuid, message);
-			}
-			if (out != null) {
-			    out.print(message);
-			}
-		}
-		
-		public void println(String text) {
-		    if (resourceUuid != null) {
-		        broadcastMessage(resourceUuid, (text+"\n"));
-		    }
-	        if (out != null) {
-	            out.println(text);
-	        }
-		}
+        private String resourceUuid;
+        private PrintStream out;
+
+        ClientMessageOutputStream(String resourceUuid, PrintStream out) {
+            this.resourceUuid = resourceUuid;
+            this.out = out;
+        }
+
+        @Override
+        public void write(int b) throws IOException {
+        }
+
+        @Override
+        public void write(byte b[], int off, int len) throws IOException {
+            byte[] data = new byte[len];
+            System.arraycopy(b, off, data, 0, len);
+            String message = new String(data);
+            if (resourceUuid != null) {
+                broadcastMessage(resourceUuid, message);
+            }
+            if (out != null) {
+                out.print(message);
+            }
+        }
+
+        public void println(String text) {
+            if (resourceUuid != null) {
+                broadcastMessage(resourceUuid, (text + "\n"));
+            }
+            if (out != null) {
+                out.println(text);
+            }
+        }
 
     }
 
-	@Override
-	public int getKaaNodeWebPort() throws SandboxServiceException {
-		return kaaNodeWebPort;
-	}
+    @Override
+    public int getKaaNodeWebPort() throws SandboxServiceException {
+        return kaaNodeWebPort;
+    }
 
 }

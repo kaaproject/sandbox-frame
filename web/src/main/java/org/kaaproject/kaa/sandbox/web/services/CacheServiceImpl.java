@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 CyberVision, Inc.
+ * Copyright 2014-2015 CyberVision, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,28 +32,34 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 @Service
 public class CacheServiceImpl implements CacheService {
 
     private static final Logger LOG = LoggerFactory.getLogger(CacheServiceImpl.class);
-    
+
     private static final String SDK_CACHE = "sdkCache";
     private static final String FILE_CACHE = "fileCache";
     private static final String PROPS_CACHE = "propsCache";
-    
+
     @Autowired
     private AdminClientProvider clientProvider;
-    
-    /** The thrift host. */
+
+    /**
+     * The thrift host.
+     */
     @Value("#{properties[tenant_developer_user]}")
     private String tenantDeveloperUser;
 
-    /** The thrift port. */
+    /**
+     * The thrift port.
+     */
     @Value("#{properties[tenant_developer_password]}")
     private String tenantDeveloperPassword;
-    
+
     @Override
     @Cacheable(value = SDK_CACHE, key = "#p0.concat('-').concat(#p1.toString())")
     public FileData getSdk(String sdkProfileId, Platform targetPlatform) throws SandboxServiceException {
@@ -67,21 +73,21 @@ public class CacheServiceImpl implements CacheService {
         }
         return fileData;
     }
-    
+
     @Override
-    @Cacheable(value = FILE_CACHE, key = "#key", unless="#result == null")
+    @Cacheable(value = FILE_CACHE, key = "#key", unless = "#result == null")
     public FileData getProjectFile(ProjectDataKey key) {
         return null;
     }
-    
+
     @Override
     @CachePut(value = FILE_CACHE, key = "#key")
     public FileData putProjectFile(ProjectDataKey key, FileData data) {
         return data;
     }
-    
+
     @Override
-    @Cacheable(value = PROPS_CACHE, key = "#propertyKey", unless="#result == null")
+    @Cacheable(value = PROPS_CACHE, key = "#propertyKey", unless = "#result == null")
     public Object getProperty(String propertyKey) {
         return null;
     }
@@ -90,38 +96,77 @@ public class CacheServiceImpl implements CacheService {
     @CachePut(value = PROPS_CACHE, key = "#propertyKey")
     public Object putProperty(String propertyKey, Object propertyValue) {
         return propertyValue;
-    }  
+    }
 
 
     @Override
     @Caching(evict = {
-            @CacheEvict(value=SDK_CACHE, allEntries=true),
-            @CacheEvict(value=FILE_CACHE, allEntries=true)     
-        })  
+            @CacheEvict(value = SDK_CACHE, allEntries = true),
+            @CacheEvict(value = FILE_CACHE, allEntries = true)
+    })
     public void flushAllCaches() throws SandboxServiceException {
-        AdminClient client = clientProvider.getClient();
+        final AdminClient client = clientProvider.getClient();
         client.login(tenantDeveloperUser, tenantDeveloperPassword);
         try {
-            client.flushSdkCache();
+            retryRestCall(new RestCall() {
+                @Override
+                public void executeRestCall() throws Exception {
+                    client.flushSdkCache();
+                }
+            }, 3, 5000, HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
             throw Utils.handleException(e);
         }
-
-        LOG.info("All caches have been completely flushed.");        
+        LOG.info("All caches have been completely flushed.");
     }
-    
+
     private static SdkPlatform toSdkPlatform(Platform targetPlatform) {
-    	switch (targetPlatform) {
-		case ANDROID:
-			return SdkPlatform.ANDROID; 
-		case C:
-			return SdkPlatform.C; 
-		case CPP:
-			return SdkPlatform.CPP;
-		case JAVA:
-			return SdkPlatform.JAVA;
-		default:
-			throw new IllegalArgumentException("Unsupported platform " + targetPlatform);
-    	}
+        switch (targetPlatform) {
+            case ANDROID:
+                return SdkPlatform.ANDROID;
+            case C:
+                return SdkPlatform.C;
+            case CPP:
+                return SdkPlatform.CPP;
+            case JAVA:
+                return SdkPlatform.JAVA;
+            default:
+                throw new IllegalArgumentException("Unsupported platform " + targetPlatform);
+        }
+    }
+
+    private void retryRestCall(RestCall restCall, int maxRetries,
+                               long retryInterval, HttpStatus... acceptedErrorStatuses) throws SandboxServiceException {
+        int retryCount = 0;
+        while (retryCount++ < maxRetries) {
+            try {
+                restCall.executeRestCall();
+                return;
+            } catch (HttpClientErrorException httpClientError) {
+                boolean accepted = false;
+                for (HttpStatus acceptedStatus : acceptedErrorStatuses) {
+                    if (httpClientError.getStatusCode() == acceptedStatus) {
+                        accepted = true;
+                        break;
+                    }
+                }
+                if (accepted) {
+                    try {
+                        Thread.sleep(retryInterval);
+                    } catch (InterruptedException e) {
+                    }
+                } else {
+                    throw Utils.handleException(httpClientError);
+                }
+            } catch (Exception e) {
+                throw Utils.handleException(e);
+            }
+        }
+    }
+
+    private interface RestCall {
+
+        void executeRestCall() throws Exception;
+
     }
 }

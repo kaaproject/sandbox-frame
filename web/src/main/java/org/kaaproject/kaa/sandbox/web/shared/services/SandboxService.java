@@ -16,15 +16,15 @@
 
 package org.kaaproject.kaa.sandbox.web.shared.services;
 
-import java.util.List;
-
+import com.google.gwt.user.client.rpc.RemoteService;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import org.kaaproject.kaa.examples.common.projects.Project;
+import org.kaaproject.kaa.sandbox.web.client.util.LogLevel;
 import org.kaaproject.kaa.sandbox.web.shared.dto.AnalyticsInfo;
 import org.kaaproject.kaa.sandbox.web.shared.dto.BuildOutputData;
 import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectDataType;
 
-import com.google.gwt.user.client.rpc.RemoteService;
-import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import java.util.List;
 
 @RemoteServiceRelativePath("springGwtServices/sandboxService")
 public interface SandboxService extends RemoteService {
@@ -40,7 +40,17 @@ public interface SandboxService extends RemoteService {
     public void changeKaaHostDialogShown() throws SandboxServiceException;
     
     public void changeKaaHost(String uuid, String host) throws SandboxServiceException;
-    
+
+    public boolean getLogsEnabled() throws SandboxServiceException;
+
+    public void getLogsArchive() throws SandboxServiceException;
+
+    public void changeKaaLogLevel(String uuid, String logLevel, Boolean removeOldLogs) throws SandboxServiceException;
+
+    public String getKaaCurrentHost() throws SandboxServiceException;
+
+    public LogLevel getKaaCurrentLogLevel() throws SandboxServiceException;
+
     public AnalyticsInfo getAnalyticsInfo() throws SandboxServiceException;
     
     public List<Project> getDemoProjects() throws SandboxServiceException;
