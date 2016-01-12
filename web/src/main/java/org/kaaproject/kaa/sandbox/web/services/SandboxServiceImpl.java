@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 CyberVision, Inc.
+ * Copyright 2014-2016 CyberVision, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -243,8 +243,10 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
     }
 
     @Override
-    public String getKaaVersion() throws SandboxServiceException {
-        return org.kaaproject.kaa.server.common.Version.PROJECT_VERSION;
+    public String[] getKaaVersion() throws SandboxServiceException {
+        return new String[] { org.kaaproject.kaa.server.common.Version.PROJECT_VERSION,
+                              org.kaaproject.kaa.sandbox.web.shared.Version.PROJECT_VERSION,
+                              org.kaaproject.kaa.examples.common.shared.Version.PROJECT_VERSION};
     }
 
     @Override

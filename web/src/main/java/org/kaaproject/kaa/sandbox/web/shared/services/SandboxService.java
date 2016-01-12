@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 CyberVision, Inc.
+ * Copyright 2014-2016 CyberVision, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,17 +28,17 @@ import java.util.List;
 
 @RemoteServiceRelativePath("springGwtServices/sandboxService")
 public interface SandboxService extends RemoteService {
-	
-	public String getKaaVersion() throws SandboxServiceException;
-	
-	public int getKaaNodeWebPort() throws SandboxServiceException;
+
+    public String[] getKaaVersion() throws SandboxServiceException;
+
+    public int getKaaNodeWebPort() throws SandboxServiceException;
 
     public boolean changeKaaHostEnabled() throws SandboxServiceException;
-    
+
     public boolean showChangeKaaHostDialog() throws SandboxServiceException;
-    
+
     public void changeKaaHostDialogShown() throws SandboxServiceException;
-    
+
     public void changeKaaHost(String uuid, String host) throws SandboxServiceException;
 
     public boolean getLogsEnabled() throws SandboxServiceException;
@@ -52,12 +52,12 @@ public interface SandboxService extends RemoteService {
     public LogLevel getKaaCurrentLogLevel() throws SandboxServiceException;
 
     public AnalyticsInfo getAnalyticsInfo() throws SandboxServiceException;
-    
+
     public List<Project> getDemoProjects() throws SandboxServiceException;
-    
+
     public Project getDemoProject(String projectId) throws SandboxServiceException;
-    
+
     public boolean checkProjectDataExists(String projectId, ProjectDataType dataType) throws SandboxServiceException;
- 
+
     public void buildProjectData(String uuid, BuildOutputData outputData, String projectId, ProjectDataType dataType) throws SandboxServiceException;
 }
