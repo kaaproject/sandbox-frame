@@ -78,8 +78,6 @@ public class DemoProjectWidget extends VerticalPanel implements
         applicationImage = new Image();
         complexityImage = new Image();
         applicationImage.getElement().getStyle().setHeight(128, Unit.PX);
-        applicationImage.getElement().getStyle().setZIndex(1000);
-        complexityImage.getElement().getStyle().setZIndex(2000);
         platformImagePanel
                 .setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
         
