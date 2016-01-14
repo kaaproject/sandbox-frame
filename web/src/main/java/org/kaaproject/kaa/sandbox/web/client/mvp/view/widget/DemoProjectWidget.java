@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 CyberVision, Inc.
+ * Copyright 2014-2016 CyberVision, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,11 @@
 
 package org.kaaproject.kaa.sandbox.web.client.mvp.view.widget;
 
+import org.kaaproject.kaa.examples.common.projects.Bundle;
 import org.kaaproject.kaa.examples.common.projects.Feature;
+import org.kaaproject.kaa.examples.common.projects.Platform;
 import org.kaaproject.kaa.examples.common.projects.Project;
+import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.FilterItem;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.HasProjectActionEventHandlers;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.ProjectAction;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.ProjectActionEvent;
@@ -41,88 +44,327 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class DemoProjectWidget extends AbstractDemoProjectWidget {
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
+public class DemoProjectWidget extends VerticalPanel implements
+        HasProjectActionEventHandlers {
+
+    private VerticalPanel detailsPanel;
+    private Image applicationImage;
+    private Image complexityImage;
+    private HorizontalPanel platformPanel;
+    private HorizontalPanel featuresPanel;
+
+    private HorizontalPanel buttonsPanel;
+    private Anchor projectTitle;
     private Button getSourceButton;
     private Button getBinaryButton;
+
+    private Project project;
+    private FilterItem filterItem;
+
+    private ProjectWidgetAnimation projectWidgetAnimation;
 
     public DemoProjectWidget() {
         super();
 
-        HorizontalPanel buttonsPanel = new HorizontalPanel();
+        addStyleName(Utils.sandboxStyle.demoProjectWidget());
+        setVisible(false);
+
+        projectWidgetAnimation = new ProjectWidgetAnimation(this, 190, 10.0);
+
+         detailsPanel = new VerticalPanel();
+        detailsPanel.addStyleName(Utils.sandboxStyle.details());
+        detailsPanel.sinkEvents(Event.ONCLICK);
+
+        detailsPanel.setWidth("100%");
+
+        AbsolutePanel layoutPanel = new AbsolutePanel();
+
+        VerticalPanel platformImagePanel = new VerticalPanel();
+        platformImagePanel.addStyleName(Utils.sandboxStyle.detailsInnerTop());
+        platformImagePanel.setWidth("100%");
+        applicationImage = new Image();
+        complexityImage = new Image();
+        applicationImage.getElement().getStyle().setHeight(128, Unit.PX);
+        applicationImage.getElement().getStyle().setZIndex(1000);
+        complexityImage.getElement().getStyle().setZIndex(2000);
+        platformImagePanel
+                .setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+        
+        platformImagePanel.add(applicationImage);
+
+        layoutPanel.add(platformImagePanel);
+        layoutPanel.add(complexityImage, 3, 3);
+        SimplePanel platformImageHoverPanel = new SimplePanel();
+        platformImageHoverPanel.addStyleName(Utils.sandboxStyle
+                .platformImageHover());
+        layoutPanel.add(platformImageHoverPanel);
+        platformImageHoverPanel.setSize("100%", "100%");
+        layoutPanel.setSize("100%", "100%");
+
+        detailsPanel.add(layoutPanel);
+        VerticalPanel titlePanel = new VerticalPanel();
+        titlePanel.addStyleName(Utils.sandboxStyle.detailsInnerCenter());
+        titlePanel.addStyleName(Utils.sandboxStyle.titlePanel());
+        projectTitle = new Anchor();
+        projectTitle.addStyleName(Utils.sandboxStyle.title());
+        titlePanel.add(projectTitle);
+        titlePanel.setCellVerticalAlignment(projectTitle, HasVerticalAlignment.ALIGN_MIDDLE);
+
+        detailsPanel.add(titlePanel);
+
+        add(detailsPanel);
+
+        HorizontalPanel iconsPanel = new HorizontalPanel();
+        iconsPanel.setWidth("100%");
+        iconsPanel.addStyleName(Utils.sandboxStyle.detailsInnerCenter());
+        iconsPanel.getElement().getStyle().setPaddingTop(10, Unit.PX);
+        platformPanel = new HorizontalPanel();
+        iconsPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
+        iconsPanel.add(platformPanel);
+        
+        featuresPanel = new HorizontalPanel();
+        iconsPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+        iconsPanel.add(featuresPanel);
+        
+        add(iconsPanel);
+
+        buttonsPanel = new HorizontalPanel();
         buttonsPanel.setWidth("100%");
         buttonsPanel.addStyleName(Utils.sandboxStyle.detailsInnerBottom());
-        getSourceButton = new Button(Utils.constants.getSourceCode());
-        getSourceButton.addStyleName(Utils.sandboxStyle.action());
-        getSourceButton.getElement().getStyle().setMarginRight(20, Unit.PX);
-        getBinaryButton = new Button(Utils.constants.getBinary());
-        getBinaryButton.addStyleName(Utils.sandboxStyle.action());
-        buttonsPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
-        buttonsPanel.add(getSourceButton);
-        buttonsPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-        buttonsPanel.add(getBinaryButton);
-        add(buttonsPanel);
-
-        detailsPanel.addHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                if (project != null) {
-                    ProjectActionEvent action = new ProjectActionEvent(project,
-                                                    ProjectAction.OPEN_DETAILS);
-                    fireEvent(action);
-                }
-            }
-        }, ClickEvent.getType());
-
-        getSourceButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                if (project != null) {
-                    ProjectActionEvent action = new ProjectActionEvent(project,
-                                                    ProjectAction.GET_SOURCE_CODE);
-                    fireEvent(action);
-                }
-            }
-        });
-
-        getBinaryButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                if (project != null) {
-                    ProjectActionEvent action = new ProjectActionEvent(project,
-                                                    ProjectAction.GET_BINARY);
-                    fireEvent(action);
-                }
-            }
-        });
     }
 
-    @Override
-    public void setProject(Project project) {
-        super.setProject(project);
-        projectTitle.setText(project.getName());
-        projectTitle.setTitle(project.getName());
-        Image platformImage = new Image(Utils.getPlatformIcon(project.getPlatform()));
-        platformImage.setTitle(Utils.getPlatformText(project.getPlatform()));
-        platformPanel.add(platformImage);
-        for (Feature feature : project.getFeatures()) {
+    public void setProjects(Bundle bundle, Project... projects) {
+        constructButtons(bundle != null);
+
+        Set<Platform> platforms = new HashSet<>();
+        Set<Feature> features = new HashSet<>();
+        for (Project project : projects) {
+            platforms.add(project.getPlatform());
+            for (Feature feature : project.getFeatures()) {
+                features.add(feature);
+            }
+        }
+        Iterator<Platform> platformIterator = platforms.iterator();
+        while (platformIterator.hasNext()) {
+            Platform platform = platformIterator.next();
+            Image platformImage = new Image(Utils.getPlatformIcon(platform));
+            platformImage.getElement().getStyle().setPaddingRight(4, Unit.PX);
+            platformImage.setTitle(Utils.getPlatformText(platform));
+            platformPanel.add(platformImage);
+        }
+        Iterator<Feature> featureIterator = features.iterator();
+        while (featureIterator.hasNext()) {
+            Feature feature = featureIterator.next();
             Image image = new Image(Utils.getFeatureIcon(feature));
             image.setTitle(Utils.getFeatureText(feature));
             image.getElement().getStyle().setPaddingRight(4, Unit.PX);
             featuresPanel.add(image);
         }
-        getBinaryButton.setVisible(project.getDestBinaryFile() != null &&
-                project.getDestBinaryFile().length() > 0);
+
+        project = projects[0];
+        filterItem = new FilterItem(new ArrayList<Platform>(platforms), new ArrayList<Feature>(features),
+                bundle == null ? project.getComplexity() : bundle.getComplexity());
+
+        if (bundle == null) {
+            if (project.getIconBase64() != null && project.getIconBase64().length() > 0) {
+                applicationImage.setUrl("data:image/png;base64," + project.getIconBase64());
+            } else {
+                applicationImage.setResource(Utils.getPlatformIconBig(project.getPlatform()));
+            }
+            complexityImage.setResource(Utils.getComplexityStarIcon(project.getComplexity()));
+            projectTitle.setText(project.getName());
+            projectTitle.setTitle(project.getName());
+
+            getBinaryButton.setVisible(project.getDestBinaryFile() != null &&
+                    project.getDestBinaryFile().length() > 0);
+        } else {
+
+            if (bundle.getIconBase64() != null && bundle.getIconBase64().length() > 0) {
+                applicationImage.setUrl("data:image/png;base64," + bundle.getIconBase64());
+            } else {
+                applicationImage.setResource(Utils.getPlatformIconBig(project.getPlatform()));
+            }
+            complexityImage.setResource(Utils.getComplexityStarIcon(bundle.getComplexity()));
+            projectTitle.setText(bundle.getName());
+            projectTitle.setTitle(bundle.getName());
+        }
+
     }
 
-    public Project getProject() {
-        return project;
+    private void constructButtons(boolean isBundle) {
+
+        if (!isBundle) {
+            buttonsPanel.setWidth("100%");
+            buttonsPanel.addStyleName(Utils.sandboxStyle.detailsInnerBottom());
+            getSourceButton = new Button(Utils.constants.getSourceCode());
+            getSourceButton.addStyleName(Utils.sandboxStyle.action());
+            getSourceButton.getElement().getStyle().setMarginRight(20, Unit.PX);
+            getBinaryButton = new Button(Utils.constants.getBinary());
+            getBinaryButton.addStyleName(Utils.sandboxStyle.action());
+            buttonsPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
+            buttonsPanel.add(getSourceButton);
+            buttonsPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+            buttonsPanel.add(getBinaryButton);
+            add(buttonsPanel);
+
+            detailsPanel.addHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    if (project != null) {
+                        ProjectActionEvent action = new ProjectActionEvent(project,
+                                ProjectAction.OPEN_DETAILS);
+                        fireEvent(action);
+                    }
+                }
+            }, ClickEvent.getType());
+
+            getSourceButton.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    if (project != null) {
+                        ProjectActionEvent action = new ProjectActionEvent(project,
+                                ProjectAction.GET_SOURCE_CODE);
+                        fireEvent(action);
+                    }
+                }
+            });
+
+            getBinaryButton.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    if (project != null) {
+                        ProjectActionEvent action = new ProjectActionEvent(project,
+                                ProjectAction.GET_BINARY);
+                        fireEvent(action);
+                    }
+                }
+            });
+        } else {
+            buttonsPanel.setHeight("54px");
+            add(buttonsPanel);
+
+            detailsPanel.addHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    if (project != null) {
+                        ProjectActionEvent action = new ProjectActionEvent(project,
+                                ProjectAction.OPEN_BUNDLE_DETAILS);
+                        fireEvent(action);
+                    }
+                }
+            }, ClickEvent.getType());
+        }
+
+    }
+
+//    public Project getProject() {
+//        return project;
+//    }
+
+    public FilterItem getFilterItem() {
+        return filterItem;
     }
 
     @Override
     public HandlerRegistration addProjectActionHandler(
             ProjectActionEventHandler handler) {
         return this.addHandler(handler, ProjectActionEvent.getType());
+    }
+
+    public void show(boolean animate) {
+        projectWidgetAnimation.show(animate);
+    }
+
+    public void hide(boolean animate) {
+        projectWidgetAnimation.hide(animate);
+    }
+
+    static class ProjectWidgetAnimation extends Animation {
+        
+        private static final int ANIMATION_DURATION = 300;
+
+        private Widget widget;
+
+        private double opacityIncrement;
+        private double targetOpacity;
+        private double baseOpacity;
+
+        private double marginIncrement;
+        private double targetMargin;
+        private double baseMargin;
+
+        private int width;
+        private double rightMargin;
+
+        private boolean show;
+
+        public ProjectWidgetAnimation(Widget widget, int width,
+                double rightMargin) {
+            this.widget = widget;
+            this.show = widget.isVisible();
+            this.width = width;
+            this.rightMargin = rightMargin;
+        }
+
+        @Override
+        protected void onUpdate(double progress) {
+            widget.getElement().getStyle()
+                    .setOpacity(baseOpacity + progress * opacityIncrement);
+            widget.getElement()
+                    .getStyle()
+                    .setMarginRight(baseMargin + progress * marginIncrement,
+                            Unit.PX);
+        }
+
+        @Override
+        protected void onComplete() {
+            super.onComplete();
+            widget.getElement().getStyle().setOpacity(targetOpacity);
+            widget.getElement().getStyle()
+                    .setMarginRight(targetMargin, Unit.PX);
+            if (!show) {
+                widget.setVisible(false);
+            }
+        }
+
+        public void show(boolean animate) {
+            if (!show) {
+                show = true;
+                widget.setVisible(true);
+                animate(0.0, 1.0, -width, rightMargin, animate ? ANIMATION_DURATION : 0);
+            }
+        }
+
+        public void hide(boolean animate) {
+            if (show) {
+                show = false;
+                animate(1.0, 0.0, rightMargin, -width, animate ? ANIMATION_DURATION : 0);
+            }
+        }
+
+        private void animate(double baseOpacity, double targetOpacity, double baseMargin,
+                double targetMargin, int duration) {
+            this.baseOpacity = baseOpacity;
+            this.targetOpacity = targetOpacity;
+            this.baseMargin = baseMargin;
+            this.targetMargin = targetMargin;
+            widget.getElement().getStyle().setOpacity(this.baseOpacity);
+            widget.getElement().getStyle()
+                    .setMarginRight(this.baseMargin, Unit.PX);
+            this.opacityIncrement = this.targetOpacity - this.baseOpacity;
+            this.marginIncrement = this.targetMargin - this.baseMargin;
+            if (duration > 0) {
+                run(duration);
+            } else {
+                onComplete();
+            }
+        }
+
     }
 
 }

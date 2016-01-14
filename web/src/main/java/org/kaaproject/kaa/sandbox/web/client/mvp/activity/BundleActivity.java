@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 CyberVision, Inc.
+ * Copyright 2014-2016 CyberVision, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,9 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
+import org.kaaproject.kaa.examples.common.projects.Bundle;
+import org.kaaproject.kaa.examples.common.projects.Feature;
+import org.kaaproject.kaa.examples.common.projects.Platform;
 import org.kaaproject.kaa.examples.common.projects.Project;
 import org.kaaproject.kaa.sandbox.web.client.Sandbox;
 import org.kaaproject.kaa.sandbox.web.client.mvp.ClientFactory;
@@ -34,16 +37,18 @@ import org.kaaproject.kaa.sandbox.web.client.mvp.place.ProjectPlace;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.ProjectBundleView;
 import org.kaaproject.kaa.sandbox.web.client.util.Analytics;
 import org.kaaproject.kaa.sandbox.web.client.util.Utils;
+import org.kaaproject.kaa.sandbox.web.shared.dto.BundleData;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class BundleActivity extends AbstractActivity {
 
     private final ClientFactory clientFactory;
     private final BundlePlace place;
     private ProjectBundleView view;
-    private Project project;
 
     private List<HandlerRegistration> registrations = new ArrayList<HandlerRegistration>();
 
@@ -97,7 +102,8 @@ public class BundleActivity extends AbstractActivity {
     }
 
     private void fillView() {
-        Sandbox.getSandboxService().getDemoProjectsByBundleName(place.getBundleName(), new AsyncCallback<List<Project>>() {
+
+        Sandbox.getSandboxService().getProjectsBundleDataByBundleId(place.getBundleName(), new AsyncCallback<BundleData>() {
             @Override
             public void onFailure(Throwable throwable) {
                 String message = Utils.getErrorMessage(throwable);
@@ -106,22 +112,32 @@ public class BundleActivity extends AbstractActivity {
             }
 
             @Override
-            public void onSuccess(List<Project> projects) {
-                project = projects.get(0);
+            public void onSuccess(BundleData bundleData) {
+                Bundle bundle = bundleData.getBundle();
+                List<Project> projects = bundleData.getBundleProjects();
 
-                if (project.getIconBase64() != null && project.getIconBase64().length() > 0) {
-                    view.getApplicationImage().setUrl("data:image/png;base64,"+project.getIconBase64());
+                if (bundle.getIconBase64() != null && bundle.getIconBase64().length() > 0) {
+                    view.getApplicationImage().setUrl("data:image/png;base64," + bundle.getIconBase64());
                 } else {
-                    view.getApplicationImage().setResource(Utils.getPlatformIconBig(project.getPlatform()));
+                    view.getApplicationImage().setResource(Utils.getPlatformIconBig(projects.get(0).getPlatform()));
                 }
-                view.setProjectTitle(project.getName());
-                view.setPlatform(project.getPlatform());
-                view.setFeatures(project.getFeatures());
-                view.setComplexity(project.getComplexity());
-                view.getDescription().setText(project.getDescription());
-                view.getDetails().setHTML(project.getDetails());
-                Analytics.switchProjectScreen(project);
+                view.getDescription().setText(bundle.getDescription());
+                view.setProjectTitle(bundle.getName());
+                view.getDetails().setHTML(bundle.getDetails());
 
+                Analytics.switchBundleScreen(bundle);
+
+                Set<Platform> platforms = new HashSet<>();
+                Set<Feature> features = new HashSet<>();
+                for (Project project : projects) {
+                    platforms.add(project.getPlatform());
+                    for (Feature feature : project.getFeatures()) {
+                        features.add(feature);
+                    }
+                }
+                view.setPlatforms(new ArrayList<Platform>(platforms));
+                view.setFeatures(new ArrayList<Feature>(features));
+                view.setComplexity(projects.get(0).getComplexity());
                 view.setProjects(projects);
             }
         });

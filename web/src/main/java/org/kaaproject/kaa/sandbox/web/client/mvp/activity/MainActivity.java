@@ -46,6 +46,7 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
+import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectsData;
 
 public class MainActivity extends AbstractActivity {
 
@@ -94,7 +95,7 @@ public class MainActivity extends AbstractActivity {
                     clientFactory.getPlaceController().goTo(projectPlace);
                     break;
                     case OPEN_BUNDLE_DETAILS:
-                    clientFactory.getPlaceController().goTo(new BundlePlace(event.getProject().getBundle()));
+                    clientFactory.getPlaceController().goTo(new BundlePlace(event.getProject().getBundleId()));
                     break;
                 default:
                     break;
@@ -116,17 +117,31 @@ public class MainActivity extends AbstractActivity {
 
     private void fillView() {
         
-        Sandbox.getSandboxService().getDemoProjects(new BusyAsyncCallback<List<Project>>() {
+//        Sandbox.getSandboxService().getDemoProjects(new BusyAsyncCallback<List<Project>>() {
+//            @Override
+//            public void onFailureImpl(Throwable caught) {
+//            	String message = Utils.getErrorMessage(caught);
+//                view.setErrorMessage(message);
+//                Analytics.sendException(message);
+//            }
+//
+//            @Override
+//            public void onSuccessImpl(List<Project> result) {
+//                view.setProjects(result);
+//            }
+//        });
+
+        Sandbox.getSandboxService().getDemoProjectsData(new AsyncCallback<ProjectsData>() {
             @Override
-            public void onFailureImpl(Throwable caught) {
-            	String message = Utils.getErrorMessage(caught);
+            public void onFailure(Throwable throwable) {
+                String message = Utils.getErrorMessage(throwable);
                 view.setErrorMessage(message);
                 Analytics.sendException(message);
             }
 
             @Override
-            public void onSuccessImpl(List<Project> result) {
-                view.setProjects(result);
+            public void onSuccess(ProjectsData projectsData) {
+                view.setProjects(projectsData);
             }
         });
     }

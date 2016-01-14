@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 CyberVision, Inc.
+ * Copyright 2014-2016 CyberVision, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,7 @@ import org.atmosphere.interceptor.AtmosphereResourceLifecycleInterceptor;
 import org.atmosphere.interceptor.IdleResourceInterceptor;
 import org.atmosphere.interceptor.SuspendTrackerInterceptor;
 import org.kaaproject.kaa.common.dto.file.FileData;
+import org.kaaproject.kaa.examples.common.projects.Bundle;
 import org.kaaproject.kaa.examples.common.projects.Platform;
 import org.kaaproject.kaa.examples.common.projects.Project;
 import org.kaaproject.kaa.examples.common.projects.ProjectsConfig;
@@ -59,8 +60,10 @@ import org.kaaproject.kaa.sandbox.web.services.cache.CacheService;
 import org.kaaproject.kaa.sandbox.web.services.util.Utils;
 import org.kaaproject.kaa.sandbox.web.shared.dto.AnalyticsInfo;
 import org.kaaproject.kaa.sandbox.web.shared.dto.BuildOutputData;
+import org.kaaproject.kaa.sandbox.web.shared.dto.BundleData;
 import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectDataKey;
 import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectDataType;
+import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectsData;
 import org.kaaproject.kaa.sandbox.web.shared.services.SandboxService;
 import org.kaaproject.kaa.sandbox.web.shared.services.SandboxServiceException;
 import org.kaaproject.kaa.server.common.Environment;
@@ -150,6 +153,7 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
     private String analyticsTrackingId;
 
     private Map<String, Project> projectsMap = new HashMap<>();
+    private Map<String, Bundle> bundlesMap = new HashMap<>();
 
     private static String[] sandboxEnv;
 
@@ -173,12 +177,16 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
             Unmarshaller unmarshaller = jc.createUnmarshaller();
 
 //            String demoProkectsXmlFile = Environment.getServerHomeDir() + "/" + DEMO_PROJECTS_FOLDER + "/" + DEMO_PROJECTS_XML_FILE;
-            String demoProkectsXmlFile = "/usr/lib/kaa-sandbox/demo_projects/demo_projects.xml";
+            String demoProkectsXmlFile = "/home/krp/demo_projects_bundles.xml";
 
             ProjectsConfig projectsConfig = (ProjectsConfig) unmarshaller.unmarshal(new File(demoProkectsXmlFile));
             for (Project project : projectsConfig.getProjects()) {
                 projectsMap.put(project.getId(), project);
                 LOG.info("Demo project: id [{}] name [{}]", project.getId(), project.getName());
+            }
+            for (Bundle bundle : projectsConfig.getBundles()) {
+                bundlesMap.put(bundle.getId(), bundle);
+                LOG.info("Demo projects bundle: id [{}] name [{}]", bundle.getId(), bundle.getName());
             }
 
             if (sandboxEnv == null) {
@@ -378,12 +386,20 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
     }
 
     @Override
-    public List<Project> getDemoProjectsByBundleName(String bundleName) throws SandboxServiceException {
-        List<Project> all = getDemoProjects();
+    public ProjectsData getDemoProjectsData() throws SandboxServiceException {
+        return new ProjectsData(projectsMap, bundlesMap);
+    }
+
+    @Override
+    public BundleData getProjectsBundleDataByBundleId(String bundleId) throws SandboxServiceException {
+        return new BundleData(bundlesMap.get(bundleId), getDemoProjectsByBundleId(bundleId));
+    }
+
+    public List<Project> getDemoProjectsByBundleId(String bundleId) throws SandboxServiceException {
         List<Project> bundleProjects = new ArrayList<>();
-        for (Project project : all) {
-            String bundle = project.getBundle();
-            if (bundle != null && !bundle.isEmpty() && bundle.equals(bundleName)) {
+        for (Project project : projectsMap.values()) {
+            String bundle = project.getBundleId();
+            if (bundle != null && !bundle.isEmpty() && bundle.equals(bundleId)) {
                 bundleProjects.add(project);
             }
         }

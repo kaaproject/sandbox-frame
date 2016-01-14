@@ -29,7 +29,7 @@ import java.util.List;
 
 public interface ProjectBundleView extends BaseView {
 
-    void setPlatform(Platform platform);
+    void setPlatforms(List<Platform>platform);
 
     void setFeatures(List<Feature> features);
 

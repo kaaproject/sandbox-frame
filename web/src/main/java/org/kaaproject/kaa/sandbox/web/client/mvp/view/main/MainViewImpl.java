@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 CyberVision, Inc.
+ * Copyright 2014-2016 CyberVision, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,6 @@
 
 package org.kaaproject.kaa.sandbox.web.client.mvp.view.main;
 
-import java.util.List;
-
-import org.kaaproject.kaa.examples.common.projects.Project;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.HasProjectActionEventHandlers;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.ProjectFilter;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.MainView;
@@ -27,6 +24,7 @@ import org.kaaproject.kaa.sandbox.web.client.mvp.view.widget.DemoProjectsWidget;
 
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectsData;
 
 public class MainViewImpl extends BaseViewImpl implements MainView {
 
@@ -62,7 +60,7 @@ public class MainViewImpl extends BaseViewImpl implements MainView {
     }
 
     @Override
-    public void setProjects(List<Project> projects) {
+    public void setProjects(ProjectsData projects) {
         demoProjectsView.setProjects(projects);
     }
 

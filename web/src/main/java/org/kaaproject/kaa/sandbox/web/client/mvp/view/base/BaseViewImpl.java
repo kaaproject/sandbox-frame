@@ -58,7 +58,7 @@ public abstract class BaseViewImpl extends Composite implements BaseView {
         errorPanel = new AlertPanel(Type.ERROR);
         sandboxStyle = Utils.sandboxStyle;
         avroUiStyle = Utils.avroUiStyle;
-        initWidget(uiBinder.createAndBindUi(this));
+        initWidget(createAndBindUi());
         setTitle(getViewTitle());
         if (useDetailsPanel) {
             detailsPanel = new VerticalPanel();
@@ -71,6 +71,10 @@ public abstract class BaseViewImpl extends Composite implements BaseView {
         }
         initCenterPanel();        
         clearError();
+    }
+
+    protected Widget createAndBindUi() {
+        return uiBinder.createAndBindUi(this);
     }
 
     @Override

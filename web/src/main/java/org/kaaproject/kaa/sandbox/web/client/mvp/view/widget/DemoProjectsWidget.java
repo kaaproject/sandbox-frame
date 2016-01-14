@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 CyberVision, Inc.
+ * Copyright 2014-2016 CyberVision, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,9 @@
 package org.kaaproject.kaa.sandbox.web.client.mvp.view.widget;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import org.kaaproject.kaa.examples.common.projects.Bundle;
 import org.kaaproject.kaa.examples.common.projects.Project;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.HasProjectActionEventHandlers;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.ProjectActionEvent;
@@ -29,17 +28,16 @@ import org.kaaproject.kaa.sandbox.web.client.util.Utils;
 
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.FlowPanel;
+import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectsData;
 
 public class DemoProjectsWidget extends FlowPanel implements HasProjectActionEventHandlers, 
             ProjectActionEventHandler {
     
     private List<HandlerRegistration> registrations = new ArrayList<>();
     
-    private List<AbstractDemoProjectWidget> projectWidgets;
+    private List<DemoProjectWidget> projectWidgets;
     
     private ProjectFilter projectFilter;
-
-    private Map<String, AbstractDemoProjectWidget> bundles;
     
     public DemoProjectsWidget() {
         super();
@@ -56,7 +54,7 @@ public class DemoProjectsWidget extends FlowPanel implements HasProjectActionEve
         clear();
     }
     
-    public void setProjects(List<Project> projects) {
+    public void setProjects(ProjectsData projects) {
         loadProjects(projects);
     }
     
@@ -65,36 +63,53 @@ public class DemoProjectsWidget extends FlowPanel implements HasProjectActionEve
         updateProjects(true);
     }
     
-    void loadProjects(List<Project> projects) {
+    void loadProjects(ProjectsData projects) {
         reset();
         projectWidgets = new ArrayList<>();
-        bundles = new HashMap<>();
-        for (Project project : projects) {
-            AbstractDemoProjectWidget demoProjectWidget = null;
-            String bundleName = project.getBundle();
-            if (bundleName != null && !bundleName.isEmpty()) {
-                if (!bundles.containsKey(bundleName)) {
-                    demoProjectWidget = new ProjectsBundleWidget();
-                    demoProjectWidget.setProject(project);
-                    bundles.put(bundleName, demoProjectWidget);
-                }
-            } else {
-                demoProjectWidget = new DemoProjectWidget();
-            }
-            if (demoProjectWidget != null) {
-                demoProjectWidget.setProject(project);
+        for (Project project : projects.getProjectsMap().values()) {
+            if (project.getBundleId() == null || project.getBundleId().isEmpty()) {
+                DemoProjectWidget demoProjectWidget = new DemoProjectWidget();
+                demoProjectWidget.setProjects(null, project);
+                add(demoProjectWidget);
                 registrations.add(demoProjectWidget.addProjectActionHandler(this));
                 setVisible(true);
-                add(demoProjectWidget);
                 projectWidgets.add(demoProjectWidget);
             }
+        }
+        for (Bundle bundle : new ArrayList<>(projects.getBundlesMap().values())) {
+            ArrayList<Project> bundleProjects = new ArrayList<>();
+            for (String id : bundle.getProjectsIds()) {
+                bundleProjects.add(projects.getProjectsMap().get(id));
+            }
+            DemoProjectWidget demoProjectWidget = new DemoProjectWidget();
+            Project[] bProjects = new Project[bundleProjects.size()];
+            bundleProjects.toArray(bProjects);
+            demoProjectWidget.setProjects(bundle, bProjects);
+            add(demoProjectWidget);
+            registrations.add(demoProjectWidget.addProjectActionHandler(this));
+            setVisible(true);
+            projectWidgets.add(demoProjectWidget);
         }
         updateProjects(true);
     }
 
+//    void loadProjects(List<Project> projects) {
+//        reset();
+//        projectWidgets = new ArrayList<>();
+//        for (Project project : projects) {
+//            DemoProjectWidget demoProjectWidget = new DemoProjectWidget();
+//            demoProjectWidget.setProject(project);
+//            add(demoProjectWidget);
+//            registrations.add(demoProjectWidget.addProjectActionHandler(this));
+//            setVisible(true);
+//            projectWidgets.add(demoProjectWidget);
+//        }
+//        updateProjects(true);
+//    }
+
     void updateProjects(boolean animate) {
-        for (AbstractDemoProjectWidget projectWidget : projectWidgets) {
-            boolean show = projectFilter.filter(projectWidget.getProject());
+        for (DemoProjectWidget projectWidget : projectWidgets) {
+            boolean show = projectFilter.filter(projectWidget.getFilterItem());
             if (show) {
                 projectWidget.show(animate);
             } else {
