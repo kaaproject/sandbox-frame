@@ -63,6 +63,10 @@ public interface SandboxResources extends ClientBundle {
     @ImageOptions(width = 114, height = 128)
     @Source("images/cpp.png")
     ImageResource cpp();
+
+    @ImageOptions(width = 140, height = 140)
+    @Source("images/objc.png")
+    ImageResource objc();
     
     @ImageOptions(width = 32, height = 28)
     @Source("images/config_feature.png")
@@ -132,4 +136,7 @@ public interface SandboxResources extends ClientBundle {
     @Source("images/complexity_advanced_s.png")
     ImageResource advancedStar();
 
+    @ImageOptions(width = 44, height = 44)
+    @Source("images/objc_platform.png")
+    ImageResource objcPlatform();
 }

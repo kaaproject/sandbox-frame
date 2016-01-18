@@ -130,6 +130,8 @@ public class CacheServiceImpl implements CacheService {
                 return SdkPlatform.CPP;
             case JAVA:
                 return SdkPlatform.JAVA;
+            case OBJC:
+                return SdkPlatform.OBJC;
             default:
                 throw new IllegalArgumentException("Unsupported platform " + targetPlatform);
         }
