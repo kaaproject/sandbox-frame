@@ -40,6 +40,42 @@
     font-size: 23px;
 }
 
+.carouselLeftButton, .carouselLeftButton:hover {
+    border: 1px solid #CCCCCC;
+    background: #EEEEEE;
+    color: #444444;
+    padding: 2px 10px;
+}
+
+.carouselLeftButton:hover {
+    background: #CCCCCC;
+    border-color: #AAAAAA;
+}
+
+.carouselLeftButton:after {
+    content: "<";
+    font-weight: bold;
+    font-size: 23px;
+}
+
+.carouselRightButton, .carouselRightButton:hover {
+    border: 1px solid #CCCCCC;
+    background: #EEEEEE;
+    color: #444444;
+    padding: 2px 10px;
+}
+
+.carouselRightButton:hover {
+    background: #CCCCCC;
+    border-color: #AAAAAA;
+}
+
+.carouselRightButton:after {
+    content: ">";
+    font-weight: bold;
+    font-size: 23px;
+}
+
 .appHeaderPanel {
     box-shadow: inset 8px 0px 8px -8px rgba(0,0,0,0.5);
     white-space: nowrap;
