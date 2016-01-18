@@ -56,8 +56,7 @@ public class ProjectFilter {
         boolean hasPlatform = !usePlatformFilter;
         boolean hasComplexity= !useComplexityFilter;
         if (useFeatureFilter) {
-            List<Feature> features = project.getFeatures();
-            for (Feature feature : features) {
+            for (Feature feature : project.getFeatures()) {
                 if (enabledFeatures.contains(feature)) {
                     hasFeature = true;
                     break;
@@ -65,7 +64,12 @@ public class ProjectFilter {
             }
         }
         if (usePlatformFilter) {
-            hasPlatform = enabledPlatforms.contains(project.getPlatform());
+            for (Platform platform : project.getPlatforms()) {
+                if (enabledPlatforms.contains(platform)) {
+                    hasPlatform = true;
+                    break;
+                }
+            }
         }
         if (useComplexityFilter) {
         	hasComplexity = enabledComplexities.contains(project.getComplexity());

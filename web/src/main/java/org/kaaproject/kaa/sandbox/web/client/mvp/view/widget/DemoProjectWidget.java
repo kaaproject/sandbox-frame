@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 CyberVision, Inc.
+ * Copyright 2014-2016 CyberVision, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.kaaproject.kaa.sandbox.web.client.mvp.view.widget;
 
 import org.kaaproject.kaa.examples.common.projects.Feature;
+import org.kaaproject.kaa.examples.common.projects.Platform;
 import org.kaaproject.kaa.examples.common.projects.Project;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.HasProjectActionEventHandlers;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.ProjectAction;
@@ -112,6 +113,7 @@ public class DemoProjectWidget extends VerticalPanel implements
         iconsPanel.addStyleName(Utils.sandboxStyle.detailsInnerCenter());
         iconsPanel.getElement().getStyle().setPaddingTop(10, Unit.PX);
         platformPanel = new HorizontalPanel();
+        platformPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
         iconsPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
         iconsPanel.add(platformPanel);
         
@@ -177,14 +179,17 @@ public class DemoProjectWidget extends VerticalPanel implements
                     + project.getIconBase64());
         } else {
             applicationImage.setResource(Utils.getPlatformIconBig(project
-                    .getPlatform()));
+                    .getPlatforms().get(0)));
         }
         complexityImage.setResource(Utils.getComplexityStarIcon(project.getComplexity()));
         projectTitle.setText(project.getName());
         projectTitle.setTitle(project.getName());
-        Image platformImage = new Image(Utils.getPlatformIcon(project.getPlatform()));
-        platformImage.setTitle(Utils.getPlatformText(project.getPlatform()));
-        platformPanel.add(platformImage);
+        for (Platform platform : project.getPlatforms()) {
+            Image image = new Image(Utils.getPlatformIcon(platform));
+            image.setTitle(Utils.getPlatformText(platform));
+            image.getElement().getStyle().setPaddingRight(4, Unit.PX);
+            platformPanel.add(image);
+        }
         for (Feature feature : project.getFeatures()) {
             Image image = new Image(Utils.getFeatureIcon(feature));
             image.setTitle(Utils.getFeatureText(feature));

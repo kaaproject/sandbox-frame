@@ -400,7 +400,16 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
                 String sdkProfileId = project.getSdkProfileId();
                 outStream.println("SDK profile id of project: " + sdkProfileId);
                 outStream.println("Getting SDK for requested project...");
-                FileData sdkFileData = cacheService.getSdk(sdkProfileId, project.getPlatform());
+                Platform platform = project.getPlatforms().get(0);
+                for (Platform targetPlatform : project.getPlatforms()) {
+                    if (targetPlatform == Platform.ESP_8266 || targetPlatform == Platform.CC_32_XX){
+                        platform = Platform.C;
+                    }
+                    if (targetPlatform == Platform.ARTIK_5 || targetPlatform == Platform.CC_32_XX) {
+                        platform = Platform.CPP;
+                    }
+                }
+                FileData sdkFileData = cacheService.getSdk(sdkProfileId, platform);
                 if (sdkFileData != null) {
                     outStream.println("Successfuly got SDK.");
                     File rootDir = createTempDirectory("demo-project");
@@ -455,9 +464,9 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
 
                             binaryFileData.setFileName(binaryFileName);
                             binaryFileData.setFileData(binaryFileBytes);
-                            if (project.getPlatform() == Platform.ANDROID) {
+                            if (project.getPlatforms().contains(Platform.ANDROID)) {
                                 binaryFileData.setContentType("application/vnd.android.package-archive");
-                            } else if (project.getPlatform() == Platform.JAVA) {
+                            } else if (project.getPlatforms().contains(Platform.JAVA)) {
                                 binaryFileData.setContentType("application/java-archive");
                             }
                             cacheService.putProjectFile(dataKey, binaryFileData);

@@ -136,6 +136,12 @@ public class Utils {
                 return constants.cpp();
             case JAVA:
                 return constants.java();
+            case ARTIK_5:
+                return constants.artik5();
+            case ESP_8266:
+                return constants.esp8266();
+            case CC_32_XX:
+                return constants.cc32xx();
         }
         return null;
     }
@@ -150,6 +156,12 @@ public class Utils {
                 return resources.cppPlatform();
             case JAVA:
                 return resources.javaPlatform();
+            case ARTIK_5:
+                return resources.artik5Platform();
+            case ESP_8266:
+                return resources.esp8266Platform();
+            case CC_32_XX:
+                return resources.cc32xxPlatform();
         }
         return null;
     }
@@ -177,6 +189,11 @@ public class Utils {
                 return resources.cpp();
             case JAVA:
                 return resources.java();
+            case ARTIK_5:
+                return resources.cpp();
+            case ESP_8266:
+            case CC_32_XX:
+                return resources.c();
         }
         return null;
     }

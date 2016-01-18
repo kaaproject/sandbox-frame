@@ -108,6 +108,18 @@ public interface SandboxResources extends ClientBundle {
     @Source("images/cpp_platform.png")
     ImageResource cppPlatform();
     
+    @ImageOptions(width = 26, height = 28)
+    @Source("images/artik5.png")
+    ImageResource artik5Platform();
+
+    @ImageOptions(width = 29, height = 28)
+    @Source("images/esp8266.png")
+    ImageResource esp8266Platform();
+
+   @ImageOptions(width = 29, height = 21)
+    @Source("images/intel_edison.png")
+    ImageResource cc32xxPlatform();
+
     @ImageOptions(width = 30, height = 26)
     @Source("images/complexity_basic.png")
     ImageResource basic();

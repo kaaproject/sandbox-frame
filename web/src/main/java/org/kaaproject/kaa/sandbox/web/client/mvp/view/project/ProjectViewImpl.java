@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 CyberVision, Inc.
+ * Copyright 2014-2016 CyberVision, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -217,18 +217,24 @@ public class ProjectViewImpl extends BaseViewImpl implements ProjectView {
     }
 
     @Override
-    public void setPlatform(Platform platform) {
-        Image image = new Image(Utils.getPlatformIcon(platform));
-        image.setTitle(Utils.getPlatformText(platform));
-        image.getElement().getStyle().setVerticalAlign(VerticalAlign.MIDDLE);
-        Label label = new Label(Utils.getPlatformText(platform));
-        targetPlatformPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-        targetPlatformPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-        targetPlatformPanel.add(image);
-        targetPlatformPanel.setCellWidth(image, "32px");
-        targetPlatformPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
-        targetPlatformPanel.add(label);
-        label.getElement().getStyle().setPaddingLeft(8, Unit.PX);
+    public void setPlatforms(List<Platform> platforms) {
+        for (int i=0;i<platforms.size();i++) {
+            Platform platform = platforms.get(i);
+            Image image = new Image(Utils.getPlatformIcon(platform));
+            image.setTitle(Utils.getPlatformText(platform));
+            image.getElement().getStyle().setVerticalAlign(VerticalAlign.MIDDLE);
+            Label label = new Label(Utils.getPlatformText(platform));
+            targetPlatformPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+            targetPlatformPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+            targetPlatformPanel.add(image);
+            targetPlatformPanel.setCellWidth(image, "32px");
+            targetPlatformPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
+            targetPlatformPanel.add(label);
+            if (i < platforms.size()-1) {
+                label.getElement().getStyle().setPaddingRight(10, Unit.PX);
+            }
+            label.getElement().getStyle().setPaddingRight(8, Unit.PX);
+        }
     }
 
     @Override
