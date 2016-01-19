@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 CyberVision, Inc.
+ * Copyright 2014-2016 CyberVision, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ package org.kaaproject.kaa.sandbox.web.services;
 
 import org.kaaproject.kaa.common.dto.admin.SdkPlatform;
 import org.kaaproject.kaa.common.dto.file.FileData;
-import org.kaaproject.kaa.examples.common.projects.Platform;
 import org.kaaproject.kaa.sandbox.web.services.cache.CacheService;
 import org.kaaproject.kaa.sandbox.web.services.rest.AdminClientProvider;
 import org.kaaproject.kaa.sandbox.web.services.util.Utils;
@@ -62,7 +61,7 @@ public class CacheServiceImpl implements CacheService {
 
     @Override
     @Cacheable(value = SDK_CACHE, key = "#p0.concat('-').concat(#p1.toString())")
-    public FileData getSdk(String sdkProfileId, Platform targetPlatform) throws SandboxServiceException {
+    public FileData getSdk(String sdkProfileId, org.kaaproject.kaa.examples.common.projects.SdkPlatform targetPlatform) throws SandboxServiceException {
         AdminClient client = clientProvider.getClient();
         client.login(tenantDeveloperUser, tenantDeveloperPassword);
         FileData fileData;
@@ -120,7 +119,7 @@ public class CacheServiceImpl implements CacheService {
         LOG.info("All caches have been completely flushed.");
     }
 
-    private static SdkPlatform toSdkPlatform(Platform targetPlatform) {
+    private static SdkPlatform toSdkPlatform(org.kaaproject.kaa.examples.common.projects.SdkPlatform targetPlatform) {
         switch (targetPlatform) {
             case ANDROID:
                 return SdkPlatform.ANDROID;

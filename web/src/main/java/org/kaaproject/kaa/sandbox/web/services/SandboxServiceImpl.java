@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 CyberVision, Inc.
+ * Copyright 2014-2016 CyberVision, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,9 +51,9 @@ import org.atmosphere.interceptor.AtmosphereResourceLifecycleInterceptor;
 import org.atmosphere.interceptor.IdleResourceInterceptor;
 import org.atmosphere.interceptor.SuspendTrackerInterceptor;
 import org.kaaproject.kaa.common.dto.file.FileData;
-import org.kaaproject.kaa.examples.common.projects.Platform;
 import org.kaaproject.kaa.examples.common.projects.Project;
 import org.kaaproject.kaa.examples.common.projects.ProjectsConfig;
+import org.kaaproject.kaa.examples.common.projects.SdkPlatform;
 import org.kaaproject.kaa.sandbox.web.client.util.LogLevel;
 import org.kaaproject.kaa.sandbox.web.services.cache.CacheService;
 import org.kaaproject.kaa.sandbox.web.services.util.Utils;
@@ -400,16 +400,7 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
                 String sdkProfileId = project.getSdkProfileId();
                 outStream.println("SDK profile id of project: " + sdkProfileId);
                 outStream.println("Getting SDK for requested project...");
-                Platform platform = project.getPlatforms().get(0);
-                for (Platform targetPlatform : project.getPlatforms()) {
-                    if (targetPlatform == Platform.ESP_8266 || targetPlatform == Platform.CC_32_XX){
-                        platform = Platform.C;
-                    }
-                    if (targetPlatform == Platform.ARTIK_5 || targetPlatform == Platform.CC_32_XX) {
-                        platform = Platform.CPP;
-                    }
-                }
-                FileData sdkFileData = cacheService.getSdk(sdkProfileId, platform);
+                FileData sdkFileData = cacheService.getSdk(sdkProfileId, project.getSdkPlatform());
                 if (sdkFileData != null) {
                     outStream.println("Successfuly got SDK.");
                     File rootDir = createTempDirectory("demo-project");
@@ -464,9 +455,9 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
 
                             binaryFileData.setFileName(binaryFileName);
                             binaryFileData.setFileData(binaryFileBytes);
-                            if (project.getPlatforms().contains(Platform.ANDROID)) {
+                            if (project.getSdkPlatform() == SdkPlatform.ANDROID) {
                                 binaryFileData.setContentType("application/vnd.android.package-archive");
-                            } else if (project.getPlatforms().contains(Platform.JAVA)) {
+                            } else if (project.getSdkPlatform() == SdkPlatform.JAVA) {
                                 binaryFileData.setContentType("application/java-archive");
                             }
                             cacheService.putProjectFile(dataKey, binaryFileData);
