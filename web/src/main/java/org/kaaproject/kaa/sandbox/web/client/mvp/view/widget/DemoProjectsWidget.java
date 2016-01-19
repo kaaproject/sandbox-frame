@@ -71,7 +71,7 @@ public class DemoProjectsWidget extends FlowPanel implements HasProjectActionEve
         Map<String, List<Project>> bundleProjectsMap = new HashMap<>();
         List<Project> projectsList = new ArrayList<>();
         projectsList.addAll(projects.getProjectsMap().values());
-        for (Project project : projectsList) {
+        for (final Project project : projectsList) {
             String bundleId = project.getBundleId();
             if (bundleId == null || bundleId.isEmpty()) {
                 DemoProjectWidget demoProjectWidget = new DemoProjectWidget();
@@ -84,9 +84,7 @@ public class DemoProjectsWidget extends FlowPanel implements HasProjectActionEve
                 if (bundleProjectsMap.containsKey(bundleId)) {
                     bundleProjectsMap.get(bundleId).add(project);
                 } else {
-                    List<Project> projectsList1 = new ArrayList<>();
-                    projectsList1.add(project);
-                    bundleProjectsMap.put(bundleId, projectsList1);
+                    bundleProjectsMap.put(bundleId, new ArrayList<Project>(){{add(project);}});
                 }
             }
         }

@@ -41,6 +41,7 @@ import org.kaaproject.kaa.sandbox.web.client.util.Utils;
 import org.kaaproject.kaa.sandbox.web.shared.dto.BundleData;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -130,16 +131,17 @@ public class BundleActivity extends AbstractActivity {
 
                 Set<Platform> platforms = new HashSet<>();
                 Set<Feature> features = new HashSet<>();
-//                Set<Complexity> complexities = new HashSet<Complexity>();
+                Set<Complexity> bundleComplexities = new HashSet<>();
                 for (Project project : projects) {
                     platforms.add(project.getPlatform());
                     for (Feature feature : project.getFeatures()) {
                         features.add(feature);
                     }
+                    bundleComplexities.add(project.getComplexity());
                 }
-                view.setPlatforms(new ArrayList<Platform>(platforms));
-                view.setFeatures(new ArrayList<Feature>(features));
-                view.setComplexity(projects.get(0).getComplexity());
+                view.setPlatforms(new ArrayList<>(platforms));
+                view.setFeatures(new ArrayList<>(features));
+                view.setComplexity(Collections.max(bundleComplexities));
                 view.setProjects(projects);
             }
         });

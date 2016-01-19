@@ -17,6 +17,7 @@
 package org.kaaproject.kaa.sandbox.web.client.mvp.view.widget;
 
 import org.kaaproject.kaa.examples.common.projects.Bundle;
+import org.kaaproject.kaa.examples.common.projects.Complexity;
 import org.kaaproject.kaa.examples.common.projects.Feature;
 import org.kaaproject.kaa.examples.common.projects.Platform;
 import org.kaaproject.kaa.examples.common.projects.Project;
@@ -45,6 +46,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -167,32 +169,37 @@ public class DemoProjectWidget extends VerticalPanel implements
         }
 
         project = projects[0];
-        filterItem = new FilterItem(new ArrayList<Platform>(platforms), new ArrayList<Feature>(features),
-                project.getComplexity());
 
+        Complexity complexity = null;
         if (bundle == null) {
             if (project.getIconBase64() != null && project.getIconBase64().length() > 0) {
                 applicationImage.setUrl("data:image/png;base64," + project.getIconBase64());
             } else {
                 applicationImage.setResource(Utils.getPlatformIconBig(project.getPlatform()));
             }
-            complexityImage.setResource(Utils.getComplexityStarIcon(project.getComplexity()));
+            complexity = project.getComplexity();
+            complexityImage.setResource(Utils.getComplexityStarIcon(complexity));
             projectTitle.setText(project.getName());
             projectTitle.setTitle(project.getName());
 
             getBinaryButton.setVisible(project.getDestBinaryFile() != null &&
                     project.getDestBinaryFile().length() > 0);
         } else {
-
+            Set<Complexity> bundleComplexities = new HashSet<>();
+            for (Project project : projects) {
+                bundleComplexities.add(project.getComplexity());
+            }
             if (bundle.getIconBase64() != null && bundle.getIconBase64().length() > 0) {
                 applicationImage.setUrl("data:image/png;base64," + bundle.getIconBase64());
             } else {
                 applicationImage.setResource(Utils.getPlatformIconBig(project.getPlatform()));
             }
-            complexityImage.setResource(Utils.getComplexityStarIcon(project.getComplexity()));
+            complexity = Collections.max(bundleComplexities);
+            complexityImage.setResource(Utils.getComplexityStarIcon(complexity));
             projectTitle.setText(bundle.getName());
             projectTitle.setTitle(bundle.getName());
         }
+        filterItem = new FilterItem(new ArrayList<>(platforms), new ArrayList<>(features), complexity);
 
     }
 
@@ -261,10 +268,6 @@ public class DemoProjectWidget extends VerticalPanel implements
         }
 
     }
-
-//    public Project getProject() {
-//        return project;
-//    }
 
     public FilterItem getFilterItem() {
         return filterItem;
