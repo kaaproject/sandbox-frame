@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 CyberVision, Inc.
+ * Copyright 2014-2016 CyberVision, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,6 @@ package org.kaaproject.kaa.sandbox.web.client.mvp.place;
 public interface PlaceConstants {
 
     public static final String PROJECT_ID = "projectId"; 
-    public static final String BUNDLE_NAME = "bundleName";
+    public static final String BUNDLE_ID = "bundleId";
 
 }

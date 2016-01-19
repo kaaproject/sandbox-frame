@@ -168,7 +168,7 @@ public class DemoProjectWidget extends VerticalPanel implements
 
         project = projects[0];
         filterItem = new FilterItem(new ArrayList<Platform>(platforms), new ArrayList<Feature>(features),
-                bundle == null ? project.getComplexity() : bundle.getComplexity());
+                project.getComplexity());
 
         if (bundle == null) {
             if (project.getIconBase64() != null && project.getIconBase64().length() > 0) {
@@ -189,7 +189,7 @@ public class DemoProjectWidget extends VerticalPanel implements
             } else {
                 applicationImage.setResource(Utils.getPlatformIconBig(project.getPlatform()));
             }
-            complexityImage.setResource(Utils.getComplexityStarIcon(bundle.getComplexity()));
+            complexityImage.setResource(Utils.getComplexityStarIcon(project.getComplexity()));
             projectTitle.setText(bundle.getName());
             projectTitle.setTitle(bundle.getName());
         }

@@ -22,29 +22,29 @@ import com.google.gwt.place.shared.Prefix;
 
 public class BundlePlace extends Place {
 
-    private String bundleName;
+    private String bundleId;
 
     public BundlePlace(String bundleName) {
-        this.bundleName = bundleName;
+        this.bundleId = bundleName;
     }
 
-    public String getBundleName() {
-        return bundleName;
+    public String getBundleId() {
+        return bundleId;
     }
 
-    @Prefix(value = "bundle")
+    @Prefix(value = "bundleId")
     public static class Tokenizer implements PlaceTokenizer<BundlePlace>, PlaceConstants {
 
         @Override
         public BundlePlace getPlace(String token) {
             PlaceParams.paramsFromToken(token);
-            return new BundlePlace(PlaceParams.getParam(BUNDLE_NAME));
+            return new BundlePlace(PlaceParams.getParam(BUNDLE_ID));
         }
 
         @Override
         public String getToken(BundlePlace place) {
             PlaceParams.clear();
-            PlaceParams.putParam(BUNDLE_NAME, place.getBundleName());
+            PlaceParams.putParam(BUNDLE_ID, place.getBundleId());
             return PlaceParams.generateToken();
         }
     }

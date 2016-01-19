@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 CyberVision, Inc.
+ * Copyright 2014-2016 CyberVision, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,9 +35,9 @@ public interface ProjectBundleView extends BaseView {
 
     void setComplexity(Complexity complexity);
 
-    void setProjectTitle(String title);
+    void setBundleTitle(String title);
 
-    Image getApplicationImage();
+    Image getBundleImage();
 
     HasText getDescription();
 

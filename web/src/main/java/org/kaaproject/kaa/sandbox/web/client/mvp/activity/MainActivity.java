@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 CyberVision, Inc.
+ * Copyright 2014-2016 CyberVision, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,21 +116,6 @@ public class MainActivity extends AbstractActivity {
     }
 
     private void fillView() {
-        
-//        Sandbox.getSandboxService().getDemoProjects(new BusyAsyncCallback<List<Project>>() {
-//            @Override
-//            public void onFailureImpl(Throwable caught) {
-//            	String message = Utils.getErrorMessage(caught);
-//                view.setErrorMessage(message);
-//                Analytics.sendException(message);
-//            }
-//
-//            @Override
-//            public void onSuccessImpl(List<Project> result) {
-//                view.setProjects(result);
-//            }
-//        });
-
         Sandbox.getSandboxService().getDemoProjectsData(new AsyncCallback<ProjectsData>() {
             @Override
             public void onFailure(Throwable throwable) {

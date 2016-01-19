@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 CyberVision, Inc.
+ * Copyright 2014-2016 CyberVision, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,12 @@
 
 package org.kaaproject.kaa.sandbox.web.client.mvp;
 
-import org.kaaproject.kaa.sandbox.web.client.mvp.view.*;
+import org.kaaproject.kaa.sandbox.web.client.mvp.view.ChangeKaaHostView;
+import org.kaaproject.kaa.sandbox.web.client.mvp.view.FilterView;
+import org.kaaproject.kaa.sandbox.web.client.mvp.view.HeaderView;
+import org.kaaproject.kaa.sandbox.web.client.mvp.view.MainView;
+import org.kaaproject.kaa.sandbox.web.client.mvp.view.ProjectBundleView;
+import org.kaaproject.kaa.sandbox.web.client.mvp.view.ProjectView;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.filter.FilterViewImpl;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.header.HeaderViewImpl;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.main.MainViewImpl;

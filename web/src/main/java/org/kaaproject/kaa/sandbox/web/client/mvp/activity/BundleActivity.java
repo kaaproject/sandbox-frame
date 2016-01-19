@@ -24,6 +24,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import org.kaaproject.kaa.examples.common.projects.Bundle;
+import org.kaaproject.kaa.examples.common.projects.Complexity;
 import org.kaaproject.kaa.examples.common.projects.Feature;
 import org.kaaproject.kaa.examples.common.projects.Platform;
 import org.kaaproject.kaa.examples.common.projects.Project;
@@ -103,7 +104,7 @@ public class BundleActivity extends AbstractActivity {
 
     private void fillView() {
 
-        Sandbox.getSandboxService().getProjectsBundleDataByBundleId(place.getBundleName(), new AsyncCallback<BundleData>() {
+        Sandbox.getSandboxService().getProjectsBundleDataByBundleId(place.getBundleId(), new AsyncCallback<BundleData>() {
             @Override
             public void onFailure(Throwable throwable) {
                 String message = Utils.getErrorMessage(throwable);
@@ -117,18 +118,19 @@ public class BundleActivity extends AbstractActivity {
                 List<Project> projects = bundleData.getBundleProjects();
 
                 if (bundle.getIconBase64() != null && bundle.getIconBase64().length() > 0) {
-                    view.getApplicationImage().setUrl("data:image/png;base64," + bundle.getIconBase64());
+                    view.getBundleImage().setUrl("data:image/png;base64," + bundle.getIconBase64());
                 } else {
-                    view.getApplicationImage().setResource(Utils.getPlatformIconBig(projects.get(0).getPlatform()));
+                    view.getBundleImage().setResource(Utils.getPlatformIconBig(projects.get(0).getPlatform()));
                 }
                 view.getDescription().setText(bundle.getDescription());
-                view.setProjectTitle(bundle.getName());
+                view.setBundleTitle(bundle.getName());
                 view.getDetails().setHTML(bundle.getDetails());
 
                 Analytics.switchBundleScreen(bundle);
 
                 Set<Platform> platforms = new HashSet<>();
                 Set<Feature> features = new HashSet<>();
+//                Set<Complexity> complexities = new HashSet<Complexity>();
                 for (Project project : projects) {
                     platforms.add(project.getPlatform());
                     for (Feature feature : project.getFeatures()) {

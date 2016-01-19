@@ -53,8 +53,8 @@ public class ProjectBundleViewImpl extends BaseViewImpl implements ProjectBundle
 
     private CarouselWidget carousel;
 
-    private Label projectTitleLabel;
-    private Image applicationImage;
+    private Label bundleTitleLabel;
+    private Image bundleImage;
     private Label descriptionLabel;
     private HTML projectDetailsPanel;
     private VerticalPanel targetPlatformPanel;
@@ -93,20 +93,20 @@ public class ProjectBundleViewImpl extends BaseViewImpl implements ProjectBundle
         flexTable.getFlexCellFormatter().setRowSpan(0, 0, 3);
         flexTable.getFlexCellFormatter().setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_TOP);
 
-        projectTitleLabel = new Label();
-        projectTitleLabel.addStyleName(Utils.sandboxStyle.contentTitleLabel());
-        projectTitleLabel.getElement().getStyle().setPaddingBottom(15, Style.Unit.PX);
+        bundleTitleLabel = new Label();
+        bundleTitleLabel.addStyleName(Utils.sandboxStyle.contentTitleLabel());
+        bundleTitleLabel.getElement().getStyle().setPaddingBottom(15, Style.Unit.PX);
 
-        flexTable.setWidget(0, 1, projectTitleLabel);
+        flexTable.setWidget(0, 1, bundleTitleLabel);
         flexTable.getFlexCellFormatter().setColSpan(0, 1, 2);
         flexTable.getFlexCellFormatter().setHeight(0, 1, "51px");
 
         VerticalPanel iconAndButtons = new VerticalPanel();
         iconAndButtons.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
 
-        applicationImage = new Image();
-        iconAndButtons.add(applicationImage);
-        iconAndButtons.setCellHorizontalAlignment(applicationImage, HasHorizontalAlignment.ALIGN_CENTER);
+        bundleImage = new Image();
+        iconAndButtons.add(bundleImage);
+        iconAndButtons.setCellHorizontalAlignment(bundleImage, HasHorizontalAlignment.ALIGN_CENTER);
 
         FlexTable appFeaturesPanel = new FlexTable();
         appFeaturesPanel.getColumnFormatter().setWidth(0, "110px");
@@ -185,8 +185,8 @@ public class ProjectBundleViewImpl extends BaseViewImpl implements ProjectBundle
         complexityPanel.clear();
         descriptionLabel.setText("");
         projectDetailsPanel.setHTML("");
-        projectTitleLabel.setText("");
-        applicationImage.setUrl("");
+        bundleTitleLabel.setText("");
+        bundleImage.setUrl("");
 
     }
 
@@ -249,13 +249,13 @@ public class ProjectBundleViewImpl extends BaseViewImpl implements ProjectBundle
     }
 
     @Override
-    public void setProjectTitle(String title) {
-        projectTitleLabel.setText(title);
+    public void setBundleTitle(String title) {
+        bundleTitleLabel.setText(title);
     }
 
     @Override
-    public Image getApplicationImage() {
-        return applicationImage;
+    public Image getBundleImage() {
+        return bundleImage;
     }
 
     @Override

@@ -17,7 +17,9 @@ package org.kaaproject.kaa.sandbox.web.client.mvp.view.widget;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import java.util.HashMap;
 import org.kaaproject.kaa.examples.common.projects.Bundle;
 import org.kaaproject.kaa.examples.common.projects.Project;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.HasProjectActionEventHandlers;
@@ -66,21 +68,30 @@ public class DemoProjectsWidget extends FlowPanel implements HasProjectActionEve
     void loadProjects(ProjectsData projects) {
         reset();
         projectWidgets = new ArrayList<>();
-        for (Project project : projects.getProjectsMap().values()) {
-            if (project.getBundleId() == null || project.getBundleId().isEmpty()) {
+        Map<String, List<Project>> bundleProjectsMap = new HashMap<>();
+        List<Project> projectsList = new ArrayList<>();
+        projectsList.addAll(projects.getProjectsMap().values());
+        for (Project project : projectsList) {
+            String bundleId = project.getBundleId();
+            if (bundleId == null || bundleId.isEmpty()) {
                 DemoProjectWidget demoProjectWidget = new DemoProjectWidget();
                 demoProjectWidget.setProjects(null, project);
                 add(demoProjectWidget);
                 registrations.add(demoProjectWidget.addProjectActionHandler(this));
                 setVisible(true);
                 projectWidgets.add(demoProjectWidget);
+            } else {
+                if (bundleProjectsMap.containsKey(bundleId)) {
+                    bundleProjectsMap.get(bundleId).add(project);
+                } else {
+                    List<Project> projectsList1 = new ArrayList<>();
+                    projectsList1.add(project);
+                    bundleProjectsMap.put(bundleId, projectsList1);
+                }
             }
         }
         for (Bundle bundle : new ArrayList<>(projects.getBundlesMap().values())) {
-            ArrayList<Project> bundleProjects = new ArrayList<>();
-            for (String id : bundle.getProjectsIds()) {
-                bundleProjects.add(projects.getProjectsMap().get(id));
-            }
+            List<Project> bundleProjects = bundleProjectsMap.get(bundle.getId());
             DemoProjectWidget demoProjectWidget = new DemoProjectWidget();
             Project[] bProjects = new Project[bundleProjects.size()];
             bundleProjects.toArray(bProjects);
@@ -92,20 +103,6 @@ public class DemoProjectsWidget extends FlowPanel implements HasProjectActionEve
         }
         updateProjects(true);
     }
-
-//    void loadProjects(List<Project> projects) {
-//        reset();
-//        projectWidgets = new ArrayList<>();
-//        for (Project project : projects) {
-//            DemoProjectWidget demoProjectWidget = new DemoProjectWidget();
-//            demoProjectWidget.setProject(project);
-//            add(demoProjectWidget);
-//            registrations.add(demoProjectWidget.addProjectActionHandler(this));
-//            setVisible(true);
-//            projectWidgets.add(demoProjectWidget);
-//        }
-//        updateProjects(true);
-//    }
 
     void updateProjects(boolean animate) {
         for (DemoProjectWidget projectWidget : projectWidgets) {
