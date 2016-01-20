@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 CyberVision, Inc.
+ * Copyright 2014-2016 CyberVision, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,16 +22,18 @@ import org.kaaproject.kaa.examples.common.projects.Project;
 import org.kaaproject.kaa.sandbox.web.client.util.LogLevel;
 import org.kaaproject.kaa.sandbox.web.shared.dto.AnalyticsInfo;
 import org.kaaproject.kaa.sandbox.web.shared.dto.BuildOutputData;
+import org.kaaproject.kaa.sandbox.web.shared.dto.BundleData;
 import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectDataType;
+import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectsData;
 
 import java.util.List;
 
 @RemoteServiceRelativePath("springGwtServices/sandboxService")
 public interface SandboxService extends RemoteService {
-	
-	public String getKaaVersion() throws SandboxServiceException;
-	
-	public int getKaaNodeWebPort() throws SandboxServiceException;
+
+    public String getKaaVersion() throws SandboxServiceException;
+
+    public int getKaaNodeWebPort() throws SandboxServiceException;
 
     public boolean changeKaaHostEnabled() throws SandboxServiceException;
     
@@ -54,7 +56,11 @@ public interface SandboxService extends RemoteService {
     public AnalyticsInfo getAnalyticsInfo() throws SandboxServiceException;
     
     public List<Project> getDemoProjects() throws SandboxServiceException;
-    
+
+    public ProjectsData getDemoProjectsData() throws SandboxServiceException;
+
+    public BundleData getProjectsBundleDataByBundleId(String bundleId) throws SandboxServiceException;
+
     public Project getDemoProject(String projectId) throws SandboxServiceException;
     
     public boolean checkProjectDataExists(String projectId, ProjectDataType dataType) throws SandboxServiceException;

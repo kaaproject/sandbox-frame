@@ -18,18 +18,27 @@ package org.kaaproject.kaa.sandbox.web.client.util;
 
 import org.kaaproject.avro.ui.gwt.client.AvroUiResources;
 import org.kaaproject.avro.ui.gwt.client.AvroUiResources.AvroUiStyle;
+import org.kaaproject.avro.ui.gwt.client.util.BusyAsyncCallback;
 import org.kaaproject.kaa.examples.common.projects.Complexity;
 import org.kaaproject.kaa.examples.common.projects.Feature;
 import org.kaaproject.kaa.examples.common.projects.Platform;
+import org.kaaproject.kaa.examples.common.projects.Project;
+import org.kaaproject.kaa.sandbox.web.client.Sandbox;
 import org.kaaproject.kaa.sandbox.web.client.SandboxResources;
 import org.kaaproject.kaa.sandbox.web.client.SandboxResources.KaaTheme;
 import org.kaaproject.kaa.sandbox.web.client.SandboxResources.SandboxStyle;
 import org.kaaproject.kaa.sandbox.web.client.i18n.SandboxConstants;
 import org.kaaproject.kaa.sandbox.web.client.i18n.SandboxMessages;
+import org.kaaproject.kaa.sandbox.web.client.mvp.view.BaseView;
+import org.kaaproject.kaa.sandbox.web.client.mvp.view.dialog.ConsoleDialog;
+import org.kaaproject.kaa.sandbox.web.client.mvp.view.dialog.ConsoleDialog.ConsoleDialogListener;
+import org.kaaproject.kaa.sandbox.web.client.servlet.ServletHelper;
+import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectDataType;
 import org.kaaproject.kaa.sandbox.web.shared.services.SandboxServiceException;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class Utils {
 
@@ -219,6 +228,71 @@ public class Utils {
                 return constants.advanced();
         }
         return null;
+    }
+    
+    public static void getProjectSourceCode(BaseView view, Project project) {
+    	Analytics.sendProjectEvent(project, Analytics.SOURCE_ACTION);
+        getProjectData(view, project, ProjectDataType.SOURCE);
+    }
+    
+    public static void getProjectBinary(BaseView view, Project project) {
+    	Analytics.sendProjectEvent(project, Analytics.BINARY_ACTION);
+        getProjectData(view, project, ProjectDataType.BINARY);
+    }
+    
+    private static void getProjectData(final BaseView view, final Project project, final ProjectDataType type) {
+        view.clearError();
+        Sandbox.getSandboxService().checkProjectDataExists(project.getId(), type, new BusyAsyncCallback<Boolean>() {
+
+            @Override
+            public void onFailureImpl(Throwable caught) {
+            	String message = Utils.getErrorMessage(caught);
+                view.setErrorMessage(message);
+                Analytics.sendException(message);
+            }
+
+            @Override
+            public void onSuccessImpl(Boolean result) {
+                if (result) {
+                    ServletHelper.downloadProjectFile(project.getId(), type);
+                }
+                else {
+                    String initialMessage = "Assembling ";
+                    if (type == ProjectDataType.SOURCE) {
+                        initialMessage += "sources";
+                    } else {
+                        initialMessage += "binary";
+                    }
+                    initialMessage += " for '" + project.getName() + "' project...\n";
+                    ConsoleDialog.startConsoleDialog(initialMessage, new ConsoleDialogListener() {
+                        @Override
+                        public void onOk(boolean success) {
+                            if (success) {
+                                ServletHelper.downloadProjectFile(project.getId(), type);
+                            }
+                        }
+
+                        @Override
+                        public void onStart(String uuid, final ConsoleDialog dialog, final AsyncCallback<Void> callback) {
+                            Sandbox.getSandboxService().buildProjectData(uuid, null, project.getId(), type, new AsyncCallback<Void>() {
+                              @Override
+                              public void onFailure(Throwable caught) {
+                                  callback.onFailure(caught);
+                              }
+                    
+                              @Override
+                              public void onSuccess(Void result) {
+                                  dialog.appendToConsoleAtFinish("Succesfully prepared project data!\n");
+                                  dialog.appendToConsoleAtFinish("\n\n\n-------- CLICK OK TO START DOWNLOAD " + 
+                                          (type==ProjectDataType.SOURCE ? "PROJECT SOURCES" : "BINARY FILE") + " --------\n\n\n");
+                                  callback.onSuccess(result);
+                              }
+                            });
+                        }
+                    });
+                }
+            }
+        });
     }
 
 }

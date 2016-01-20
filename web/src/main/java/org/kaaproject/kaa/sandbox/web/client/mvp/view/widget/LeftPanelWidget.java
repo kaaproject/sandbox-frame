@@ -36,6 +36,10 @@ public class LeftPanelWidget extends DockLayoutPanel {
     
     private ScrollPanel contentScroll;
     private Label titleLabel;
+    private Anchor anchor;
+    
+    protected boolean isActive = true;
+    
     
     public LeftPanelWidget(Unit unit) {
         super(unit);
@@ -47,7 +51,7 @@ public class LeftPanelWidget extends DockLayoutPanel {
         titleLabel.addStyleName(Utils.sandboxStyle.title());
         titlePanel.add(titleLabel);
         titlePanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-        Anchor anchor = new Anchor();
+        anchor = new Anchor();
         anchor.addStyleName(Utils.sandboxStyle.toggle());
         titlePanel.add(anchor);
         titlePanel.setSize("100%", "100%");
@@ -62,14 +66,34 @@ public class LeftPanelWidget extends DockLayoutPanel {
         anchor.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                isOpen = !isOpen;
-                if (isOpen) {
-                    addStyleName(Utils.sandboxStyle.isOpen());
-                } else {
-                    removeStyleName(Utils.sandboxStyle.isOpen());
-                }
+            	if (isActive) {
+            		setOpen(!isOpen);
+            	}
             }
         });
+    }
+    
+    public void setActive(boolean isActive) {
+    	if (this.isActive != isActive) {
+    		this.isActive = isActive;
+    		setOpen(this.isActive);
+    		if (!isActive) {
+    			anchor.addStyleName(Utils.sandboxStyle.inactive());
+    		} else {
+    			anchor.removeStyleName(Utils.sandboxStyle.inactive());
+    		}
+    	}
+    }
+    
+    private void setOpen(boolean isOpen) {
+    	if (this.isOpen != isOpen) {
+    		this.isOpen = isOpen;
+	        if (this.isOpen) {
+	            addStyleName(Utils.sandboxStyle.isOpen());
+	        } else {
+	            removeStyleName(Utils.sandboxStyle.isOpen());
+	        }
+    	}
     }
     
     public void setHeadTitle(String title) {

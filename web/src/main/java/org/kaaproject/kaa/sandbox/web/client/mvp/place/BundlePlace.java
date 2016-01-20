@@ -13,46 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.kaaproject.kaa.sandbox.web.client.mvp.place;
 
 import com.google.gwt.place.shared.Place;
 import com.google.gwt.place.shared.PlaceTokenizer;
 import com.google.gwt.place.shared.Prefix;
 
-public class ProjectPlace extends Place {
-    
-    private String projectId;
-    private Place previousPlace;
-    
-    public ProjectPlace(String projectId) {
-        this.projectId = projectId;
-    }
-    
-    public String getProjectId() {
-        return projectId;
+public class BundlePlace extends Place {
+
+    private String bundleId;
+
+    public BundlePlace(String bundleName) {
+        this.bundleId = bundleName;
     }
 
-    public Place getPreviousPlace() {
-        return previousPlace;
+    public String getBundleId() {
+        return bundleId;
     }
 
-    public void setPreviousPlace(Place previousPlace) {
-        this.previousPlace = previousPlace;
-    }
-
-    @Prefix(value = "proj")
-    public static class Tokenizer implements PlaceTokenizer<ProjectPlace>, PlaceConstants {
+    @Prefix(value = "bundleId")
+    public static class Tokenizer implements PlaceTokenizer<BundlePlace>, PlaceConstants {
 
         @Override
-        public ProjectPlace getPlace(String token) {
+        public BundlePlace getPlace(String token) {
             PlaceParams.paramsFromToken(token);
-            return new ProjectPlace(PlaceParams.getParam(PROJECT_ID));
+            return new BundlePlace(PlaceParams.getParam(BUNDLE_ID));
         }
 
         @Override
-        public String getToken(ProjectPlace place) {
+        public String getToken(BundlePlace place) {
             PlaceParams.clear();
-            PlaceParams.putParam(PROJECT_ID, place.getProjectId());
+            PlaceParams.putParam(BUNDLE_ID, place.getBundleId());
             return PlaceParams.generateToken();
         }
     }
