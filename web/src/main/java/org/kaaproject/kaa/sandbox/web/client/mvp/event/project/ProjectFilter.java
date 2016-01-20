@@ -17,7 +17,6 @@
 package org.kaaproject.kaa.sandbox.web.client.mvp.event.project;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.kaaproject.kaa.examples.common.projects.Complexity;
@@ -50,12 +49,12 @@ public class ProjectFilter {
         useComplexityFilter = !enabledComplexities.isEmpty();
     }
 
-    public boolean filter(FilterItem item) {
+    public boolean filter(FilterableItem item) {
         boolean hasFeature = !useFeatureFilter;
         boolean hasPlatform = !usePlatformFilter;
         boolean hasComplexity = !useComplexityFilter;
         if (useFeatureFilter) {
-            List<Feature> features = item.getFeatures();
+            Set<Feature> features = item.getFeatures();
             for (Feature feature : features) {
                 if (enabledFeatures.contains(feature)) {
                     hasFeature = true;
@@ -64,7 +63,7 @@ public class ProjectFilter {
             }
         }
         if (usePlatformFilter) {
-            List<Platform> platforms = item.getPlatforms();
+        	Set<Platform> platforms = item.getPlatforms();
             for (Platform platform : platforms) {
                 if (enabledPlatforms.contains(platform)) {
                     hasPlatform = true;

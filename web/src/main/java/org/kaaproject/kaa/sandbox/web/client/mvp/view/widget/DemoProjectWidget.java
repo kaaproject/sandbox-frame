@@ -27,7 +27,7 @@ import org.kaaproject.kaa.examples.common.projects.Complexity;
 import org.kaaproject.kaa.examples.common.projects.Feature;
 import org.kaaproject.kaa.examples.common.projects.Platform;
 import org.kaaproject.kaa.examples.common.projects.Project;
-import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.FilterItem;
+import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.FilterableItem;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.HasProjectActionEventHandlers;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.ProjectAction;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.ProjectActionEvent;
@@ -66,7 +66,7 @@ public class DemoProjectWidget extends AbsolutePanel implements HasProjectAction
     private Button getBinaryButton;
 
     private Project project;
-    private FilterItem filterItem;
+    private FilterableItem filterItem;
     
     
     
@@ -226,8 +226,7 @@ public class DemoProjectWidget extends AbsolutePanel implements HasProjectAction
             projectTitle.setText(bundle.getName());
             projectTitle.setTitle(bundle.getName());
         }
-        filterItem = new FilterItem(new ArrayList<>(platforms), new ArrayList<>(features), complexity);
-
+        filterItem = new FilterableItem(platforms, features, complexity);
     }
 
     private void constructButtons(final boolean isBundle) {
@@ -284,7 +283,7 @@ public class DemoProjectWidget extends AbsolutePanel implements HasProjectAction
         }, ClickEvent.getType());
     }
 
-    public FilterItem getFilterItem() {
+    public FilterableItem getFilterItem() {
         return filterItem;
     }
 

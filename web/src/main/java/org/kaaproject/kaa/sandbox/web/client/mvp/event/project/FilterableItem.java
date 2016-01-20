@@ -16,41 +16,40 @@
 
 package org.kaaproject.kaa.sandbox.web.client.mvp.event.project;
 
+import java.util.Set;
+
 import org.kaaproject.kaa.examples.common.projects.Complexity;
 import org.kaaproject.kaa.examples.common.projects.Feature;
 import org.kaaproject.kaa.examples.common.projects.Platform;
 
-import java.io.Serializable;
-import java.util.List;
+public class FilterableItem {
 
-public class FilterItem implements Serializable {
-
-    private List<Platform> platforms;
-    private List<Feature> features;
+    private Set<Platform> platforms;
+    private Set<Feature> features;
     private Complexity complexity;
 
-    public FilterItem() {
+    public FilterableItem() {
     }
 
-    public FilterItem(List<Platform> platforms, List<Feature> features, Complexity complexity) {
+    public FilterableItem(Set<Platform> platforms, Set<Feature> features, Complexity complexity) {
         this.platforms = platforms;
         this.features = features;
         this.complexity = complexity;
     }
 
-    public List<Platform> getPlatforms() {
+    public Set<Platform> getPlatforms() {
         return platforms;
     }
 
-    public void setPlatforms(List<Platform> platforms) {
+    public void setPlatforms(Set<Platform> platforms) {
         this.platforms = platforms;
     }
 
-    public List<Feature> getFeatures() {
+    public Set<Feature> getFeatures() {
         return features;
     }
 
-    public void setFeatures(List<Feature> features) {
+    public void setFeatures(Set<Feature> features) {
         this.features = features;
     }
 
