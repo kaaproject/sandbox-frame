@@ -16,10 +16,11 @@
 package org.kaaproject.kaa.sandbox.web.client.mvp.view.widget;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
 import java.util.HashMap;
+
 import org.kaaproject.kaa.examples.common.projects.Bundle;
 import org.kaaproject.kaa.examples.common.projects.Project;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.HasProjectActionEventHandlers;
@@ -30,6 +31,7 @@ import org.kaaproject.kaa.sandbox.web.client.util.Utils;
 
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.FlowPanel;
+
 import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectsData;
 
 public class DemoProjectsWidget extends FlowPanel implements HasProjectActionEventHandlers, 
@@ -71,7 +73,7 @@ public class DemoProjectsWidget extends FlowPanel implements HasProjectActionEve
         Map<String, List<Project>> bundleProjectsMap = new HashMap<>();
         List<Project> projectsList = new ArrayList<>();
         projectsList.addAll(projects.getProjectsMap().values());
-        for (Project project : projectsList) {
+        for (final Project project : projectsList) {
             String bundleId = project.getBundleId();
             if (bundleId == null || bundleId.isEmpty()) {
                 DemoProjectWidget demoProjectWidget = new DemoProjectWidget();
@@ -84,9 +86,7 @@ public class DemoProjectsWidget extends FlowPanel implements HasProjectActionEve
                 if (bundleProjectsMap.containsKey(bundleId)) {
                     bundleProjectsMap.get(bundleId).add(project);
                 } else {
-                    List<Project> projectsList1 = new ArrayList<>();
-                    projectsList1.add(project);
-                    bundleProjectsMap.put(bundleId, projectsList1);
+                    bundleProjectsMap.put(bundleId, new ArrayList<>(Arrays.asList(project)));
                 }
             }
         }

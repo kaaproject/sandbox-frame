@@ -84,10 +84,10 @@ public class MainActivity extends AbstractActivity {
             public void onProjectAction(ProjectActionEvent event) {
                 switch(event.getAction()) {
                 case GET_SOURCE_CODE:
-                    getProjectSourceCode(event.getProject());
+                	Utils.getProjectSourceCode(view, event.getProject());
                     break;
                 case GET_BINARY:
-                    getProjectBinary(event.getProject());
+                	Utils.getProjectBinary(view, event.getProject());
                     break;
                 case OPEN_DETAILS:
                     ProjectPlace projectPlace = new ProjectPlace(event.getProject().getId());
@@ -175,71 +175,5 @@ public class MainActivity extends AbstractActivity {
             }
         });
     }
-    
-    private void getProjectSourceCode(Project project) {
-    	Analytics.sendProjectEvent(project, Analytics.SOURCE_ACTION);
-        getProjectData(project, ProjectDataType.SOURCE);
-    }
-    
-    private void getProjectBinary(Project project) {
-    	Analytics.sendProjectEvent(project, Analytics.BINARY_ACTION);
-        getProjectData(project, ProjectDataType.BINARY);
-    }
-    
-    private void getProjectData(final Project project, final ProjectDataType type) {
-        view.clearError();
-        Sandbox.getSandboxService().checkProjectDataExists(project.getId(), type, new BusyAsyncCallback<Boolean>() {
-
-            @Override
-            public void onFailureImpl(Throwable caught) {
-            	String message = Utils.getErrorMessage(caught);
-                view.setErrorMessage(message);
-                Analytics.sendException(message);
-            }
-
-            @Override
-            public void onSuccessImpl(Boolean result) {
-                if (result) {
-                    ServletHelper.downloadProjectFile(project.getId(), type);
-                }
-                else {
-                    String initialMessage = "Assembling ";
-                    if (type == ProjectDataType.SOURCE) {
-                        initialMessage += "sources";
-                    } else {
-                        initialMessage += "binary";
-                    }
-                    initialMessage += " for '" + project.getName() + "' project...\n";
-                    ConsoleDialog.startConsoleDialog(initialMessage, new ConsoleDialogListener() {
-                        @Override
-                        public void onOk(boolean success) {
-                            if (success) {
-                                ServletHelper.downloadProjectFile(project.getId(), type);
-                            }
-                        }
-
-                        @Override
-                        public void onStart(String uuid, final ConsoleDialog dialog, final AsyncCallback<Void> callback) {
-                            Sandbox.getSandboxService().buildProjectData(uuid, null, project.getId(), type, new AsyncCallback<Void>() {
-                              @Override
-                              public void onFailure(Throwable caught) {
-                                  callback.onFailure(caught);
-                              }
-                    
-                              @Override
-                              public void onSuccess(Void result) {
-                                  dialog.appendToConsoleAtFinish("Succesfully prepared project data!\n");
-                                  dialog.appendToConsoleAtFinish("\n\n\n-------- CLICK OK TO START DOWNLOAD " + 
-                                          (type==ProjectDataType.SOURCE ? "PROJECT SOURCES" : "BINARY FILE") + " --------\n\n\n");
-                                  callback.onSuccess(result);
-                              }
-                            });
-                        }
-                    });
-                }
-            }
-        });
-    }
-    
     
 }

@@ -17,11 +17,13 @@
 package org.kaaproject.kaa.sandbox.web.client.mvp.activity;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.kaaproject.kaa.examples.common.projects.Bundle;
+import org.kaaproject.kaa.examples.common.projects.Complexity;
 import org.kaaproject.kaa.examples.common.projects.Feature;
 import org.kaaproject.kaa.examples.common.projects.Platform;
 import org.kaaproject.kaa.examples.common.projects.Project;
@@ -44,6 +46,7 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
+
 
 public class BundleActivity extends AbstractActivity {
 
@@ -81,6 +84,12 @@ public class BundleActivity extends AbstractActivity {
             @Override
             public void onProjectAction(ProjectActionEvent event) {
                 switch(event.getAction()) {
+	                case GET_SOURCE_CODE:
+	                	Utils.getProjectSourceCode(view, event.getProject());
+	                    break;
+	                case GET_BINARY:
+	                	Utils.getProjectBinary(view, event.getProject());
+	                    break;
                     case OPEN_DETAILS:
                         ProjectPlace projectPlace = new ProjectPlace(event.getProject().getId());
                         projectPlace.setPreviousPlace(place);
@@ -130,16 +139,17 @@ public class BundleActivity extends AbstractActivity {
 
                 Set<Platform> platforms = new HashSet<>();
                 Set<Feature> features = new HashSet<>();
-//                Set<Complexity> complexities = new HashSet<Complexity>();
+                Set<Complexity> bundleComplexities = new HashSet<>();
                 for (Project project : projects) {
                     platforms.add(project.getPlatform());
                     for (Feature feature : project.getFeatures()) {
                         features.add(feature);
                     }
+                    bundleComplexities.add(project.getComplexity());
                 }
-                view.setPlatforms(new ArrayList<Platform>(platforms));
-                view.setFeatures(new ArrayList<Feature>(features));
-                view.setComplexity(projects.get(0).getComplexity());
+                view.setPlatforms(new ArrayList<>(platforms));
+                view.setFeatures(new ArrayList<>(features));
+                view.setComplexity(Collections.max(bundleComplexities));
                 view.setProjects(projects);
             }
         });
