@@ -171,8 +171,20 @@
                 <version>${kaa.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.kaaproject.kaa.server.common</groupId>
+                <artifactId>dto</artifactId>
+                <classifier>sources</classifier>
+                <version>${kaa.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.kaaproject.kaa.examples</groupId>
                 <artifactId>common</artifactId>
+                <version>${kaa-sample-apps.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kaaproject.kaa.examples</groupId>
+                <artifactId>common</artifactId>
+                <classifier>sources</classifier>
                 <version>${kaa-sample-apps.version}</version>
             </dependency>
             <dependency>

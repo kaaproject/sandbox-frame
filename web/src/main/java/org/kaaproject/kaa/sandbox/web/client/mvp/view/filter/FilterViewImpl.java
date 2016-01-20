@@ -72,7 +72,9 @@ public class FilterViewImpl extends LeftPanelWidget implements FilterView, Value
     
     @Override
     public void onValueChange(ValueChangeEvent<Boolean> event) {
-        fireFilter();
+    	if (isActive) {
+    		fireFilter();
+    	}
     }
     
     private void fireFilter() {
@@ -149,5 +151,9 @@ public class FilterViewImpl extends LeftPanelWidget implements FilterView, Value
         
     }
 
+    @Override
+    public void setActive(boolean active) {
+    	super.setActive(active);
+    }
 
 }

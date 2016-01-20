@@ -24,7 +24,7 @@ import com.google.gwt.place.shared.Place;
 
 public class LeftPanelActivityMapper implements ActivityMapper {
 
-    private final Activity leftPanelActivity; 
+    private final LeftPanelActivity leftPanelActivity; 
 
     public LeftPanelActivityMapper(ClientFactory clientFactory) {
         super();
@@ -33,6 +33,7 @@ public class LeftPanelActivityMapper implements ActivityMapper {
 
     @Override
     public Activity getActivity(Place place) {
+    	leftPanelActivity.setPlace(place);
         return leftPanelActivity;
     }
 }

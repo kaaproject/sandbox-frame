@@ -25,7 +25,9 @@ import java.util.Map;
 
 public class ProjectsData implements Serializable{
 
-    private Map<String, Project> projectsMap = new HashMap<>();
+	private static final long serialVersionUID = 6752405093583545845L;
+	
+	private Map<String, Project> projectsMap = new HashMap<>();
     private Map<String, Bundle> bundlesMap = new HashMap<>();
 
     public ProjectsData() {

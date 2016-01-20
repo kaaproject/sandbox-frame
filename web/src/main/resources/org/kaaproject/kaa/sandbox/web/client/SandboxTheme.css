@@ -182,6 +182,10 @@
     text-decoration: none;
 }
 
+.leftPanel .toggle.inactive {
+	color: #AAA;
+}
+
 .leftPanel .toggle::before {
     content: '\f0c9';
     font: 30px fontawesome;
@@ -368,9 +372,17 @@
 }
 
 .demoProjectWidget {
-	width: 190px;
-	margin: 10px;
+	width: 230px;
+	height: 340px;
+	margin-right: 10px;
 	display: inline-block;
+}
+
+.demoProjectWidget .projectCard {
+	width: 190px;
+	height: 300px;
+	margin: 10px;
+	background-color: #fff;
 	
 	-webkit-border-radius: 4px;
     -moz-border-radius: 4px;
@@ -523,4 +535,10 @@
 	border: solid 1px #CCC;
 	font-size: 12px;
 	padding: 8px;
+}
+
+.bundleProjectsPanel {
+	box-shadow: inset 0 8px 8px -8px rgba(0, 0, 0, 0.5);
+	padding-top: 10px;
+	padding-bottom: 10px;
 }

@@ -70,5 +70,4 @@
                 <kaa:layout.SimpleWidgetPanel ui:field="centerPanel" />
             </gwt:center>
         </gwt:DockLayoutPanel>
-        
 </ui:UiBinder>

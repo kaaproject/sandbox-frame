@@ -17,6 +17,7 @@
 package org.kaaproject.kaa.sandbox.web.client.mvp.view.widget;
 
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -25,6 +26,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
+
 import org.kaaproject.kaa.examples.common.projects.Project;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.HasProjectActionEventHandlers;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.ProjectActionEvent;
@@ -36,10 +38,13 @@ import java.util.List;
 
 public class CarouselWidget extends FlexTable implements HasProjectActionEventHandlers,
         ProjectActionEventHandler {
+	
+	public static final int DEFAULT_VISIBLE_RANGE = 5;
 
-    private final int visibleRange = 5;
+    private final int initialVisibleRange;
+    private int visibleRange;
     private int left;
-    private int right = visibleRange - 1;
+    private int right;
 
     private Button goLeftButton;
     private Button goRightButton;
@@ -48,9 +53,15 @@ public class CarouselWidget extends FlexTable implements HasProjectActionEventHa
 
     private List<HandlerRegistration> registrations = new ArrayList<>();
     private List<DemoProjectWidget> projectWidgets;
-
+    
     public CarouselWidget() {
+    	this(DEFAULT_VISIBLE_RANGE);
+    }
+
+    public CarouselWidget(int visibleRange) {
         super();
+        
+        this.initialVisibleRange = visibleRange;
 
         goLeftButton = new Button();
         goLeftButton.addStyleName(Utils.sandboxStyle.carouselLeftButton());
@@ -78,6 +89,7 @@ public class CarouselWidget extends FlexTable implements HasProjectActionEventHa
         carousel.setWidth("100%");
         carousel.addStyleName(Utils.sandboxStyle.demoProjectsWidget());
         carousel.getElement().getStyle().setProperty("maxHeight", 320, Style.Unit.PX);
+        carousel.getElement().getStyle().setOverflow(Overflow.HIDDEN);
 
         SimplePanel container = new SimplePanel();
         container.setWidth("860px");
@@ -89,19 +101,18 @@ public class CarouselWidget extends FlexTable implements HasProjectActionEventHa
         setWidget(0, 1, carousel);
         getFlexCellFormatter().setHorizontalAlignment(0, 1, HasHorizontalAlignment.ALIGN_CENTER);
         setWidget(0, 2, goRightButton);
+        
+        reset();
     }
 
     public void setProjects(List<Project> projects) {
-//        List<Project> l = new ArrayList<>();
-//        l.addAll(projects);
-//        l.addAll(projects);
-//        l.addAll(projects);
-//        loadProjects(l);
         loadProjects(projects);
     }
 
     void loadProjects(List<Project> projects) {
         reset();
+        this.visibleRange = Math.min(this.initialVisibleRange, projects.size());
+        this.right = this.visibleRange - 1;
         projectWidgets = new ArrayList<>();
         for (Project project : projects) {
             DemoProjectWidget demoProjectWidget = new DemoProjectWidget();
@@ -119,34 +130,44 @@ public class CarouselWidget extends FlexTable implements HasProjectActionEventHa
 
     private void moveLeft() {
         if (left > 0) {
-            projectWidgets.get(right--).hide(false);
-            projectWidgets.get(--left).show(false);
+            projectWidgets.get(right--).hide(true);
+            projectWidgets.get(--left).show(true);
         }
         updateButtons();
     }
 
     private void moveRight() {
         if (right < projectWidgets.size()-1) {
-            projectWidgets.get(left++).hide(false);
-            projectWidgets.get(++right).show(false);
+            projectWidgets.get(left++).hide(true);
+            projectWidgets.get(++right).show(true);
         }
         updateButtons();
     }
 
     private void updateButtons() {
-        if (left == 0) {
-            goLeftButton.setEnabled(false);
-        } else {
-            goLeftButton.setEnabled(true);
-        }
-        if (right == projectWidgets.size()-1) {
-            goRightButton.setEnabled(false);
-        } else {
-            goRightButton.setEnabled(true);
-        }
+    	if (this.visibleRange == projectWidgets.size()) {
+    		goLeftButton.setVisible(false);
+    		goRightButton.setVisible(false);
+    	} else {
+    		goLeftButton.setVisible(true);
+    		goRightButton.setVisible(true);
+	        if (left == 0) {
+	            goLeftButton.setEnabled(false);
+	        } else {
+	            goLeftButton.setEnabled(true);
+	        }
+	        if (right == projectWidgets.size()-1) {
+	            goRightButton.setEnabled(false);
+	        } else {
+	            goRightButton.setEnabled(true);
+	        }
+    	}
     }
 
     public void reset() {
+        this.left = 0;
+        this.right = this.initialVisibleRange - 1;
+        this.visibleRange = this.initialVisibleRange;
         for (HandlerRegistration registration : registrations) {
             registration.removeHandler();
         }

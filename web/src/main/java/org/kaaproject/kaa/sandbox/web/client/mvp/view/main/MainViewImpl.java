@@ -22,8 +22,10 @@ import org.kaaproject.kaa.sandbox.web.client.mvp.view.MainView;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.base.BaseViewImpl;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.widget.DemoProjectsWidget;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.ScrollPanel;
+
 import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectsData;
 
 public class MainViewImpl extends BaseViewImpl implements MainView {
@@ -47,11 +49,13 @@ public class MainViewImpl extends BaseViewImpl implements MainView {
         ScrollPanel centerScroll = new ScrollPanel();
         centerScroll.setWidth("100%");
         centerPanel.setWidget(centerScroll);        
-        centerPanel.setWidgetTopBottom(centerScroll, 15, Unit.PX, 0, Unit.PX);
-        centerPanel.setWidgetLeftRight(centerScroll, 30, Unit.PX, 30, Unit.PX);
-        
         demoProjectsView = new DemoProjectsWidget();
         centerScroll.add(demoProjectsView);
+        Element scrollContainer = demoProjectsView.getElement().getParentElement();
+        scrollContainer.getStyle().setPaddingTop(15, Unit.PX);
+        scrollContainer.getStyle().setPaddingBottom(15, Unit.PX);
+        scrollContainer.getStyle().setPaddingLeft(30, Unit.PX);
+        scrollContainer.getStyle().setPaddingRight(30, Unit.PX);
     }
 
     @Override

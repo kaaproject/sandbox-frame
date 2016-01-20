@@ -16,6 +16,11 @@
 
 package org.kaaproject.kaa.sandbox.web.client.mvp.view.widget;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 import org.kaaproject.kaa.examples.common.projects.Bundle;
 import org.kaaproject.kaa.examples.common.projects.Feature;
 import org.kaaproject.kaa.examples.common.projects.Platform;
@@ -44,28 +49,26 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
-public class DemoProjectWidget extends VerticalPanel implements
+public class DemoProjectWidget extends AbsolutePanel implements
         HasProjectActionEventHandlers {
 
     private VerticalPanel detailsPanel;
     private Image applicationImage;
     private Image complexityImage;
+    
+    private VerticalPanel bottomPanel;
     private HorizontalPanel platformPanel;
     private HorizontalPanel featuresPanel;
 
-    private HorizontalPanel buttonsPanel;
     private Anchor projectTitle;
     private Button getSourceButton;
     private Button getBinaryButton;
 
     private Project project;
     private FilterItem filterItem;
-
+    
+    
+    
     private ProjectWidgetAnimation projectWidgetAnimation;
 
     public DemoProjectWidget() {
@@ -73,10 +76,26 @@ public class DemoProjectWidget extends VerticalPanel implements
 
         addStyleName(Utils.sandboxStyle.demoProjectWidget());
         setVisible(false);
+        projectWidgetAnimation = new ProjectWidgetAnimation(this, 230, 10.0);
 
-        projectWidgetAnimation = new ProjectWidgetAnimation(this, 190, 10.0);
+        SimplePanel backPanel = new SimplePanel();
+        backPanel.addStyleName(Utils.sandboxStyle.projectCard());
+        add(backPanel, 20, 20);        
+        backPanel = new SimplePanel();
+        backPanel.addStyleName(Utils.sandboxStyle.projectCard());
+        add(backPanel, 10, 10);        
+        backPanel = new SimplePanel();
+        backPanel.addStyleName(Utils.sandboxStyle.projectCard());
+        add(backPanel, 0, 0);
+        
+        getWidget(0).setVisible(false);
+        getWidget(1).setVisible(false);
+        
+        VerticalPanel rootPanel = new VerticalPanel();
+        rootPanel.setHeight("100%");
+        backPanel.add(rootPanel);
 
-         detailsPanel = new VerticalPanel();
+        detailsPanel = new VerticalPanel();
         detailsPanel.addStyleName(Utils.sandboxStyle.details());
         detailsPanel.sinkEvents(Event.ONCLICK);
 
@@ -117,28 +136,35 @@ public class DemoProjectWidget extends VerticalPanel implements
 
         detailsPanel.add(titlePanel);
 
-        add(detailsPanel);
+        rootPanel.add(detailsPanel);
+        
+        bottomPanel = new VerticalPanel();
+        bottomPanel.setWidth("100%");
 
         HorizontalPanel iconsPanel = new HorizontalPanel();
         iconsPanel.setWidth("100%");
         iconsPanel.addStyleName(Utils.sandboxStyle.detailsInnerCenter());
         iconsPanel.getElement().getStyle().setPaddingTop(10, Unit.PX);
         platformPanel = new HorizontalPanel();
+        platformPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
         iconsPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
         iconsPanel.add(platformPanel);
         
         featuresPanel = new HorizontalPanel();
+        featuresPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
         iconsPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
         iconsPanel.add(featuresPanel);
         
-        add(iconsPanel);
-
-        buttonsPanel = new HorizontalPanel();
-        buttonsPanel.setWidth("100%");
-        buttonsPanel.addStyleName(Utils.sandboxStyle.detailsInnerBottom());
+        bottomPanel.add(iconsPanel);
+        
+        rootPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+        rootPanel.add(bottomPanel);
+        rootPanel.setCellHeight(bottomPanel, "100%");
     }
 
     public void setProjects(Bundle bundle, Project... projects) {
+        getWidget(0).setVisible(bundle != null);
+        getWidget(1).setVisible(bundle != null);    	
         constructButtons(bundle != null);
 
         Set<Platform> platforms = new HashSet<>();
@@ -149,14 +175,16 @@ public class DemoProjectWidget extends VerticalPanel implements
                 features.add(feature);
             }
         }
-        Iterator<Platform> platformIterator = platforms.iterator();
-        while (platformIterator.hasNext()) {
-            Platform platform = platformIterator.next();
-            Image platformImage = new Image(Utils.getPlatformIcon(platform));
-            platformImage.getElement().getStyle().setPaddingRight(4, Unit.PX);
+        Image platformImage;
+        if (platforms.size() > 1) {
+        	platformImage = new Image(Utils.resources.multiplePlatforms());
+        	platformImage.setTitle(Utils.constants.multiplePlatforms());
+        } else {
+        	Platform platform = platforms.iterator().next();
+        	platformImage = new Image(Utils.getPlatformIcon(platform));
             platformImage.setTitle(Utils.getPlatformText(platform));
-            platformPanel.add(platformImage);
         }
+        platformPanel.add(platformImage);
         Iterator<Feature> featureIterator = features.iterator();
         while (featureIterator.hasNext()) {
             Feature feature = featureIterator.next();
@@ -196,9 +224,12 @@ public class DemoProjectWidget extends VerticalPanel implements
 
     }
 
-    private void constructButtons(boolean isBundle) {
+    private void constructButtons(final boolean isBundle) {
 
         if (!isBundle) {
+        	HorizontalPanel buttonsPanel = new HorizontalPanel();
+            buttonsPanel.setWidth("100%");
+            buttonsPanel.addStyleName(Utils.sandboxStyle.detailsInnerBottom());
             buttonsPanel.setWidth("100%");
             buttonsPanel.addStyleName(Utils.sandboxStyle.detailsInnerBottom());
             getSourceButton = new Button(Utils.constants.getSourceCode());
@@ -210,18 +241,7 @@ public class DemoProjectWidget extends VerticalPanel implements
             buttonsPanel.add(getSourceButton);
             buttonsPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
             buttonsPanel.add(getBinaryButton);
-            add(buttonsPanel);
-
-            detailsPanel.addHandler(new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent event) {
-                    if (project != null) {
-                        ProjectActionEvent action = new ProjectActionEvent(project,
-                                ProjectAction.OPEN_DETAILS);
-                        fireEvent(action);
-                    }
-                }
-            }, ClickEvent.getType());
+            bottomPanel.add(buttonsPanel);
 
             getSourceButton.addClickHandler(new ClickHandler() {
                 @Override
@@ -244,27 +264,19 @@ public class DemoProjectWidget extends VerticalPanel implements
                     }
                 }
             });
-        } else {
-            buttonsPanel.setHeight("54px");
-            add(buttonsPanel);
-
-            detailsPanel.addHandler(new ClickHandler() {
-                @Override
-                public void onClick(ClickEvent event) {
-                    if (project != null) {
-                        ProjectActionEvent action = new ProjectActionEvent(project,
-                                ProjectAction.OPEN_BUNDLE_DETAILS);
-                        fireEvent(action);
-                    }
+        }       
+        
+        detailsPanel.addHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                if (project != null) {
+                    ProjectActionEvent action = new ProjectActionEvent(project,
+                    		isBundle ? ProjectAction.OPEN_BUNDLE_DETAILS : ProjectAction.OPEN_DETAILS);
+                    fireEvent(action);
                 }
-            }, ClickEvent.getType());
-        }
-
+            }
+        }, ClickEvent.getType());
     }
-
-//    public Project getProject() {
-//        return project;
-//    }
 
     public FilterItem getFilterItem() {
         return filterItem;

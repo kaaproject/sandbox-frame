@@ -176,10 +176,9 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
             JAXBContext jc = JAXBContext.newInstance("org.kaaproject.kaa.examples.common.projects");
             Unmarshaller unmarshaller = jc.createUnmarshaller();
 
-//            String demoProkectsXmlFile = Environment.getServerHomeDir() + "/" + DEMO_PROJECTS_FOLDER + "/" + DEMO_PROJECTS_XML_FILE;
-            String demoProkectsXmlFile = "/home/krp/demo_projects_bundles.xml";
+            String demoProjectsXmlFile = Environment.getServerHomeDir() + "/" + DEMO_PROJECTS_FOLDER + "/" + DEMO_PROJECTS_XML_FILE;
 
-            ProjectsConfig projectsConfig = (ProjectsConfig) unmarshaller.unmarshal(new File(demoProkectsXmlFile));
+            ProjectsConfig projectsConfig = (ProjectsConfig) unmarshaller.unmarshal(new File(demoProjectsXmlFile));
             for (Project project : projectsConfig.getProjects()) {
                 projectsMap.put(project.getId(), project);
                 LOG.info("Demo project: id [{}] name [{}]", project.getId(), project.getName());
