@@ -154,6 +154,9 @@ public class FilterViewImpl extends LeftPanelWidget implements FilterView, Value
     @Override
     public void setActive(boolean active) {
     	super.setActive(active);
+    	featureFilter.setActive(active);
+    	platformFilter.setActive(active);
+    	complexityFilter.setActive(active);
     }
 
 }

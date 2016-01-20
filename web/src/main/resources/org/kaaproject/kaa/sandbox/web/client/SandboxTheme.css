@@ -159,9 +159,13 @@
     display: flex;
     display: -webkit-box; /* Safari */
     width: 235px;
-    margin-left: -200px;
+    margin-left: -190px;
     transition: margin-left .3s;
     -webkit-transition:  margin-left .3s; /* Safari */
+}
+
+.leftPanel.isScroll {
+	margin-left: -170px;
 }
 
 .leftPanel.isOpen {
@@ -182,7 +186,7 @@
     text-decoration: none;
 }
 
-.leftPanel .toggle.inactive {
+.leftPanel.isInactive .toggle {
 	color: #AAA;
 }
 
@@ -227,6 +231,28 @@
     padding: 10px 15px;
 }
 
+.leftPanel.isOpen .navPrimary li > a > span.icon {
+	left: 0px;
+	transition: left .3s;
+    -webkit-transition:  left .3s; /* Safari */
+}
+
+.leftPanel .navPrimary li > a > span.icon {
+	left: 190px;
+    transition: left .3s;
+    -webkit-transition:  left .3s; /* Safari */
+}
+
+.leftPanel.isScroll .navPrimary li > a > span.icon {
+	left: 170px;
+    transition: left .3s;
+    -webkit-transition:  left .3s; /* Safari */
+}
+
+.leftPanel.isInactive .navPrimary li > a > span.icon {
+	opacity: 0.4;
+}
+
 .navPrimary li > a > span.icon {
     margin: -12px 10px -12px -15px;
     line-height: 44px;
@@ -237,22 +263,28 @@
     border-right: 1px solid rgba(255, 255, 255, 0.05);
     text-align: center;
     position: relative;
-    overflow: hidden;
+    overflow: hidden;    
+    opacity: 1;
+}
+
+.leftPanel.isInactive .navPrimary ul.nav > li > a > span.icon > b,
+.leftPanel.isInactive .navPrimary ul.nav > li.active > a > span.icon > b {
+    left: -42px !important;
+}
+
+.leftPanel .navPrimary ul.nav > li.active > a > span.icon > b {
+    left: 0px !important;
 }
 
 .navPrimary li>a>span.icon>b {
   position: absolute;
-  left: -42px;
+  left: -42px; 
   width: 100%;
   top: 0;
   bottom: 0;
   z-index: 0;
   transition: left .25s;
   -webkit-transition: left .25s;
-}
-
-.navPrimary ul.nav > li.active > a > span.icon > b {
-    left: 0px !important;
 }
 
 .navPrimary ul.nav > li.active > a > span.icon {
