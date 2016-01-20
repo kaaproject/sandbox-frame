@@ -77,12 +77,19 @@ public class FilterPanel extends NavWidget implements HasValueChangeHandlers<Boo
         return items;
     }
     
+    public void setActive(boolean active) {
+    	for (FilterItem item : items) {
+    		item.setActive(active);
+    	}
+    }
+    
     public class FilterItem extends ListItem implements HasValue<Boolean> {
         
         private Anchor anchor;
         
         private boolean valueChangeHandlerInitialized;
-        private boolean active = false;
+        private boolean value = false;
+        private boolean active = true;
         
         FilterItem(ImageResource imageRes, String bgClass, String text) {
             anchor = new Anchor();
@@ -104,6 +111,7 @@ public class FilterPanel extends NavWidget implements HasValueChangeHandlers<Boo
 
             if (imageRes != null) {
                 Image image = new Image(imageRes);
+                image.setTitle(text);
                 DOM.insertChild(span, image.getElement(), 0);
             }
         }
@@ -112,7 +120,9 @@ public class FilterPanel extends NavWidget implements HasValueChangeHandlers<Boo
             anchor.addClickHandler(new ClickHandler() {
               @Override
               public void onClick(ClickEvent event) {
-                setValue(!active, true);
+            	  if (FilterItem.this.active) {
+            		  setValue(!FilterItem.this.value, true);
+            	  }
               }
             });
         }
@@ -125,11 +135,17 @@ public class FilterPanel extends NavWidget implements HasValueChangeHandlers<Boo
                 valueChangeHandlerInitialized = true;
               }
               return addHandler(handler, ValueChangeEvent.getType());
-            }
+        }
+        
+        public void setActive(boolean active) {
+        	if (this.active != active) {
+        		this.active = active;
+        	}
+        }
 
         @Override
         public Boolean getValue() {
-            return active;
+            return this.value;
         }
 
         @Override
@@ -139,16 +155,16 @@ public class FilterPanel extends NavWidget implements HasValueChangeHandlers<Boo
 
         @Override
         public void setValue(Boolean value, boolean fireEvents) {
-            if (this.active != value) {
-                this.active = value;
-                if (active) {
+            if (this.value != value) {
+                this.value = value;
+                if (this.value) {
                     addStyleName(Utils.sandboxStyle.active());
                 } else {
                     removeStyleName(Utils.sandboxStyle.active());
                 }
             }
             if (fireEvents) {
-                ValueChangeEvent.fire(this, value);
+                ValueChangeEvent.fire(this, this.value);
             }
         }
     }
