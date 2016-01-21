@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 CyberVision, Inc.
+ * Copyright 2014-2016 CyberVision, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,10 @@ import org.kaaproject.kaa.sandbox.web.client.util.Utils;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -36,6 +40,11 @@ public class LeftPanelWidget extends DockLayoutPanel {
     
     private ScrollPanel contentScroll;
     private Label titleLabel;
+    private Anchor anchor;
+    
+    protected boolean isActive = true;
+    
+    private HandlerRegistration resizeHandler;
     
     public LeftPanelWidget(Unit unit) {
         super(unit);
@@ -47,13 +56,26 @@ public class LeftPanelWidget extends DockLayoutPanel {
         titleLabel.addStyleName(Utils.sandboxStyle.title());
         titlePanel.add(titleLabel);
         titlePanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-        Anchor anchor = new Anchor();
+        anchor = new Anchor();
         anchor.addStyleName(Utils.sandboxStyle.toggle());
         titlePanel.add(anchor);
         titlePanel.setSize("100%", "100%");
         addNorth(titlePanel, 40);
         
-        contentScroll = new ScrollPanel();
+        contentScroll = new ScrollPanel() {
+        	@Override
+        	public void onResize() {
+        		super.onResize();
+        		int scrollHeight = this.getScrollableElement().getClientHeight();
+        		int elementHeight = this.getContainerElement().getClientHeight();
+        		boolean isScroll = elementHeight > scrollHeight;
+        		if (isScroll && !(LeftPanelWidget.this.isOpen && LeftPanelWidget.this.isActive)) {
+        			LeftPanelWidget.this.addStyleName(Utils.sandboxStyle.isScroll());
+        		} else {
+        			LeftPanelWidget.this.removeStyleName(Utils.sandboxStyle.isScroll());
+        		}
+        	}
+        };
         contentScroll.setHeight("100%");
         add(contentScroll);
         
@@ -62,14 +84,49 @@ public class LeftPanelWidget extends DockLayoutPanel {
         anchor.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                isOpen = !isOpen;
-                if (isOpen) {
-                    addStyleName(Utils.sandboxStyle.isOpen());
-                } else {
-                    removeStyleName(Utils.sandboxStyle.isOpen());
-                }
+            	if (isActive) {
+            		setOpen(!isOpen, false);
+            	}
             }
         });
+    }
+    
+    public void setActive(boolean isActive) {
+    	if (this.isActive != isActive) {
+    		this.isActive = isActive;
+    		if (!isActive) {
+    			setOpen(false, true);
+    			addStyleName(Utils.sandboxStyle.isInactive());
+    		} else {
+    			setOpen(this.isOpen, true);
+    			removeStyleName(Utils.sandboxStyle.isInactive());
+    		}
+    	}
+    }
+    
+    private void setOpen(boolean isOpen, boolean force) {
+    	if (this.isOpen != isOpen || force) {
+    		if (!force) {
+    			this.isOpen = isOpen;
+    		}
+	        if (isOpen) {
+	            addStyleName(Utils.sandboxStyle.isOpen());
+	            removeStyleName(Utils.sandboxStyle.isScroll());
+	        	if (resizeHandler != null) {
+	        		resizeHandler.removeHandler();
+	        		resizeHandler = null;
+	        	}
+	        } else {
+	            removeStyleName(Utils.sandboxStyle.isOpen());
+	        	contentScroll.onResize();
+	        	resizeHandler = Window.addResizeHandler(new ResizeHandler() {
+	    			@Override
+	    			public void onResize(ResizeEvent event) {
+	    				contentScroll.onResize();
+	    			}
+	    		});
+	        }
+    	}
     }
     
     public void setHeadTitle(String title) {

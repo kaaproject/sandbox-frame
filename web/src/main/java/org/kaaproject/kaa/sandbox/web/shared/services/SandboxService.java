@@ -22,7 +22,9 @@ import org.kaaproject.kaa.examples.common.projects.Project;
 import org.kaaproject.kaa.sandbox.web.client.util.LogLevel;
 import org.kaaproject.kaa.sandbox.web.shared.dto.AnalyticsInfo;
 import org.kaaproject.kaa.sandbox.web.shared.dto.BuildOutputData;
+import org.kaaproject.kaa.sandbox.web.shared.dto.BundleData;
 import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectDataType;
+import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectsData;
 
 import java.util.List;
 
@@ -52,6 +54,10 @@ public interface SandboxService extends RemoteService {
     public AnalyticsInfo getAnalyticsInfo() throws SandboxServiceException;
 
     public List<Project> getDemoProjects() throws SandboxServiceException;
+
+    public ProjectsData getDemoProjectsData() throws SandboxServiceException;
+
+    public BundleData getProjectsBundleDataByBundleId(String bundleId) throws SandboxServiceException;
 
     public Project getDemoProject(String projectId) throws SandboxServiceException;
 

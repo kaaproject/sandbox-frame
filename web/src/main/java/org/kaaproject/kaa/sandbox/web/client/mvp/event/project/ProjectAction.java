@@ -20,6 +20,7 @@ public enum ProjectAction {
 
     GET_SOURCE_CODE,
     GET_BINARY,
-    OPEN_DETAILS;
-    
+    OPEN_DETAILS,
+    OPEN_BUNDLE_DETAILS;
+
 }

@@ -21,5 +21,7 @@ import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.HasProjectFilterE
 import com.google.gwt.user.client.ui.IsWidget;
 
 public interface FilterView extends IsWidget, HasProjectFilterEventHandlers {
+	
+	void setActive(boolean active);
 
 }

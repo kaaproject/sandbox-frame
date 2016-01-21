@@ -40,6 +40,42 @@
     font-size: 23px;
 }
 
+.carouselLeftButton, .carouselLeftButton:hover {
+    border: 1px solid #CCCCCC;
+    background: #EEEEEE;
+    color: #444444;
+    padding: 2px 10px;
+}
+
+.carouselLeftButton:hover {
+    background: #CCCCCC;
+    border-color: #AAAAAA;
+}
+
+.carouselLeftButton:after {
+    content: "<";
+    font-weight: bold;
+    font-size: 23px;
+}
+
+.carouselRightButton, .carouselRightButton:hover {
+    border: 1px solid #CCCCCC;
+    background: #EEEEEE;
+    color: #444444;
+    padding: 2px 10px;
+}
+
+.carouselRightButton:hover {
+    background: #CCCCCC;
+    border-color: #AAAAAA;
+}
+
+.carouselRightButton:after {
+    content: ">";
+    font-weight: bold;
+    font-size: 23px;
+}
+
 .appHeaderPanel {
     box-shadow: inset 8px 0px 8px -8px rgba(0,0,0,0.5);
     white-space: nowrap;
@@ -123,9 +159,13 @@
     display: flex;
     display: -webkit-box; /* Safari */
     width: 235px;
-    margin-left: -200px;
+    margin-left: -190px;
     transition: margin-left .3s;
     -webkit-transition:  margin-left .3s; /* Safari */
+}
+
+.leftPanel.isScroll {
+	margin-left: -170px;
 }
 
 .leftPanel.isOpen {
@@ -144,6 +184,10 @@
     cursor: pointer;
     color: #FFF;
     text-decoration: none;
+}
+
+.leftPanel.isInactive .toggle {
+	color: #AAA;
 }
 
 .leftPanel .toggle::before {
@@ -187,6 +231,28 @@
     padding: 10px 15px;
 }
 
+.leftPanel.isOpen .navPrimary li > a > span.icon {
+	left: 0px;
+	transition: left .3s;
+    -webkit-transition:  left .3s; /* Safari */
+}
+
+.leftPanel .navPrimary li > a > span.icon {
+	left: 190px;
+    transition: left .3s;
+    -webkit-transition:  left .3s; /* Safari */
+}
+
+.leftPanel.isScroll .navPrimary li > a > span.icon {
+	left: 170px;
+    transition: left .3s;
+    -webkit-transition:  left .3s; /* Safari */
+}
+
+.leftPanel.isInactive .navPrimary li > a > span.icon {
+	opacity: 0.4;
+}
+
 .navPrimary li > a > span.icon {
     margin: -12px 10px -12px -15px;
     line-height: 44px;
@@ -197,22 +263,28 @@
     border-right: 1px solid rgba(255, 255, 255, 0.05);
     text-align: center;
     position: relative;
-    overflow: hidden;
+    overflow: hidden;    
+    opacity: 1;
+}
+
+.leftPanel.isInactive .navPrimary ul.nav > li > a > span.icon > b,
+.leftPanel.isInactive .navPrimary ul.nav > li.active > a > span.icon > b {
+    left: -42px !important;
+}
+
+.leftPanel .navPrimary ul.nav > li.active > a > span.icon > b {
+    left: 0px !important;
 }
 
 .navPrimary li>a>span.icon>b {
   position: absolute;
-  left: -42px;
+  left: -42px; 
   width: 100%;
   top: 0;
   bottom: 0;
   z-index: 0;
   transition: left .25s;
   -webkit-transition: left .25s;
-}
-
-.navPrimary ul.nav > li.active > a > span.icon > b {
-    left: 0px !important;
 }
 
 .navPrimary ul.nav > li.active > a > span.icon {
@@ -332,9 +404,17 @@
 }
 
 .demoProjectWidget {
-	width: 190px;
-	margin: 10px;
+	width: 230px;
+	height: 340px;
+	margin-right: 10px;
 	display: inline-block;
+}
+
+.demoProjectWidget .projectCard {
+	width: 190px;
+	height: 300px;
+	margin: 10px;
+	background-color: #fff;
 	
 	-webkit-border-radius: 4px;
     -moz-border-radius: 4px;
@@ -487,4 +567,10 @@
 	border: solid 1px #CCC;
 	font-size: 12px;
 	padding: 8px;
+}
+
+.bundleProjectsPanel {
+	box-shadow: inset 0 8px 8px -8px rgba(0, 0, 0, 0.5);
+	padding-top: 10px;
+	padding-bottom: 10px;
 }

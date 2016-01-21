@@ -51,6 +51,7 @@ import org.atmosphere.interceptor.AtmosphereResourceLifecycleInterceptor;
 import org.atmosphere.interceptor.IdleResourceInterceptor;
 import org.atmosphere.interceptor.SuspendTrackerInterceptor;
 import org.kaaproject.kaa.common.dto.file.FileData;
+import org.kaaproject.kaa.examples.common.projects.Bundle;
 import org.kaaproject.kaa.examples.common.projects.Platform;
 import org.kaaproject.kaa.examples.common.projects.Project;
 import org.kaaproject.kaa.examples.common.projects.ProjectsConfig;
@@ -59,8 +60,10 @@ import org.kaaproject.kaa.sandbox.web.services.cache.CacheService;
 import org.kaaproject.kaa.sandbox.web.services.util.Utils;
 import org.kaaproject.kaa.sandbox.web.shared.dto.AnalyticsInfo;
 import org.kaaproject.kaa.sandbox.web.shared.dto.BuildOutputData;
+import org.kaaproject.kaa.sandbox.web.shared.dto.BundleData;
 import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectDataKey;
 import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectDataType;
+import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectsData;
 import org.kaaproject.kaa.sandbox.web.shared.services.SandboxService;
 import org.kaaproject.kaa.sandbox.web.shared.services.SandboxServiceException;
 import org.kaaproject.kaa.server.common.Environment;
@@ -150,6 +153,7 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
     private String analyticsTrackingId;
 
     private Map<String, Project> projectsMap = new HashMap<>();
+    private Map<String, Bundle> bundlesMap = new HashMap<>();
 
     private static String[] sandboxEnv;
 
@@ -172,12 +176,16 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
             JAXBContext jc = JAXBContext.newInstance("org.kaaproject.kaa.examples.common.projects");
             Unmarshaller unmarshaller = jc.createUnmarshaller();
 
-            String demoProkectsXmlFile = Environment.getServerHomeDir() + "/" + DEMO_PROJECTS_FOLDER + "/" + DEMO_PROJECTS_XML_FILE;
+            String demoProjectsXmlFile = Environment.getServerHomeDir() + "/" + DEMO_PROJECTS_FOLDER + "/" + DEMO_PROJECTS_XML_FILE;
 
-            ProjectsConfig projectsConfig = (ProjectsConfig) unmarshaller.unmarshal(new File(demoProkectsXmlFile));
+            ProjectsConfig projectsConfig = (ProjectsConfig) unmarshaller.unmarshal(new File(demoProjectsXmlFile));
             for (Project project : projectsConfig.getProjects()) {
                 projectsMap.put(project.getId(), project);
                 LOG.info("Demo project: id [{}] name [{}]", project.getId(), project.getName());
+            }
+            for (Bundle bundle : projectsConfig.getBundles()) {
+                bundlesMap.put(bundle.getId(), bundle);
+                LOG.info("Demo projects bundle: id [{}] name [{}]", bundle.getId(), bundle.getName());
             }
 
             if (sandboxEnv == null) {
@@ -369,6 +377,27 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
     public Project getDemoProject(String projectId)
             throws SandboxServiceException {
         return projectsMap.get(projectId);
+    }
+
+    @Override
+    public ProjectsData getDemoProjectsData() throws SandboxServiceException {
+        return new ProjectsData(projectsMap, bundlesMap);
+    }
+
+    @Override
+    public BundleData getProjectsBundleDataByBundleId(String bundleId) throws SandboxServiceException {
+        return new BundleData(bundlesMap.get(bundleId), getDemoProjectsByBundleId(bundleId));
+    }
+
+    public List<Project> getDemoProjectsByBundleId(String bundleId) throws SandboxServiceException {
+        List<Project> bundleProjects = new ArrayList<>();
+        for (Project project : projectsMap.values()) {
+            String bundle = project.getBundleId();
+            if (bundle != null && !bundle.isEmpty() && bundle.equals(bundleId)) {
+                bundleProjects.add(project);
+            }
+        }
+        return bundleProjects;
     }
 
     @Override

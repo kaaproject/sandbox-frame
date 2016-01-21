@@ -156,9 +156,19 @@
 			<groupId>org.kaaproject.kaa.server.common</groupId>
 			<artifactId>dto</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.kaaproject.kaa.server.common</groupId>
+			<artifactId>dto</artifactId>
+            <classifier>sources</classifier>
+		</dependency>
         <dependency>
             <groupId>org.kaaproject.kaa.examples</groupId>
             <artifactId>common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kaaproject.kaa.examples</groupId>
+            <artifactId>common</artifactId>
+            <classifier>sources</classifier>
         </dependency>
                 
         <!-- Embedded Jetty server -->
