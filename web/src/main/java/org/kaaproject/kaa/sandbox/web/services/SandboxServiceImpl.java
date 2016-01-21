@@ -251,11 +251,6 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
     }
 
     @Override
-    public String getKaaVersion() throws SandboxServiceException {
-        return org.kaaproject.kaa.server.common.Version.PROJECT_VERSION;
-    }
-
-    @Override
     public boolean changeKaaHostEnabled() throws SandboxServiceException {
         return guiChangeHostEnabled;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 CyberVision, Inc.
+ * Copyright 2014-2016 CyberVision, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,58 +17,52 @@
 package org.kaaproject.kaa.sandbox.web.client.layout;
 
 import org.kaaproject.avro.ui.gwt.client.AvroUiResources.AvroUiStyle;
-import org.kaaproject.kaa.sandbox.web.client.Sandbox;
 import org.kaaproject.kaa.sandbox.web.client.SandboxResources.SandboxStyle;
 import org.kaaproject.kaa.sandbox.web.client.util.Utils;
+import org.kaaproject.kaa.sandbox.web.shared.Version;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class AppLayout extends Composite {
-        interface AppLayoutUiBinder extends UiBinder<Widget, AppLayout> { }
-        private static AppLayoutUiBinder uiBinder = GWT.create(AppLayoutUiBinder.class);
+    interface AppLayoutUiBinder extends UiBinder<Widget, AppLayout> {}
 
-        @UiField SimplePanel appHeader;
-        @UiField SimpleWidgetPanel appContent;
-        @UiField HTMLPanel footerPanel;
-        @UiField SimplePanel leftPanel;
+    private static AppLayoutUiBinder uiBinder = GWT.create(AppLayoutUiBinder.class);
 
-        @UiField (provided = true) public final AvroUiStyle avroUiStyle;
-        @UiField (provided = true) public final SandboxStyle sandboxStyle;
+    @UiField SimplePanel appHeader;
+    @UiField SimpleWidgetPanel appContent;
+    @UiField HTMLPanel footerPanel;
+    @UiField SimplePanel leftPanel;
 
-        public AppLayout() {
-            avroUiStyle = Utils.avroUiStyle;
-            sandboxStyle = Utils.sandboxStyle;
-            initWidget(uiBinder.createAndBindUi(this));
-            Sandbox.getSandboxService().getKaaVersion(new AsyncCallback<String>() {
-				@Override
-				public void onSuccess(String result) {
-					footerPanel.getElement().setInnerHTML(Utils.messages.footerMessage(result));
-				}
-				
-				@Override
-				public void onFailure(Throwable caught) {
-				}
-			});
-        }
+    @UiField(provided = true) public final AvroUiStyle avroUiStyle;
+    @UiField(provided = true) public final SandboxStyle sandboxStyle;
 
-        public SimplePanel getAppHeaderHolder() {
-            return this.appHeader;
-        }
-        
-        public SimpleWidgetPanel getAppContentHolder() {
-            return this.appContent;
-        }
-        
-        public SimplePanel getLeftPanel() {
-            return this.leftPanel;
-        }
+    public AppLayout() {
+        avroUiStyle = Utils.avroUiStyle;
+        sandboxStyle = Utils.sandboxStyle;
+        initWidget(uiBinder.createAndBindUi(this));
+        footerPanel.getElement().setInnerHTML(Utils.messages.footerMessage(
+        		Version.KAA_VERSION,
+                Version.PROJECT_VERSION,
+                Version.KAA_SAMPLE_APPS_VERSION));
+    }
+
+    public SimplePanel getAppHeaderHolder() {
+        return this.appHeader;
+    }
+
+    public SimpleWidgetPanel getAppContentHolder() {
+        return this.appContent;
+    }
+
+    public SimplePanel getLeftPanel() {
+        return this.leftPanel;
+    }
 
 }
 
