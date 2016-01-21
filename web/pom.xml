@@ -256,6 +256,14 @@
                             <token>@projectVersion@</token>
                             <value>${project.version}</value>
                         </replacement>
+                        <replacement>
+                            <token>@kaaVersion@</token>
+                            <value>${kaa.version}</value>
+                        </replacement>                        
+                        <replacement>
+                            <token>@kaaSampleAppsVersion@</token>
+                            <value>${kaa-sample-apps.version}</value>
+                        </replacement>                        
                     </replacements>
                 </configuration>
             </plugin>            

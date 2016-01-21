@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 CyberVision, Inc.
+ * Copyright 2014-2016 CyberVision, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,13 @@ package org.kaaproject.kaa.sandbox.web.shared;
 public final class Version {
 
     /** The Constant PROJECT_VERSION. */
-    public static final String PROJECT_VERSION = "1.2.0-SNAPSHOT";
+    public static final String PROJECT_VERSION = "1.3.0-SNAPSHOT";
+    
+    /** The Constant KAA_VERSION. */
+    public static final String KAA_VERSION = "0.8.0-SNAPSHOT";
+
+    /** The Constant KAA_VERSION. */
+    public static final String KAA_SAMPLE_APPS_VERSION = "1.2.0-SNAPSHOT";
 
     /**
      * Instantiates a new version.

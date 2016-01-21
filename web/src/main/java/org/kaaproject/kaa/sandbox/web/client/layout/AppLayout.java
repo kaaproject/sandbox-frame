@@ -19,6 +19,7 @@ package org.kaaproject.kaa.sandbox.web.client.layout;
 import org.kaaproject.avro.ui.gwt.client.AvroUiResources.AvroUiStyle;
 import org.kaaproject.kaa.sandbox.web.client.SandboxResources.SandboxStyle;
 import org.kaaproject.kaa.sandbox.web.client.util.Utils;
+import org.kaaproject.kaa.sandbox.web.shared.Version;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -46,9 +47,9 @@ public class AppLayout extends Composite {
         sandboxStyle = Utils.sandboxStyle;
         initWidget(uiBinder.createAndBindUi(this));
         footerPanel.getElement().setInnerHTML(Utils.messages.footerMessage(
-                org.kaaproject.kaa.server.common.Version.PROJECT_VERSION,
-                org.kaaproject.kaa.sandbox.web.shared.Version.PROJECT_VERSION,
-                org.kaaproject.kaa.examples.common.shared.Version.PROJECT_VERSION));
+        		Version.KAA_VERSION,
+                Version.PROJECT_VERSION,
+                Version.KAA_SAMPLE_APPS_VERSION));
     }
 
     public SimplePanel getAppHeaderHolder() {

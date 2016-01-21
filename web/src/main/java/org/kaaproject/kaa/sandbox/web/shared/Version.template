@@ -28,6 +28,12 @@ public final class Version {
 
     /** The Constant PROJECT_VERSION. */
     public static final String PROJECT_VERSION = "@projectVersion@";
+    
+    /** The Constant KAA_VERSION. */
+    public static final String KAA_VERSION = "@kaaVersion@";
+
+    /** The Constant KAA_VERSION. */
+    public static final String KAA_SAMPLE_APPS_VERSION = "@kaaSampleAppsVersion@";
 
     /**
      * Instantiates a new version.
