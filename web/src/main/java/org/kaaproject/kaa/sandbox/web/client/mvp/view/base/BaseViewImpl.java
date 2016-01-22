@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 CyberVision, Inc.
+ * Copyright 2014-2016 CyberVision, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ public abstract class BaseViewImpl extends Composite implements BaseView {
         errorPanel = new AlertPanel(Type.ERROR);
         sandboxStyle = Utils.sandboxStyle;
         avroUiStyle = Utils.avroUiStyle;
-        initWidget(uiBinder.createAndBindUi(this));
+        initWidget(createAndBindUi());
         setTitle(getViewTitle());
         if (useDetailsPanel) {
             detailsPanel = new VerticalPanel();
@@ -71,6 +71,10 @@ public abstract class BaseViewImpl extends Composite implements BaseView {
         }
         initCenterPanel();        
         clearError();
+    }
+
+    protected Widget createAndBindUi() {
+        return uiBinder.createAndBindUi(this);
     }
 
     @Override

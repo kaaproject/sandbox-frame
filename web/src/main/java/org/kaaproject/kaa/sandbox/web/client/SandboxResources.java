@@ -116,10 +116,14 @@ public interface SandboxResources extends ClientBundle {
     @Source("images/esp8266_platform.png")
     ImageResource esp8266Platform();
 
-   @ImageOptions(width = 29, height = 21)
+    @ImageOptions(width = 29, height = 21)
     @Source("images/cc32xx_platform.png")
     ImageResource cc32xxPlatform();
-
+    
+    @ImageOptions(width = 28, height = 28)
+    @Source("images/multiple_platforms.png")
+    ImageResource multiplePlatforms();
+    
     @ImageOptions(width = 30, height = 26)
     @Source("images/complexity_basic.png")
     ImageResource basic();
@@ -143,5 +147,6 @@ public interface SandboxResources extends ClientBundle {
     @ImageOptions(width = 21, height = 56)
     @Source("images/complexity_advanced_s.png")
     ImageResource advancedStar();
+    
 
 }

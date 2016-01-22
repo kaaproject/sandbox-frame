@@ -16,9 +16,17 @@
 
 package org.kaaproject.kaa.sandbox.web.client.mvp.view.widget;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import org.kaaproject.kaa.examples.common.projects.Bundle;
+import org.kaaproject.kaa.examples.common.projects.Complexity;
 import org.kaaproject.kaa.examples.common.projects.Feature;
 import org.kaaproject.kaa.examples.common.projects.Platform;
 import org.kaaproject.kaa.examples.common.projects.Project;
+import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.FilterableItem;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.HasProjectActionEventHandlers;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.ProjectAction;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.ProjectActionEvent;
@@ -42,19 +50,25 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class DemoProjectWidget extends VerticalPanel implements
-        HasProjectActionEventHandlers {
+public class DemoProjectWidget extends AbsolutePanel implements HasProjectActionEventHandlers {
 
+    private VerticalPanel detailsPanel;
     private Image applicationImage;
     private Image complexityImage;
+    
+    private VerticalPanel bottomPanel;
     private HorizontalPanel platformPanel;
     private HorizontalPanel featuresPanel;
+
     private Anchor projectTitle;
     private Button getSourceButton;
     private Button getBinaryButton;
 
     private Project project;
-
+    private FilterableItem filterItem;
+    
+    
+    
     private ProjectWidgetAnimation projectWidgetAnimation;
 
     public DemoProjectWidget() {
@@ -62,10 +76,26 @@ public class DemoProjectWidget extends VerticalPanel implements
 
         addStyleName(Utils.sandboxStyle.demoProjectWidget());
         setVisible(false);
+        projectWidgetAnimation = new ProjectWidgetAnimation(this, 230, 10.0);
 
-        projectWidgetAnimation = new ProjectWidgetAnimation(this, 190, 10.0);
+        SimplePanel backPanel = new SimplePanel();
+        backPanel.addStyleName(Utils.sandboxStyle.projectCard());
+        add(backPanel, 20, 20);        
+        backPanel = new SimplePanel();
+        backPanel.addStyleName(Utils.sandboxStyle.projectCard());
+        add(backPanel, 10, 10);        
+        backPanel = new SimplePanel();
+        backPanel.addStyleName(Utils.sandboxStyle.projectCard());
+        add(backPanel, 0, 0);
+        
+        getWidget(0).setVisible(false);
+        getWidget(1).setVisible(false);
+        
+        VerticalPanel rootPanel = new VerticalPanel();
+        rootPanel.setHeight("100%");
+        backPanel.add(rootPanel);
 
-        VerticalPanel detailsPanel = new VerticalPanel();
+        detailsPanel = new VerticalPanel();
         detailsPanel.addStyleName(Utils.sandboxStyle.details());
         detailsPanel.sinkEvents(Event.ONCLICK);
 
@@ -79,8 +109,6 @@ public class DemoProjectWidget extends VerticalPanel implements
         applicationImage = new Image();
         complexityImage = new Image();
         applicationImage.getElement().getStyle().setHeight(128, Unit.PX);
-        applicationImage.getElement().getStyle().setZIndex(1000);
-        complexityImage.getElement().getStyle().setZIndex(2000);
         platformImagePanel
                 .setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
         
@@ -106,7 +134,10 @@ public class DemoProjectWidget extends VerticalPanel implements
 
         detailsPanel.add(titlePanel);
 
-        add(detailsPanel);
+        rootPanel.add(detailsPanel);
+        
+        bottomPanel = new VerticalPanel();
+        bottomPanel.setWidth("100%");
 
         HorizontalPanel iconsPanel = new HorizontalPanel();
         iconsPanel.setWidth("100%");
@@ -118,89 +149,139 @@ public class DemoProjectWidget extends VerticalPanel implements
         iconsPanel.add(platformPanel);
         
         featuresPanel = new HorizontalPanel();
+        featuresPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
         iconsPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
         iconsPanel.add(featuresPanel);
         
-        add(iconsPanel);
-
-        HorizontalPanel buttonsPanel = new HorizontalPanel();
-        buttonsPanel.setWidth("100%");
-        buttonsPanel.addStyleName(Utils.sandboxStyle.detailsInnerBottom());
-        getSourceButton = new Button(Utils.constants.getSourceCode());
-        getSourceButton.addStyleName(Utils.sandboxStyle.action());
-        getSourceButton.getElement().getStyle().setMarginRight(20, Unit.PX);
-        getBinaryButton = new Button(Utils.constants.getBinary());
-        getBinaryButton.addStyleName(Utils.sandboxStyle.action());
-        buttonsPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
-        buttonsPanel.add(getSourceButton);
-        buttonsPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-        buttonsPanel.add(getBinaryButton);
-        add(buttonsPanel);
-
-        detailsPanel.addHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                if (project != null) {
-                    ProjectActionEvent action = new ProjectActionEvent(project,
-                                                    ProjectAction.OPEN_DETAILS);
-                    fireEvent(action);
-                }
-            }
-        }, ClickEvent.getType());
-
-        getSourceButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                if (project != null) {
-                    ProjectActionEvent action = new ProjectActionEvent(project, 
-                                                    ProjectAction.GET_SOURCE_CODE);
-                    fireEvent(action);
-                }
-            }
-        });
-
-        getBinaryButton.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                if (project != null) {
-                    ProjectActionEvent action = new ProjectActionEvent(project, 
-                                                    ProjectAction.GET_BINARY);
-                    fireEvent(action);
-                }
-            }
-        });
+        bottomPanel.add(iconsPanel);
+        
+        rootPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+        rootPanel.add(bottomPanel);
+        rootPanel.setCellHeight(bottomPanel, "100%");
     }
 
-    public void setProject(Project project) {
-        this.project = project;
-        if (project.getIconBase64() != null
-                && project.getIconBase64().length() > 0) {
-            applicationImage.setUrl("data:image/png;base64,"
-                    + project.getIconBase64());
+    public void setProjects(Bundle bundle, Project... projects) {
+        getWidget(0).setVisible(bundle != null);
+        getWidget(1).setVisible(bundle != null);    	
+        constructButtons(bundle != null);
+
+        Set<Platform> platforms = new HashSet<>();
+        Set<Feature> features = new HashSet<>();
+        for (Project project : projects) {
+            platforms.addAll(project.getPlatforms());
+            for (Feature feature : project.getFeatures()) {
+                features.add(feature);
+            }
+        }
+        Image platformImage;
+        if (platforms.size() > 1) {
+        	platformImage = new Image(Utils.resources.multiplePlatforms());
+        	platformImage.setTitle(Utils.constants.multiplePlatforms());
         } else {
-            applicationImage.setResource(Utils.getProjectIconBig(project));
+        	Platform platform = platforms.iterator().next();
+        	platformImage = new Image(Utils.getPlatformIcon(platform));
+            platformImage.setTitle(Utils.getPlatformText(platform));
         }
-        complexityImage.setResource(Utils.getComplexityStarIcon(project.getComplexity()));
-        projectTitle.setText(project.getName());
-        projectTitle.setTitle(project.getName());
-        for (Platform platform : project.getPlatforms()) {
-            Image image = new Image(Utils.getPlatformIcon(platform));
-            image.setTitle(Utils.getPlatformText(platform));
-            image.getElement().getStyle().setPaddingRight(4, Unit.PX);
-            platformPanel.add(image);
-        }
-        for (Feature feature : project.getFeatures()) {
+        platformPanel.add(platformImage);
+        Iterator<Feature> featureIterator = features.iterator();
+        while (featureIterator.hasNext()) {
+            Feature feature = featureIterator.next();
             Image image = new Image(Utils.getFeatureIcon(feature));
             image.setTitle(Utils.getFeatureText(feature));
             image.getElement().getStyle().setPaddingRight(4, Unit.PX);
             featuresPanel.add(image);
         }
-        getBinaryButton.setVisible(project.getDestBinaryFile() != null && 
-                project.getDestBinaryFile().length() > 0);
+
+        project = projects[0];
+
+        Complexity complexity = null;
+        if (bundle == null) {
+            if (project.getIconBase64() != null && project.getIconBase64().length() > 0) {
+                applicationImage.setUrl("data:image/png;base64," + project.getIconBase64());
+            } else {
+                applicationImage.setResource(Utils.getProjectIconBig(project));
+            }
+            complexity = project.getComplexity();
+            complexityImage.setResource(Utils.getComplexityStarIcon(complexity));
+            projectTitle.setText(project.getName());
+            projectTitle.setTitle(project.getName());
+
+            getBinaryButton.setVisible(project.getDestBinaryFile() != null &&
+                    project.getDestBinaryFile().length() > 0);
+        } else {
+            Set<Complexity> bundleComplexities = new HashSet<>();
+            for (Project project : projects) {
+                bundleComplexities.add(project.getComplexity());
+            }
+            if (bundle.getIconBase64() != null && bundle.getIconBase64().length() > 0) {
+                applicationImage.setUrl("data:image/png;base64," + bundle.getIconBase64());
+            } else {
+                applicationImage.setResource(Utils.getProjectIconBig(project));
+            }
+            complexity = Collections.max(bundleComplexities);
+            complexityImage.setResource(Utils.getComplexityStarIcon(complexity));
+            projectTitle.setText(bundle.getName());
+            projectTitle.setTitle(bundle.getName());
+        }
+        filterItem = new FilterableItem(platforms, features, complexity);
     }
 
-    public Project getProject() {
-        return project;
+    private void constructButtons(final boolean isBundle) {
+
+        if (!isBundle) {
+        	HorizontalPanel buttonsPanel = new HorizontalPanel();
+            buttonsPanel.setWidth("100%");
+            buttonsPanel.addStyleName(Utils.sandboxStyle.detailsInnerBottom());
+            buttonsPanel.setWidth("100%");
+            buttonsPanel.addStyleName(Utils.sandboxStyle.detailsInnerBottom());
+            getSourceButton = new Button(Utils.constants.getSourceCode());
+            getSourceButton.addStyleName(Utils.sandboxStyle.action());
+            getSourceButton.getElement().getStyle().setMarginRight(20, Unit.PX);
+            getBinaryButton = new Button(Utils.constants.getBinary());
+            getBinaryButton.addStyleName(Utils.sandboxStyle.action());
+            buttonsPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
+            buttonsPanel.add(getSourceButton);
+            buttonsPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+            buttonsPanel.add(getBinaryButton);
+            bottomPanel.add(buttonsPanel);
+
+            getSourceButton.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    if (project != null) {
+                        ProjectActionEvent action = new ProjectActionEvent(project,
+                                ProjectAction.GET_SOURCE_CODE);
+                        fireEvent(action);
+                    }
+                }
+            });
+
+            getBinaryButton.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    if (project != null) {
+                        ProjectActionEvent action = new ProjectActionEvent(project,
+                                ProjectAction.GET_BINARY);
+                        fireEvent(action);
+                    }
+                }
+            });
+        }       
+        
+        detailsPanel.addHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                if (project != null) {
+                    ProjectActionEvent action = new ProjectActionEvent(project,
+                    		isBundle ? ProjectAction.OPEN_BUNDLE_DETAILS : ProjectAction.OPEN_DETAILS);
+                    fireEvent(action);
+                }
+            }
+        }, ClickEvent.getType());
+    }
+
+    public FilterableItem getFilterItem() {
+        return filterItem;
     }
 
     @Override

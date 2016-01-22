@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 CyberVision, Inc.
+ * Copyright 2014-2016 CyberVision, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.kaaproject.kaa.sandbox.web.client.util;
 
+import org.kaaproject.kaa.examples.common.projects.Bundle;
 import org.kaaproject.kaa.examples.common.projects.Project;
 import org.kaaproject.kaa.sandbox.web.shared.Version;
 
@@ -63,13 +64,20 @@ public class Analytics {
 	
 	private static String currentScreen;
 	
-	public static void switchProjectScreen(Project project) {		
+	public static void switchBundleScreen(Bundle bundle) {
+		if (inited) {
+			currentScreen = bundle.getName();
+			switchScreenImpl(currentScreen);
+		}
+	}
+
+	public static void switchProjectScreen(Project project) {
 		if (inited) {
 			currentScreen = project.getName() + " - " + Utils.getPlatformText(project.getPlatforms().get(0));
 			switchScreenImpl(currentScreen);
 		}
 	}
-	
+
 	public static void switchScreen(String screenName) {
 		if (inited) {
 			currentScreen = screenName;
