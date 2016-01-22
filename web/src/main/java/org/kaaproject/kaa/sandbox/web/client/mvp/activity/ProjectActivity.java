@@ -115,7 +115,7 @@ public class ProjectActivity extends AbstractActivity {
                 if (project.getIconBase64() != null && project.getIconBase64().length() > 0) {
                     view.getApplicationImage().setUrl("data:image/png;base64,"+project.getIconBase64());
                 } else {
-                    view.getApplicationImage().setResource(Utils.getPlatformIconBig(project.getPlatforms().get(0)));
+                    view.getApplicationImage().setResource(Utils.getProjectIconBig(project));
                 }
                 view.setProjectTitle(project.getName());
                 view.setPlatforms(project.getPlatforms());

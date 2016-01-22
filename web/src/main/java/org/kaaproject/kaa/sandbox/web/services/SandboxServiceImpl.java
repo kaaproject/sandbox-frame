@@ -15,10 +15,12 @@
  */
 package org.kaaproject.kaa.sandbox.web.services;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -51,9 +53,10 @@ import org.atmosphere.interceptor.AtmosphereResourceLifecycleInterceptor;
 import org.atmosphere.interceptor.IdleResourceInterceptor;
 import org.atmosphere.interceptor.SuspendTrackerInterceptor;
 import org.kaaproject.kaa.common.dto.file.FileData;
+import org.kaaproject.kaa.examples.common.projects.Platform;
 import org.kaaproject.kaa.examples.common.projects.Project;
 import org.kaaproject.kaa.examples.common.projects.ProjectsConfig;
-import org.kaaproject.kaa.examples.common.projects.SdkPlatform;
+import org.kaaproject.kaa.examples.common.projects.SdkLanguage;
 import org.kaaproject.kaa.sandbox.web.client.util.LogLevel;
 import org.kaaproject.kaa.sandbox.web.services.cache.CacheService;
 import org.kaaproject.kaa.sandbox.web.services.util.Utils;
@@ -70,9 +73,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 
 @Service("sandboxService")
 @ManagedService(path = "/sandbox/atmosphere/rpc",
@@ -400,7 +400,7 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
                 String sdkProfileId = project.getSdkProfileId();
                 outStream.println("SDK profile id of project: " + sdkProfileId);
                 outStream.println("Getting SDK for requested project...");
-                FileData sdkFileData = cacheService.getSdk(sdkProfileId, project.getSdkPlatform());
+                FileData sdkFileData = cacheService.getSdk(project.getId());
                 if (sdkFileData != null) {
                     outStream.println("Successfuly got SDK.");
                     File rootDir = createTempDirectory("demo-project");
@@ -455,10 +455,12 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
 
                             binaryFileData.setFileName(binaryFileName);
                             binaryFileData.setFileData(binaryFileBytes);
-                            if (project.getSdkPlatform() == SdkPlatform.ANDROID) {
-                                binaryFileData.setContentType("application/vnd.android.package-archive");
-                            } else if (project.getSdkPlatform() == SdkPlatform.JAVA) {
-                                binaryFileData.setContentType("application/java-archive");
+                            if (project.getSdkLanguage() == SdkLanguage.JAVA) {
+                            	if (project.getPlatforms().contains(Platform.ANDROID)) {
+                            		binaryFileData.setContentType("application/vnd.android.package-archive");
+                            	} else {
+                            		binaryFileData.setContentType("application/java-archive");
+                            	}
                             }
                             cacheService.putProjectFile(dataKey, binaryFileData);
                         }

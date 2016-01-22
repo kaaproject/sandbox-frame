@@ -17,10 +17,14 @@ package org.kaaproject.kaa.sandbox.web.services;
 
 import org.kaaproject.kaa.common.dto.admin.SdkPlatform;
 import org.kaaproject.kaa.common.dto.file.FileData;
+import org.kaaproject.kaa.examples.common.projects.Platform;
+import org.kaaproject.kaa.examples.common.projects.Project;
+import org.kaaproject.kaa.examples.common.projects.SdkLanguage;
 import org.kaaproject.kaa.sandbox.web.services.cache.CacheService;
 import org.kaaproject.kaa.sandbox.web.services.rest.AdminClientProvider;
 import org.kaaproject.kaa.sandbox.web.services.util.Utils;
 import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectDataKey;
+import org.kaaproject.kaa.sandbox.web.shared.services.SandboxService;
 import org.kaaproject.kaa.sandbox.web.shared.services.SandboxServiceException;
 import org.kaaproject.kaa.server.common.admin.AdminClient;
 import org.slf4j.Logger;
@@ -46,6 +50,9 @@ public class CacheServiceImpl implements CacheService {
 
     @Autowired
     private AdminClientProvider clientProvider;
+    
+    @Autowired
+    private SandboxService sandboxService;
 
     /**
      * The thrift host.
@@ -60,13 +67,14 @@ public class CacheServiceImpl implements CacheService {
     private String tenantDeveloperPassword;
 
     @Override
-    @Cacheable(value = SDK_CACHE, key = "#p0.concat('-').concat(#p1.toString())")
-    public FileData getSdk(String sdkProfileId, org.kaaproject.kaa.examples.common.projects.SdkPlatform targetPlatform) throws SandboxServiceException {
+    @Cacheable(value = SDK_CACHE, key = "#projectId")
+    public FileData getSdk(String projectId) throws SandboxServiceException {
+    	Project project = sandboxService.getDemoProject(projectId);
         AdminClient client = clientProvider.getClient();
         client.login(tenantDeveloperUser, tenantDeveloperPassword);
         FileData fileData;
         try {
-            fileData = client.downloadSdk(sdkProfileId, toSdkPlatform(targetPlatform));
+            fileData = client.downloadSdk(project.getSdkProfileId(), getSdkPlatform(project));
         } catch (Exception e) {
             throw Utils.handleException(e);
         }
@@ -119,18 +127,20 @@ public class CacheServiceImpl implements CacheService {
         LOG.info("All caches have been completely flushed.");
     }
 
-    private static SdkPlatform toSdkPlatform(org.kaaproject.kaa.examples.common.projects.SdkPlatform targetPlatform) {
-        switch (targetPlatform) {
-            case ANDROID:
-                return SdkPlatform.ANDROID;
+    private static SdkPlatform getSdkPlatform(Project project) {
+        switch (project.getSdkLanguage()) {
             case C:
                 return SdkPlatform.C;
             case CPP:
                 return SdkPlatform.CPP;
             case JAVA:
-                return SdkPlatform.JAVA;
+            	if (project.getPlatforms().contains(Platform.ANDROID)) {
+            		return SdkPlatform.ANDROID;
+            	} else {
+            		return SdkPlatform.JAVA;
+            	}
             default:
-                throw new IllegalArgumentException("Unsupported platform " + targetPlatform);
+                throw new IllegalArgumentException("Unsupported language " + project.getSdkLanguage());
         }
     }
 

@@ -89,35 +89,35 @@ public interface SandboxResources extends ClientBundle {
     ImageResource dataCollectionFeature();
 
     @ImageOptions(width = 28, height = 28)
+    @Source("images/java_language.png")
+    ImageResource javaLanguage();
+
+    @ImageOptions(width = 24, height = 24)
+    @Source("images/c_language.png")
+    ImageResource cLanguage();
+
+    @ImageOptions(width = 25, height = 28)
+    @Source("images/cpp_language.png")
+    ImageResource cppLanguage();
+
+    @ImageOptions(width = 28, height = 28)
     @Source("images/android_platform.png")
     ImageResource androidPlatform();
 
     @ImageOptions(width = 24, height = 24)
     @Source("images/android_platform.png")
     ImageResource androidPlatformFilter();
-
-    @ImageOptions(width = 28, height = 28)
-    @Source("images/java_platform.png")
-    ImageResource javaPlatform();
-
-    @ImageOptions(width = 24, height = 24)
-    @Source("images/c_platform.png")
-    ImageResource cPlatform();
-
-    @ImageOptions(width = 25, height = 28)
-    @Source("images/cpp_platform.png")
-    ImageResource cppPlatform();
     
     @ImageOptions(width = 26, height = 28)
-    @Source("images/artik5.png")
+    @Source("images/artik5_platform.png")
     ImageResource artik5Platform();
 
     @ImageOptions(width = 29, height = 28)
-    @Source("images/esp8266.png")
+    @Source("images/esp8266_platform.png")
     ImageResource esp8266Platform();
 
    @ImageOptions(width = 29, height = 21)
-    @Source("images/intel_edison.png")
+    @Source("images/cc32xx_platform.png")
     ImageResource cc32xxPlatform();
 
     @ImageOptions(width = 30, height = 26)

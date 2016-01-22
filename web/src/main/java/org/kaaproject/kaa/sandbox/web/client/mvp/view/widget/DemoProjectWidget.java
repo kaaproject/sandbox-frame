@@ -178,8 +178,7 @@ public class DemoProjectWidget extends VerticalPanel implements
             applicationImage.setUrl("data:image/png;base64,"
                     + project.getIconBase64());
         } else {
-            applicationImage.setResource(Utils.getPlatformIconBig(project
-                    .getPlatforms().get(0)));
+            applicationImage.setResource(Utils.getProjectIconBig(project));
         }
         complexityImage.setResource(Utils.getComplexityStarIcon(project.getComplexity()));
         projectTitle.setText(project.getName());
