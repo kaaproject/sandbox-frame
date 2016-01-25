@@ -27,6 +27,7 @@ import org.kaaproject.kaa.examples.common.projects.Complexity;
 import org.kaaproject.kaa.examples.common.projects.Feature;
 import org.kaaproject.kaa.examples.common.projects.Platform;
 import org.kaaproject.kaa.examples.common.projects.Project;
+import org.kaaproject.kaa.examples.common.projects.SdkLanguage;
 import org.kaaproject.kaa.sandbox.web.client.Sandbox;
 import org.kaaproject.kaa.sandbox.web.client.mvp.ClientFactory;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.ProjectActionEvent;
@@ -129,7 +130,7 @@ public class BundleActivity extends AbstractActivity {
                 if (bundle.getIconBase64() != null && bundle.getIconBase64().length() > 0) {
                     view.getBundleImage().setUrl("data:image/png;base64," + bundle.getIconBase64());
                 } else {
-                    view.getBundleImage().setResource(Utils.getPlatformIconBig(projects.get(0).getPlatform()));
+                    view.getBundleImage().setResource(Utils.getProjectIconBig(projects.get(0)));
                 }
                 view.getDescription().setText(bundle.getDescription());
                 view.setBundleTitle(bundle.getName());
@@ -137,16 +138,17 @@ public class BundleActivity extends AbstractActivity {
 
                 Analytics.switchBundleScreen(bundle);
 
+                Set<SdkLanguage> sdkLanguages = new HashSet<>();
                 Set<Platform> platforms = new HashSet<>();
                 Set<Feature> features = new HashSet<>();
                 Set<Complexity> bundleComplexities = new HashSet<>();
                 for (Project project : projects) {
-                    platforms.add(project.getPlatform());
-                    for (Feature feature : project.getFeatures()) {
-                        features.add(feature);
-                    }
+                	sdkLanguages.add(project.getSdkLanguage());
+                    platforms.addAll(project.getPlatforms());
+                    features.addAll(project.getFeatures());
                     bundleComplexities.add(project.getComplexity());
                 }
+                view.setSdkLanguages(new ArrayList<>(sdkLanguages));
                 view.setPlatforms(new ArrayList<>(platforms));
                 view.setFeatures(new ArrayList<>(features));
                 view.setComplexity(Collections.max(bundleComplexities));

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 CyberVision, Inc.
+ * Copyright 2014-2016 CyberVision, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.List;
 import org.kaaproject.kaa.examples.common.projects.Complexity;
 import org.kaaproject.kaa.examples.common.projects.Feature;
 import org.kaaproject.kaa.examples.common.projects.Platform;
+import org.kaaproject.kaa.examples.common.projects.SdkLanguage;
 
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.HasHTML;
@@ -28,8 +29,10 @@ import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Image;
 
 public interface ProjectView extends BaseView {
+	
+	void setSdkLanguage(SdkLanguage sdkLanguage);
 
-    void setPlatform(Platform platform);
+    void setPlatforms(List<Platform> platform);
     
     void setFeatures(List<Feature> features);
     

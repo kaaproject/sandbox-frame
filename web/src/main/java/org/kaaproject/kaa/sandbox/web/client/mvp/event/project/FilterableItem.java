@@ -21,9 +21,11 @@ import java.util.Set;
 import org.kaaproject.kaa.examples.common.projects.Complexity;
 import org.kaaproject.kaa.examples.common.projects.Feature;
 import org.kaaproject.kaa.examples.common.projects.Platform;
+import org.kaaproject.kaa.examples.common.projects.SdkLanguage;
 
 public class FilterableItem {
 
+    private Set<SdkLanguage> sdkLanguages;
     private Set<Platform> platforms;
     private Set<Feature> features;
     private Complexity complexity;
@@ -31,10 +33,19 @@ public class FilterableItem {
     public FilterableItem() {
     }
 
-    public FilterableItem(Set<Platform> platforms, Set<Feature> features, Complexity complexity) {
+    public FilterableItem(Set<SdkLanguage> sdkLanguages, Set<Platform> platforms, Set<Feature> features, Complexity complexity) {
+        this.sdkLanguages = sdkLanguages;
         this.platforms = platforms;
         this.features = features;
         this.complexity = complexity;
+    }
+    
+    public Set<SdkLanguage> getSdkLanguages() {
+        return sdkLanguages;
+    }
+
+    public void setSdkLanguages(Set<SdkLanguage> sdkLanguages) {
+        this.sdkLanguages = sdkLanguages;
     }
 
     public Set<Platform> getPlatforms() {

@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kaaproject.avro.ui.gwt.client.util.BusyAsyncCallback;
-import org.kaaproject.kaa.examples.common.projects.Project;
 import org.kaaproject.kaa.sandbox.web.client.Sandbox;
 import org.kaaproject.kaa.sandbox.web.client.mvp.ClientFactory;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.ProjectActionEvent;
@@ -34,19 +33,14 @@ import org.kaaproject.kaa.sandbox.web.client.mvp.place.ProjectPlace;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.MainView;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.dialog.ChangeHostDialog;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.dialog.ChangeHostDialog.Listener;
-import org.kaaproject.kaa.sandbox.web.client.mvp.view.dialog.ConsoleDialog;
-import org.kaaproject.kaa.sandbox.web.client.mvp.view.dialog.ConsoleDialog.ConsoleDialogListener;
-import org.kaaproject.kaa.sandbox.web.client.servlet.ServletHelper;
 import org.kaaproject.kaa.sandbox.web.client.util.Analytics;
 import org.kaaproject.kaa.sandbox.web.client.util.Utils;
-import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectDataType;
+import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectsData;
 
 import com.google.gwt.activity.shared.AbstractActivity;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
-import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectsData;
 
 public class MainActivity extends AbstractActivity {
 
@@ -116,16 +110,16 @@ public class MainActivity extends AbstractActivity {
     }
 
     private void fillView() {
-        Sandbox.getSandboxService().getDemoProjectsData(new AsyncCallback<ProjectsData>() {
+        Sandbox.getSandboxService().getDemoProjectsData(new BusyAsyncCallback<ProjectsData>() {
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailureImpl(Throwable throwable) {
                 String message = Utils.getErrorMessage(throwable);
                 view.setErrorMessage(message);
                 Analytics.sendException(message);
             }
 
             @Override
-            public void onSuccess(ProjectsData projectsData) {
+            public void onSuccessImpl(ProjectsData projectsData) {
                 view.setProjects(projectsData);
             }
         });

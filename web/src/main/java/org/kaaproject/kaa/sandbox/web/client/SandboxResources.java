@@ -21,6 +21,7 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.CssResource.NotStrict;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.resources.client.ImageResource.ImageOptions;
+import com.google.gwt.resources.client.TextResource;
 
 public interface SandboxResources extends ClientBundle {
 
@@ -44,9 +45,16 @@ public interface SandboxResources extends ClientBundle {
     @Source(SandboxStyle.DEFAULT_CSS)
     SandboxStyle sandboxStyle();
     
+    @Source("js/resizeSupport.js")
+    TextResource resizeSupportScript();
+    
     @ImageOptions(width = 77, height = 50)
     @Source("images/kaa_logo.png")
     ImageResource kaaLogo();
+    
+    @ImageOptions(width = 20, height = 20)
+    @Source("images/collapse.png")
+    ImageResource collapse();
 
     @ImageOptions(width = 128, height = 128)
     @Source("images/android.png")
@@ -89,28 +97,52 @@ public interface SandboxResources extends ClientBundle {
     ImageResource dataCollectionFeature();
 
     @ImageOptions(width = 28, height = 28)
+    @Source("images/java_language.png")
+    ImageResource javaLanguage();
+
+    @ImageOptions(width = 24, height = 24)
+    @Source("images/c_language.png")
+    ImageResource cLanguage();
+
+    @ImageOptions(width = 25, height = 28)
+    @Source("images/cpp_language.png")
+    ImageResource cppLanguage();
+    
+    @ImageOptions(width = 28, height = 28)
+    @Source("images/linux_platform.png")
+    ImageResource linuxPlatform();
+
+    @ImageOptions(width = 28, height = 28)
+    @Source("images/windows_platform.png")
+    ImageResource windowsPlatform();
+
+    @ImageOptions(width = 28, height = 28)
     @Source("images/android_platform.png")
     ImageResource androidPlatform();
 
     @ImageOptions(width = 24, height = 24)
     @Source("images/android_platform.png")
     ImageResource androidPlatformFilter();
-
-    @ImageOptions(width = 28, height = 28)
-    @Source("images/java_platform.png")
-    ImageResource javaPlatform();
-
-    @ImageOptions(width = 24, height = 24)
-    @Source("images/c_platform.png")
-    ImageResource cPlatform();
-
-    @ImageOptions(width = 25, height = 28)
-    @Source("images/cpp_platform.png")
-    ImageResource cppPlatform();
     
-    @ImageOptions(width = 28, height = 28)
+    @ImageOptions(width = 26, height = 28)
+    @Source("images/artik5_platform.png")
+    ImageResource artik5Platform();
+
+    @ImageOptions(width = 29, height = 28)
+    @Source("images/esp8266_platform.png")
+    ImageResource esp8266Platform();
+
+    @ImageOptions(width = 29, height = 21)
+    @Source("images/cc32xx_platform.png")
+    ImageResource cc32xxPlatform();
+    
+    @ImageOptions(width = 32, height = 32)
     @Source("images/multiple_platforms.png")
     ImageResource multiplePlatforms();
+    
+    @ImageOptions(width = 32, height = 32)
+    @Source("images/multiple_languages.png")
+    ImageResource multipleSdkLanguages();
     
     @ImageOptions(width = 30, height = 26)
     @Source("images/complexity_basic.png")

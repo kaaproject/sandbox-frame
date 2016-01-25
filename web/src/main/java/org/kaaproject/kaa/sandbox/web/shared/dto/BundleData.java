@@ -24,7 +24,9 @@ import java.util.List;
 
 public class BundleData implements Serializable {
 
-    private Bundle bundle;
+	private static final long serialVersionUID = -3659915249345297095L;
+
+	private Bundle bundle;
     private List<Project> bundleProjects;
 
     public BundleData() {

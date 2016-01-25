@@ -16,15 +16,15 @@
 
 package org.kaaproject.kaa.sandbox.web.client.mvp.view.widget;
 
+import org.kaaproject.kaa.sandbox.web.client.util.ResizeSupport;
+import org.kaaproject.kaa.sandbox.web.client.util.ResizeSupport.OnResizeListener;
 import org.kaaproject.kaa.sandbox.web.client.util.Utils;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.ResizeEvent;
-import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -119,12 +119,16 @@ public class LeftPanelWidget extends DockLayoutPanel {
 	        } else {
 	            removeStyleName(Utils.sandboxStyle.isOpen());
 	        	contentScroll.onResize();
-	        	resizeHandler = Window.addResizeHandler(new ResizeHandler() {
-	    			@Override
-	    			public void onResize(ResizeEvent event) {
-	    				contentScroll.onResize();
-	    			}
-	    		});
+	        	if (resizeHandler == null) {
+    	            resizeHandler = ResizeSupport.addOnResizeListener(contentScroll.getElement(), new OnResizeListener() {
+    	                
+    	                @Override
+    	                public void onResize(Element e) {
+    	                    contentScroll.onResize();
+    	                    
+    	                }
+    	            });
+	        	}
 	        }
     	}
     }

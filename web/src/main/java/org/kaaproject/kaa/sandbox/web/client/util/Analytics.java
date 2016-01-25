@@ -73,7 +73,7 @@ public class Analytics {
 
 	public static void switchProjectScreen(Project project) {
 		if (inited) {
-			currentScreen = project.getName() + " - " + Utils.getPlatformText(project.getPlatform());
+			currentScreen = project.getName() + " - " + Utils.getPlatformText(project.getPlatforms().get(0));
 			switchScreenImpl(currentScreen);
 		}
 	}
@@ -88,7 +88,7 @@ public class Analytics {
 
 	public static void sendProjectEvent(Project project, String action) {
 		if (inited) {
-			String category = project.getName() + " - " + Utils.getPlatformText(project.getPlatform());
+			String category = project.getName() + " - " + Utils.getPlatformText(project.getPlatforms().get(0));
 			sendEventImpl(category, action);
 		}
 	}

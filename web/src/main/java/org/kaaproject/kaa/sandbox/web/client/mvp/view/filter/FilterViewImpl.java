@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 CyberVision, Inc.
+ * Copyright 2014-2016 CyberVision, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,18 @@
 
 package org.kaaproject.kaa.sandbox.web.client.mvp.view.filter;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import org.kaaproject.kaa.examples.common.projects.Complexity;
 import org.kaaproject.kaa.examples.common.projects.Feature;
 import org.kaaproject.kaa.examples.common.projects.Platform;
-import org.kaaproject.kaa.examples.common.projects.Complexity;
+import org.kaaproject.kaa.examples.common.projects.SdkLanguage;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.ProjectFilter;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.ProjectFilterEvent;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.ProjectFilterEventHandler;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.FilterView;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.widget.FilterPanel;
-import org.kaaproject.kaa.sandbox.web.client.mvp.view.widget.FilterPanel.FilterItem;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.widget.LeftPanelWidget;
 import org.kaaproject.kaa.sandbox.web.client.util.Utils;
+import org.kaaproject.kaa.sandbox.web.shared.dto.FilterData;
 
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -42,6 +39,7 @@ public class FilterViewImpl extends LeftPanelWidget implements FilterView, Value
 
     private VerticalPanel filterPanel;
     private DemoProjectsFeatureFilter featureFilter;
+    private DemoProjectsSdkLanguageFilter sdkLanguageFilter;
     private DemoProjectsPlatformFilter platformFilter;
     private DemoProjectsComplexityFilter complexityFilter;
     
@@ -51,18 +49,21 @@ public class FilterViewImpl extends LeftPanelWidget implements FilterView, Value
         setHeadTitle(Utils.constants.filter());
         
         filterPanel = new VerticalPanel();
+        
         filterPanel.setWidth("100%");
         featureFilter = new DemoProjectsFeatureFilter();
         filterPanel.add(featureFilter);
         featureFilter.addValueChangeHandler(this);
         
+        sdkLanguageFilter = new DemoProjectsSdkLanguageFilter();
+        filterPanel.add(sdkLanguageFilter);
+        sdkLanguageFilter.addValueChangeHandler(this);
+        
         platformFilter = new DemoProjectsPlatformFilter();
-        platformFilter.getElement().getStyle().setPaddingTop(40, Unit.PX);
         filterPanel.add(platformFilter);
         platformFilter.addValueChangeHandler(this);
         
         complexityFilter = new DemoProjectsComplexityFilter();
-        complexityFilter.getElement().getStyle().setPaddingTop(40, Unit.PX);
         filterPanel.add(complexityFilter);
         complexityFilter.addValueChangeHandler(this);
         
@@ -78,33 +79,10 @@ public class FilterViewImpl extends LeftPanelWidget implements FilterView, Value
     }
     
     private void fireFilter() {
-        Set<Feature> enabledFeatures = new HashSet<Feature>();
-        Set<Platform> enabledPlatforms = new HashSet<Platform>();
-        Set<Complexity> enabledComplexity= new HashSet<Complexity>();
-
-        List<FilterItem> featureFilterList = featureFilter.getFilterItems();
-        List<FilterItem> platformFilterList = platformFilter.getFilterItems();
-        List<FilterItem> complexityFilterList = complexityFilter.getFilterItems();
-
-        for (Feature feature : Feature.values()) {
-            if (featureFilterList.get(feature.ordinal()).getValue()) {
-                enabledFeatures.add(feature);
-            }
-        }
-        
-        for (Platform platform : Platform.values()) {
-            if (platformFilterList.get(platform.ordinal()).getValue()) {
-                enabledPlatforms.add(platform);
-            }
-        }
-        
-        for (Complexity complexity : Complexity.values()) {
-            if (complexityFilterList.get(complexity.ordinal()).getValue()) {
-            	enabledComplexity.add(complexity);
-            }
-        }
-        
-        ProjectFilter projectFilter = new ProjectFilter(enabledFeatures, enabledPlatforms, enabledComplexity);
+        ProjectFilter projectFilter = new ProjectFilter(featureFilter.getEnabledFilterEntities(), 
+                sdkLanguageFilter.getEnabledFilterEntities(), 
+                platformFilter.getEnabledFilterEntities(), 
+                complexityFilter.getEnabledFilterEntities());
         ProjectFilterEvent filterEvent = new ProjectFilterEvent(projectFilter);
         fireEvent(filterEvent);
     }
@@ -115,48 +93,91 @@ public class FilterViewImpl extends LeftPanelWidget implements FilterView, Value
         return this.addHandler(handler, ProjectFilterEvent.getType());
     }
     
-    private class DemoProjectsFeatureFilter extends FilterPanel {
+    private class DemoProjectsFeatureFilter extends FilterPanel<Feature> {
 
         public DemoProjectsFeatureFilter() {
             super(Utils.constants.featuresFilter());
             setWidth("100%");
-            for (Feature feature : Feature.values()) {
-                addItem(Utils.getFeatureIcon(feature), Utils.getFeatureBackgroundClass(feature), Utils.getFeatureText(feature));
-            }
         }
         
+        public void addFeature(Feature feature) {
+            addItem(feature, Utils.getFeatureIcon(feature), Utils.getFeatureBackgroundClass(feature), Utils.getFeatureText(feature));
+        }
     }
     
-    private class DemoProjectsPlatformFilter extends FilterPanel {
+    private class DemoProjectsSdkLanguageFilter extends FilterPanel<SdkLanguage> {
+
+        public DemoProjectsSdkLanguageFilter() {
+            super(Utils.constants.sdkLanguagesFilter());
+            setWidth("100%");
+        }
+        
+        public void addSdkLanguage(SdkLanguage sdkLanguage) {
+            addItem(sdkLanguage, Utils.getSdkLanguageIcon(sdkLanguage), Utils.getSdkLanguageBackgroundClass(sdkLanguage), Utils.getSdkLanguageText(sdkLanguage));
+        }
+    }
+    
+    private class DemoProjectsPlatformFilter extends FilterPanel<Platform> {
 
         public DemoProjectsPlatformFilter() {
             super(Utils.constants.platformsFilter());
             setWidth("100%");
-            for (Platform platform : Platform.values()) {
-                addItem(Utils.getFilterPlatformIcon(platform), Utils.getPlatformBackgroundClass(platform), Utils.getPlatformText(platform));
-            }
         }
         
+        public void addPlatform(Platform platform) {
+            addItem(platform, Utils.getFilterPlatformIcon(platform), Utils.getPlatformBackgroundClass(platform), Utils.getPlatformText(platform));
+        }
     }
 
-    private class DemoProjectsComplexityFilter extends FilterPanel {
+    private class DemoProjectsComplexityFilter extends FilterPanel<Complexity> {
 
         public DemoProjectsComplexityFilter() {
             super(Utils.constants.complexity());
             setWidth("100%");
-            for (Complexity complexity : Complexity.values()) {
-                addItem(Utils.getFilterComplexityIcon(complexity), Utils.getComplexityBackgroundClass(complexity), Utils.getComplexityText(complexity));
-            }
         }
         
+        public void addComplexity(Complexity complexity) {
+            addItem(complexity, Utils.getFilterComplexityIcon(complexity), Utils.getComplexityBackgroundClass(complexity), Utils.getComplexityText(complexity));
+        }
+    }
+
+    @Override
+    public void reset() {
+        sdkLanguageFilter.reset();
+        featureFilter.reset();
+        platformFilter.reset();
+        complexityFilter.reset();
+    }
+    
+    @Override
+    public void setFilterData(FilterData filterData) {
+        for (Feature feature : filterData.getAvailableFeatures()) {
+            featureFilter.addFeature(feature);
+        }
+        for (SdkLanguage sdkLanguage : filterData.getAvailableSdkLanguages()) {
+            sdkLanguageFilter.addSdkLanguage(sdkLanguage);
+        }
+        for (Platform platform : filterData.getAvailablePlatforms()) {
+            platformFilter.addPlatform(platform);
+        }
+        for (Complexity complexity : filterData.getAvailableComplexities()) {
+            complexityFilter.addComplexity(complexity);
+        }
+        featureFilter.updateItemsHeight();
+        sdkLanguageFilter.updateItemsHeight();
+        platformFilter.updateItemsHeight();
+        complexityFilter.updateItemsHeight();
     }
 
     @Override
     public void setActive(boolean active) {
     	super.setActive(active);
+    	sdkLanguageFilter.setActive(active);
     	featureFilter.setActive(active);
     	platformFilter.setActive(active);
     	complexityFilter.setActive(active);
     }
+
+
 
 }

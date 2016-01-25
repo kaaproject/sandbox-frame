@@ -16,17 +16,17 @@
 
 package org.kaaproject.kaa.sandbox.web.client.mvp.view.widget;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.Collections;
 
 import org.kaaproject.kaa.examples.common.projects.Bundle;
 import org.kaaproject.kaa.examples.common.projects.Complexity;
 import org.kaaproject.kaa.examples.common.projects.Feature;
 import org.kaaproject.kaa.examples.common.projects.Platform;
 import org.kaaproject.kaa.examples.common.projects.Project;
+import org.kaaproject.kaa.examples.common.projects.SdkLanguage;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.FilterableItem;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.HasProjectActionEventHandlers;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.ProjectAction;
@@ -142,6 +142,7 @@ public class DemoProjectWidget extends AbsolutePanel implements HasProjectAction
 
         HorizontalPanel iconsPanel = new HorizontalPanel();
         iconsPanel.setWidth("100%");
+        iconsPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
         iconsPanel.addStyleName(Utils.sandboxStyle.detailsInnerCenter());
         iconsPanel.getElement().getStyle().setPaddingTop(10, Unit.PX);
         platformPanel = new HorizontalPanel();
@@ -166,14 +167,27 @@ public class DemoProjectWidget extends AbsolutePanel implements HasProjectAction
         getWidget(1).setVisible(bundle != null);    	
         constructButtons(bundle != null);
 
+        Set<SdkLanguage> sdkLanguages = new HashSet<>();
         Set<Platform> platforms = new HashSet<>();
         Set<Feature> features = new HashSet<>();
         for (Project project : projects) {
-            platforms.add(project.getPlatform());
-            for (Feature feature : project.getFeatures()) {
-                features.add(feature);
-            }
+        	sdkLanguages.add(project.getSdkLanguage());
+            platforms.addAll(project.getPlatforms());
+            features.addAll(project.getFeatures());
         }
+        
+        Image sdkLanguageImage;
+        if (sdkLanguages.size() > 1) {
+        	sdkLanguageImage = new Image(Utils.resources.multipleSdkLanguages());
+        	sdkLanguageImage.setTitle(Utils.constants.multipleSdkLanguages());
+        } else {
+        	SdkLanguage sdkLanguage = sdkLanguages.iterator().next();
+        	sdkLanguageImage = new Image(Utils.getSdkLanguageIcon(sdkLanguage));
+        	sdkLanguageImage.setTitle(Utils.getSdkLanguageText(sdkLanguage));
+        }
+        sdkLanguageImage.getElement().getStyle().setPaddingRight(4, Unit.PX);
+        platformPanel.add(sdkLanguageImage);
+        
         Image platformImage;
         if (platforms.size() > 1) {
         	platformImage = new Image(Utils.resources.multiplePlatforms());
@@ -184,6 +198,7 @@ public class DemoProjectWidget extends AbsolutePanel implements HasProjectAction
             platformImage.setTitle(Utils.getPlatformText(platform));
         }
         platformPanel.add(platformImage);
+        
         Iterator<Feature> featureIterator = features.iterator();
         while (featureIterator.hasNext()) {
             Feature feature = featureIterator.next();
@@ -200,7 +215,7 @@ public class DemoProjectWidget extends AbsolutePanel implements HasProjectAction
             if (project.getIconBase64() != null && project.getIconBase64().length() > 0) {
                 applicationImage.setUrl("data:image/png;base64," + project.getIconBase64());
             } else {
-                applicationImage.setResource(Utils.getPlatformIconBig(project.getPlatform()));
+                applicationImage.setResource(Utils.getProjectIconBig(project));
             }
             complexity = project.getComplexity();
             complexityImage.setResource(Utils.getComplexityStarIcon(complexity));
@@ -217,14 +232,14 @@ public class DemoProjectWidget extends AbsolutePanel implements HasProjectAction
             if (bundle.getIconBase64() != null && bundle.getIconBase64().length() > 0) {
                 applicationImage.setUrl("data:image/png;base64," + bundle.getIconBase64());
             } else {
-                applicationImage.setResource(Utils.getPlatformIconBig(project.getPlatform()));
+                applicationImage.setResource(Utils.getProjectIconBig(project));
             }
             complexity = Collections.max(bundleComplexities);
             complexityImage.setResource(Utils.getComplexityStarIcon(complexity));
             projectTitle.setText(bundle.getName());
             projectTitle.setTitle(bundle.getName());
         }
-        filterItem = new FilterableItem(platforms, features, complexity);
+        filterItem = new FilterableItem(sdkLanguages, platforms, features, complexity);
     }
 
     private void constructButtons(final boolean isBundle) {

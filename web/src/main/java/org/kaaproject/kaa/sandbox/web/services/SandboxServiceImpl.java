@@ -15,17 +15,22 @@
  */
 package org.kaaproject.kaa.sandbox.web.services;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.xml.bind.JAXBContext;
@@ -52,15 +57,19 @@ import org.atmosphere.interceptor.IdleResourceInterceptor;
 import org.atmosphere.interceptor.SuspendTrackerInterceptor;
 import org.kaaproject.kaa.common.dto.file.FileData;
 import org.kaaproject.kaa.examples.common.projects.Bundle;
+import org.kaaproject.kaa.examples.common.projects.Complexity;
+import org.kaaproject.kaa.examples.common.projects.Feature;
 import org.kaaproject.kaa.examples.common.projects.Platform;
 import org.kaaproject.kaa.examples.common.projects.Project;
 import org.kaaproject.kaa.examples.common.projects.ProjectsConfig;
+import org.kaaproject.kaa.examples.common.projects.SdkLanguage;
 import org.kaaproject.kaa.sandbox.web.client.util.LogLevel;
 import org.kaaproject.kaa.sandbox.web.services.cache.CacheService;
 import org.kaaproject.kaa.sandbox.web.services.util.Utils;
 import org.kaaproject.kaa.sandbox.web.shared.dto.AnalyticsInfo;
 import org.kaaproject.kaa.sandbox.web.shared.dto.BuildOutputData;
 import org.kaaproject.kaa.sandbox.web.shared.dto.BundleData;
+import org.kaaproject.kaa.sandbox.web.shared.dto.FilterData;
 import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectDataKey;
 import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectDataType;
 import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectsData;
@@ -73,9 +82,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 
 @Service("sandboxService")
 @ManagedService(path = "/sandbox/atmosphere/rpc",
@@ -367,6 +373,32 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
         }
         return info;
     }
+    
+    @Override
+    public FilterData getFilterData() throws SandboxServiceException {
+        Set<Feature> availableFeaturesSet = new HashSet<>();
+        Set<SdkLanguage> availableSdkLanguagesSet = new HashSet<>();
+        Set<Platform> availablePlatformsSet = new HashSet<>();
+        Set<Complexity> availableComplexitiesSet = new HashSet<>();
+        
+        for (Project project : projectsMap.values()) {
+            availableFeaturesSet.addAll(project.getFeatures());
+            availableSdkLanguagesSet.add(project.getSdkLanguage());
+            availablePlatformsSet.addAll(project.getPlatforms());
+            availableComplexitiesSet.add(project.getComplexity());
+        }
+        
+        List<Feature> availableFeatures = new ArrayList<>(availableFeaturesSet);
+        Collections.sort(availableFeatures);
+        List<SdkLanguage> availableSdkLanguages = new ArrayList<>(availableSdkLanguagesSet);
+        Collections.sort(availableSdkLanguages);
+        List<Platform> availablePlatforms = new ArrayList<>(availablePlatformsSet);
+        Collections.sort(availablePlatforms);
+        List<Complexity> availableComplexities = new ArrayList<>(availableComplexitiesSet);
+        Collections.sort(availableComplexities);
+        
+        return new FilterData(availableFeatures, availableSdkLanguages, availablePlatforms, availableComplexities);
+    }
 
     @Override
     public List<Project> getDemoProjects() throws SandboxServiceException {
@@ -424,7 +456,7 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
                 String sdkProfileId = project.getSdkProfileId();
                 outStream.println("SDK profile id of project: " + sdkProfileId);
                 outStream.println("Getting SDK for requested project...");
-                FileData sdkFileData = cacheService.getSdk(sdkProfileId, project.getPlatform());
+                FileData sdkFileData = cacheService.getSdk(project.getId());
                 if (sdkFileData != null) {
                     outStream.println("Successfuly got SDK.");
                     File rootDir = createTempDirectory("demo-project");
@@ -479,10 +511,12 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
 
                             binaryFileData.setFileName(binaryFileName);
                             binaryFileData.setFileData(binaryFileBytes);
-                            if (project.getPlatform() == Platform.ANDROID) {
-                                binaryFileData.setContentType("application/vnd.android.package-archive");
-                            } else if (project.getPlatform() == Platform.JAVA) {
-                                binaryFileData.setContentType("application/java-archive");
+                            if (project.getSdkLanguage() == SdkLanguage.JAVA) {
+                            	if (project.getPlatforms().contains(Platform.ANDROID)) {
+                            		binaryFileData.setContentType("application/vnd.android.package-archive");
+                            	} else {
+                            		binaryFileData.setContentType("application/java-archive");
+                            	}
                             }
                             cacheService.putProjectFile(dataKey, binaryFileData);
                         }

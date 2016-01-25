@@ -23,7 +23,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ProjectsData implements Serializable{
+public class ProjectsData implements Serializable {
 
 	private static final long serialVersionUID = 6752405093583545845L;
 	

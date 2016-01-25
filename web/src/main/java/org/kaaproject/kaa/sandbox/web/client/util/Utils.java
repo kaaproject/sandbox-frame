@@ -23,6 +23,7 @@ import org.kaaproject.kaa.examples.common.projects.Complexity;
 import org.kaaproject.kaa.examples.common.projects.Feature;
 import org.kaaproject.kaa.examples.common.projects.Platform;
 import org.kaaproject.kaa.examples.common.projects.Project;
+import org.kaaproject.kaa.examples.common.projects.SdkLanguage;
 import org.kaaproject.kaa.sandbox.web.client.Sandbox;
 import org.kaaproject.kaa.sandbox.web.client.SandboxResources;
 import org.kaaproject.kaa.sandbox.web.client.SandboxResources.KaaTheme;
@@ -64,6 +65,7 @@ public class Utils {
             avroUiResources.avroUiStyle();
 
     public static void injectSandboxStyles() {
+        ResizeSupport.injectResizeSupportScript();
         kaaTheme.ensureInjected();
         sandboxStyle.ensureInjected();
         avroUiStyle.ensureInjected();
@@ -135,30 +137,86 @@ public class Utils {
     return null;
     }
     
+    public static String getSdkLanguageText(SdkLanguage sdkLanguage) {
+    	switch(sdkLanguage) {
+			case C:
+				return constants.c();
+			case CPP:
+				return constants.cpp();
+			case JAVA:
+				return constants.java();
+			case OBJC:
+				return constants.objc();
+    	}
+    	return null;
+    }
+    
     public static String getPlatformText(Platform platform) {
         switch(platform) {
+			case LINUX_X_86:
+				return constants.linux_x86();
+			case WINDOWS_X_86:
+				return constants.windows_x86();
             case ANDROID:
                 return constants.android();
-            case C:
-                return constants.c();
-            case CPP:
-                return constants.cpp();
-            case JAVA:
-                return constants.java();
+			case IOS:
+				return constants.ios();
+            case ARTIK_5:
+                return constants.artik5();
+            case ESP_8266:
+                return constants.esp8266();
+            case CC_32_XX:
+                return constants.cc32xx();
+    		case STM_32:
+    			return constants.stm32();
+			case ECONAIS:
+				return constants.econais();
         }
         return null;
     }
     
+    public static ImageResource getSdkLanguageIcon(SdkLanguage sdkLanguage) {
+    	switch(sdkLanguage) {
+			case C:
+				return resources.cLanguage();
+			case CPP:
+				return resources.cppLanguage();
+			case JAVA:
+				return resources.javaLanguage();
+			case OBJC:
+				//TODO:
+				return resources.javaLanguage();
+    	}
+    	return null;
+    }
+    
+    public static String getSdkLanguageBackgroundClass(SdkLanguage sdkLanguage) {
+        return sandboxStyle.bgPlatformCommon();
+    }
+    
     public static ImageResource getPlatformIcon(Platform platform) {
         switch(platform) {
+			case LINUX_X_86:
+    			return resources.linuxPlatform();
+			case WINDOWS_X_86:
+    			return resources.windowsPlatform();
             case ANDROID:
                 return resources.androidPlatform();
-            case C:
-                return resources.cPlatform();
-            case CPP:
-                return resources.cppPlatform();
-            case JAVA:
-                return resources.javaPlatform();
+    		case IOS:
+    			//TODO:
+    			return resources.androidPlatform();
+            case ARTIK_5:
+                return resources.artik5Platform();
+            case ESP_8266:
+                return resources.esp8266Platform();
+            case CC_32_XX:
+                return resources.cc32xxPlatform();
+    		case STM_32:
+    			//TODO:
+    			return resources.androidPlatform();
+			case ECONAIS:
+    			//TODO:
+    			return resources.androidPlatform();
         }
         return null;
     }
@@ -176,16 +234,21 @@ public class Utils {
         return sandboxStyle.bgPlatformCommon();
     }
     
-    public static ImageResource getPlatformIconBig(Platform platform) {
-        switch(platform) {
-            case ANDROID:
-                return resources.android();
+    public static ImageResource getProjectIconBig(Project project) {
+        switch(project.getSdkLanguage()) {
             case C:
                 return resources.c();
             case CPP:
                 return resources.cpp();
             case JAVA:
-                return resources.java();
+            	if (project.getPlatforms().contains(Platform.ANDROID)) {
+            		return resources.android();
+            	} else {
+            		return resources.java();
+            	}
+			case OBJC:
+				//TODO:
+				return resources.android();
         }
         return null;
     }

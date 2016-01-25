@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 CyberVision, Inc.
+ * Copyright 2014-2016 CyberVision, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,16 @@ package org.kaaproject.kaa.sandbox.web.client.mvp.activity;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kaaproject.avro.ui.gwt.client.util.BusyAsyncCallback;
+import org.kaaproject.kaa.sandbox.web.client.Sandbox;
 import org.kaaproject.kaa.sandbox.web.client.mvp.ClientFactory;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.ProjectFilterEvent;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.ProjectFilterEventHandler;
 import org.kaaproject.kaa.sandbox.web.client.mvp.place.MainPlace;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.FilterView;
+import org.kaaproject.kaa.sandbox.web.client.util.Analytics;
+import org.kaaproject.kaa.sandbox.web.client.util.Utils;
+import org.kaaproject.kaa.sandbox.web.shared.dto.FilterData;
 
 import com.google.gwt.activity.shared.AbstractActivity;
 import com.google.gwt.event.shared.EventBus;
@@ -52,6 +57,20 @@ public class LeftPanelActivity extends AbstractActivity {
                 eventBus.fireEvent(event);
             }
         }));
+        this.filterView.reset();
+        Sandbox.getSandboxService().getFilterData(new BusyAsyncCallback<FilterData>() {
+            
+            @Override
+            public void onSuccessImpl(FilterData result) {
+                filterView.setFilterData(result);
+            }
+            
+            @Override
+            public void onFailureImpl(Throwable caught) {
+                String message = Utils.getErrorMessage(caught);
+                Analytics.sendException(message);
+            }
+        });
         containerWidget.setWidget(filterView.asWidget());
     }
     
