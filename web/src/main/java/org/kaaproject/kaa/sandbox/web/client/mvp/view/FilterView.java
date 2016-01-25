@@ -17,11 +17,16 @@
 package org.kaaproject.kaa.sandbox.web.client.mvp.view;
 
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.HasProjectFilterEventHandlers;
+import org.kaaproject.kaa.sandbox.web.shared.dto.FilterData;
 
 import com.google.gwt.user.client.ui.IsWidget;
 
 public interface FilterView extends IsWidget, HasProjectFilterEventHandlers {
 	
+    void reset();
+    
+    void setFilterData(FilterData filterData);
+    
 	void setActive(boolean active);
 
 }

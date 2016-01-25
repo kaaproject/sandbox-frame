@@ -17,6 +17,8 @@ package org.kaaproject.kaa.sandbox.web.client.mvp.view.widget;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -71,17 +73,12 @@ public class DemoProjectsWidget extends FlowPanel implements HasProjectActionEve
         reset();
         projectWidgets = new ArrayList<>();
         Map<String, List<Project>> bundleProjectsMap = new HashMap<>();
-        List<Project> projectsList = new ArrayList<>();
-        projectsList.addAll(projects.getProjectsMap().values());
-        for (final Project project : projectsList) {
+        List<Project> projectsToAdd = new ArrayList<>();
+
+        for (final Project project : projects.getProjectsMap().values()) {
             String bundleId = project.getBundleId();
             if (bundleId == null || bundleId.isEmpty()) {
-                DemoProjectWidget demoProjectWidget = new DemoProjectWidget();
-                demoProjectWidget.setProjects(null, project);
-                add(demoProjectWidget);
-                registrations.add(demoProjectWidget.addProjectActionHandler(this));
-                setVisible(true);
-                projectWidgets.add(demoProjectWidget);
+            	projectsToAdd.add(project);
             } else {
                 if (bundleProjectsMap.containsKey(bundleId)) {
                     bundleProjectsMap.get(bundleId).add(project);
@@ -90,7 +87,16 @@ public class DemoProjectsWidget extends FlowPanel implements HasProjectActionEve
                 }
             }
         }
-        for (Bundle bundle : new ArrayList<>(projects.getBundlesMap().values())) {
+        
+        List<Bundle> bundlesToAdd = new ArrayList<>(projects.getBundlesMap().values());
+        Collections.sort(bundlesToAdd, new Comparator<Bundle>() {
+			@Override
+			public int compare(Bundle o1, Bundle o2) {
+				return o1.getName().compareToIgnoreCase(o2.getName());
+			}
+		});
+        
+        for (Bundle bundle : bundlesToAdd) {
             List<Project> bundleProjects = bundleProjectsMap.get(bundle.getId());
             DemoProjectWidget demoProjectWidget = new DemoProjectWidget();
             Project[] bProjects = new Project[bundleProjects.size()];
@@ -101,6 +107,23 @@ public class DemoProjectsWidget extends FlowPanel implements HasProjectActionEve
             setVisible(true);
             projectWidgets.add(demoProjectWidget);
         }
+        
+        Collections.sort(projectsToAdd, new Comparator<Project>() {
+			@Override
+			public int compare(Project o1, Project o2) {
+				return o1.getName().compareToIgnoreCase(o2.getName());
+			}
+		});
+        
+        for (Project project : projectsToAdd) {
+            DemoProjectWidget demoProjectWidget = new DemoProjectWidget();
+            demoProjectWidget.setProjects(null, project);
+            add(demoProjectWidget);
+            registrations.add(demoProjectWidget.addProjectActionHandler(this));
+            setVisible(true);
+            projectWidgets.add(demoProjectWidget);
+        }
+
         updateProjects(true);
     }
 

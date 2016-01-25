@@ -24,10 +24,13 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.xml.bind.JAXBContext;
@@ -54,6 +57,8 @@ import org.atmosphere.interceptor.IdleResourceInterceptor;
 import org.atmosphere.interceptor.SuspendTrackerInterceptor;
 import org.kaaproject.kaa.common.dto.file.FileData;
 import org.kaaproject.kaa.examples.common.projects.Bundle;
+import org.kaaproject.kaa.examples.common.projects.Complexity;
+import org.kaaproject.kaa.examples.common.projects.Feature;
 import org.kaaproject.kaa.examples.common.projects.Platform;
 import org.kaaproject.kaa.examples.common.projects.Project;
 import org.kaaproject.kaa.examples.common.projects.ProjectsConfig;
@@ -64,6 +69,7 @@ import org.kaaproject.kaa.sandbox.web.services.util.Utils;
 import org.kaaproject.kaa.sandbox.web.shared.dto.AnalyticsInfo;
 import org.kaaproject.kaa.sandbox.web.shared.dto.BuildOutputData;
 import org.kaaproject.kaa.sandbox.web.shared.dto.BundleData;
+import org.kaaproject.kaa.sandbox.web.shared.dto.FilterData;
 import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectDataKey;
 import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectDataType;
 import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectsData;
@@ -366,6 +372,32 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
             info.setUserId(analyticsUserId);
         }
         return info;
+    }
+    
+    @Override
+    public FilterData getFilterData() throws SandboxServiceException {
+        Set<Feature> availableFeaturesSet = new HashSet<>();
+        Set<SdkLanguage> availableSdkLanguagesSet = new HashSet<>();
+        Set<Platform> availablePlatformsSet = new HashSet<>();
+        Set<Complexity> availableComplexitiesSet = new HashSet<>();
+        
+        for (Project project : projectsMap.values()) {
+            availableFeaturesSet.addAll(project.getFeatures());
+            availableSdkLanguagesSet.add(project.getSdkLanguage());
+            availablePlatformsSet.addAll(project.getPlatforms());
+            availableComplexitiesSet.add(project.getComplexity());
+        }
+        
+        List<Feature> availableFeatures = new ArrayList<>(availableFeaturesSet);
+        Collections.sort(availableFeatures);
+        List<SdkLanguage> availableSdkLanguages = new ArrayList<>(availableSdkLanguagesSet);
+        Collections.sort(availableSdkLanguages);
+        List<Platform> availablePlatforms = new ArrayList<>(availablePlatformsSet);
+        Collections.sort(availablePlatforms);
+        List<Complexity> availableComplexities = new ArrayList<>(availableComplexitiesSet);
+        Collections.sort(availableComplexities);
+        
+        return new FilterData(availableFeatures, availableSdkLanguages, availablePlatforms, availableComplexities);
     }
 
     @Override

@@ -65,6 +65,7 @@ public class Utils {
             avroUiResources.avroUiStyle();
 
     public static void injectSandboxStyles() {
+        ResizeSupport.injectResizeSupportScript();
         kaaTheme.ensureInjected();
         sandboxStyle.ensureInjected();
         avroUiStyle.ensureInjected();
@@ -189,14 +190,16 @@ public class Utils {
     	return null;
     }
     
+    public static String getSdkLanguageBackgroundClass(SdkLanguage sdkLanguage) {
+        return sandboxStyle.bgPlatformCommon();
+    }
+    
     public static ImageResource getPlatformIcon(Platform platform) {
         switch(platform) {
 			case LINUX_X_86:
-    			//TODO:
-    			return resources.androidPlatform();
+    			return resources.linuxPlatform();
 			case WINDOWS_X_86:
-    			//TODO:
-    			return resources.androidPlatform();
+    			return resources.windowsPlatform();
             case ANDROID:
                 return resources.androidPlatform();
     		case IOS:

@@ -22,35 +22,42 @@ import java.util.Set;
 import org.kaaproject.kaa.examples.common.projects.Complexity;
 import org.kaaproject.kaa.examples.common.projects.Feature;
 import org.kaaproject.kaa.examples.common.projects.Platform;
+import org.kaaproject.kaa.examples.common.projects.SdkLanguage;
 
 public class ProjectFilter {
 
     private final Set<Feature> enabledFeatures;
+    private final Set<SdkLanguage> enabledSdkLanguages;
     private final Set<Platform> enabledPlatforms;
     private final Set<Complexity> enabledComplexities;
 
     private boolean useFeatureFilter = false;
+    private boolean useSdkLanguageFilter = false;
     private boolean usePlatformFilter = false;
     private boolean useComplexityFilter = false;
 
     public ProjectFilter() {
         enabledFeatures = new HashSet<>();
+        enabledSdkLanguages = new HashSet<>();
         enabledPlatforms = new HashSet<>();
         enabledComplexities = new HashSet<>();
     }
 
-    public ProjectFilter(Set<Feature> enabledFeatures, Set<Platform> enabledPlatforms, Set<Complexity> enabledComplexities) {
+    public ProjectFilter(Set<Feature> enabledFeatures, Set<SdkLanguage> enabledSdkLanguages, Set<Platform> enabledPlatforms, Set<Complexity> enabledComplexities) {
         this.enabledFeatures = enabledFeatures;
+        this.enabledSdkLanguages = enabledSdkLanguages;
         this.enabledPlatforms = enabledPlatforms;
         this.enabledComplexities = enabledComplexities;
 
         useFeatureFilter = !enabledFeatures.isEmpty();
+        useSdkLanguageFilter = !enabledSdkLanguages.isEmpty();
         usePlatformFilter = !enabledPlatforms.isEmpty();
         useComplexityFilter = !enabledComplexities.isEmpty();
     }
 
     public boolean filter(FilterableItem item) {
         boolean hasFeature = !useFeatureFilter;
+        boolean hasSdkLanguage = !useSdkLanguageFilter;
         boolean hasPlatform = !usePlatformFilter;
         boolean hasComplexity = !useComplexityFilter;
         if (useFeatureFilter) {
@@ -58,6 +65,15 @@ public class ProjectFilter {
             for (Feature feature : features) {
                 if (enabledFeatures.contains(feature)) {
                     hasFeature = true;
+                    break;
+                }
+            }
+        }
+        if (useSdkLanguageFilter) {
+            Set<SdkLanguage> sdkLanguages = item.getSdkLanguages();
+            for (SdkLanguage sdkLanguage : sdkLanguages) {
+                if (enabledSdkLanguages.contains(sdkLanguage)) {
+                    hasSdkLanguage = true;
                     break;
                 }
             }
@@ -74,7 +90,7 @@ public class ProjectFilter {
         if (useComplexityFilter) {
             hasComplexity = enabledComplexities.contains(item.getComplexity());
         }
-        return hasFeature && hasPlatform && hasComplexity;
+        return hasFeature && hasSdkLanguage && hasPlatform && hasComplexity;
     }
 
 }

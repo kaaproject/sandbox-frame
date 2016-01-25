@@ -21,6 +21,7 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.CssResource.NotStrict;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.resources.client.ImageResource.ImageOptions;
+import com.google.gwt.resources.client.TextResource;
 
 public interface SandboxResources extends ClientBundle {
 
@@ -44,9 +45,16 @@ public interface SandboxResources extends ClientBundle {
     @Source(SandboxStyle.DEFAULT_CSS)
     SandboxStyle sandboxStyle();
     
+    @Source("js/resizeSupport.js")
+    TextResource resizeSupportScript();
+    
     @ImageOptions(width = 77, height = 50)
     @Source("images/kaa_logo.png")
     ImageResource kaaLogo();
+    
+    @ImageOptions(width = 20, height = 20)
+    @Source("images/collapse.png")
+    ImageResource collapse();
 
     @ImageOptions(width = 128, height = 128)
     @Source("images/android.png")
@@ -99,6 +107,14 @@ public interface SandboxResources extends ClientBundle {
     @ImageOptions(width = 25, height = 28)
     @Source("images/cpp_language.png")
     ImageResource cppLanguage();
+    
+    @ImageOptions(width = 28, height = 28)
+    @Source("images/linux_platform.png")
+    ImageResource linuxPlatform();
+
+    @ImageOptions(width = 28, height = 28)
+    @Source("images/windows_platform.png")
+    ImageResource windowsPlatform();
 
     @ImageOptions(width = 28, height = 28)
     @Source("images/android_platform.png")
@@ -120,9 +136,13 @@ public interface SandboxResources extends ClientBundle {
     @Source("images/cc32xx_platform.png")
     ImageResource cc32xxPlatform();
     
-    @ImageOptions(width = 28, height = 28)
+    @ImageOptions(width = 32, height = 32)
     @Source("images/multiple_platforms.png")
     ImageResource multiplePlatforms();
+    
+    @ImageOptions(width = 32, height = 32)
+    @Source("images/multiple_languages.png")
+    ImageResource multipleSdkLanguages();
     
     @ImageOptions(width = 30, height = 26)
     @Source("images/complexity_basic.png")

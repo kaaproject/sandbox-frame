@@ -19,17 +19,21 @@ package org.kaaproject.kaa.sandbox.web.client.mvp.view;
 import com.google.gwt.user.client.ui.HasHTML;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Image;
+
 import org.kaaproject.kaa.examples.common.projects.Complexity;
 import org.kaaproject.kaa.examples.common.projects.Feature;
 import org.kaaproject.kaa.examples.common.projects.Platform;
 import org.kaaproject.kaa.examples.common.projects.Project;
+import org.kaaproject.kaa.examples.common.projects.SdkLanguage;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.HasProjectActionEventHandlers;
 
 import java.util.List;
 
 public interface ProjectBundleView extends BaseView {
+	
+	void setSdkLanguages(List<SdkLanguage> sdkLanguages);
 
-    void setPlatforms(List<Platform>platform);
+    void setPlatforms(List<Platform> platforms);
 
     void setFeatures(List<Feature> features);
 

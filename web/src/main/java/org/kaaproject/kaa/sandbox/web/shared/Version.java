@@ -34,7 +34,7 @@ public final class Version {
 
     /** The Constant KAA_VERSION. */
     public static final String KAA_SAMPLE_APPS_VERSION = "1.2.0-SNAPSHOT";
-    
+
     /**
      * Instantiates a new version.
      */

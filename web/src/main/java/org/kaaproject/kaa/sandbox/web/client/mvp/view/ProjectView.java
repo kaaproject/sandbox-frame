@@ -21,6 +21,7 @@ import java.util.List;
 import org.kaaproject.kaa.examples.common.projects.Complexity;
 import org.kaaproject.kaa.examples.common.projects.Feature;
 import org.kaaproject.kaa.examples.common.projects.Platform;
+import org.kaaproject.kaa.examples.common.projects.SdkLanguage;
 
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.HasHTML;
@@ -28,6 +29,8 @@ import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Image;
 
 public interface ProjectView extends BaseView {
+	
+	void setSdkLanguage(SdkLanguage sdkLanguage);
 
     void setPlatforms(List<Platform> platform);
     

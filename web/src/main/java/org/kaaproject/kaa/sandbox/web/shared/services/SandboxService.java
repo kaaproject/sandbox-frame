@@ -18,11 +18,13 @@ package org.kaaproject.kaa.sandbox.web.shared.services;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+
 import org.kaaproject.kaa.examples.common.projects.Project;
 import org.kaaproject.kaa.sandbox.web.client.util.LogLevel;
 import org.kaaproject.kaa.sandbox.web.shared.dto.AnalyticsInfo;
 import org.kaaproject.kaa.sandbox.web.shared.dto.BuildOutputData;
 import org.kaaproject.kaa.sandbox.web.shared.dto.BundleData;
+import org.kaaproject.kaa.sandbox.web.shared.dto.FilterData;
 import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectDataType;
 import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectsData;
 
@@ -52,6 +54,8 @@ public interface SandboxService extends RemoteService {
     public LogLevel getKaaCurrentLogLevel() throws SandboxServiceException;
 
     public AnalyticsInfo getAnalyticsInfo() throws SandboxServiceException;
+    
+    public FilterData getFilterData() throws SandboxServiceException; 
 
     public List<Project> getDemoProjects() throws SandboxServiceException;
 

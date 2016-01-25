@@ -118,6 +118,7 @@ public class ProjectActivity extends AbstractActivity {
                     view.getApplicationImage().setResource(Utils.getProjectIconBig(project));
                 }
                 view.setProjectTitle(project.getName());
+                view.setSdkLanguage(project.getSdkLanguage());
                 view.setPlatforms(project.getPlatforms());
                 view.setFeatures(project.getFeatures());
                 view.setComplexity(project.getComplexity());

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 CyberVision, Inc.
+ * Copyright 2014-2016 CyberVision, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,9 @@
 package org.kaaproject.kaa.sandbox.web.client.mvp.view.widget;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.kaaproject.avro.ui.gwt.client.widget.nav.ListItem;
 import org.kaaproject.avro.ui.gwt.client.widget.nav.UnorderedList;
@@ -36,35 +38,73 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.Image;
 
-public class FilterPanel extends NavWidget implements HasValueChangeHandlers<Boolean> {
+public class FilterPanel<T> extends NavWidget implements HasValueChangeHandlers<Boolean> {
 
-    private UnorderedList ul;
+    private FilterItem<T> headerItem;
+    private UnorderedList itemsUl;
+    private List<FilterItem<T>> items = new ArrayList<>();
     
-    private List<FilterItem> items = new ArrayList<>();
+    private List<HandlerRegistration> registrations = new ArrayList<>();
+    
+    private boolean isExpanded = true;
     
     public FilterPanel(String title) {
         super();
         addStyleName(Utils.sandboxStyle.navPrimary());
 
-        ul = new UnorderedList();
-        ul.addStyleName(Utils.sandboxStyle.nav());
-        add(ul);
+        UnorderedList headerUl = new UnorderedList();
+        headerUl.addStyleName(Utils.sandboxStyle.nav());
+        add(headerUl);
         
-        FilterItem item = new FilterItem(null, null, title);
-        item.setValue(true);
-        ul.add(item);
+        headerItem = new FilterItem<T>(null, Utils.resources.collapse(), null, title);
+        headerItem.addStyleName(Utils.sandboxStyle.primary());
+        headerItem.setValue(isExpanded);
+        headerUl.add(headerItem);
+        headerItem.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<Boolean> event) {
+                setExpanded(event.getValue());
+            }
+        });
+        itemsUl = new UnorderedList();
+        itemsUl.addStyleName(Utils.sandboxStyle.nav());
+        headerItem.add(itemsUl);
     }
     
-    public void addItem(ImageResource imageRes, String bgClass, String text) {
-        FilterItem item = new FilterItem(imageRes, bgClass, text);
-        ul.add(item);
-        item.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+    public void updateItemsHeight() {
+        itemsUl.getElement().getStyle().setPropertyPx("maxHeight", itemsUl.getElement().getClientHeight());
+    }
+    
+    public void setExpanded(boolean expanded) {
+        if (isExpanded != expanded) {
+            isExpanded = expanded;
+            if (expanded) {
+                removeStyleName(Utils.sandboxStyle.collapsed());
+            } else {
+                addStyleName(Utils.sandboxStyle.collapsed());   
+            }
+        }
+    }
+    
+    public void addItem(T filterEntity, ImageResource imageRes, String bgClass, String text) {
+        FilterItem<T> item = new FilterItem<T>(filterEntity, imageRes, bgClass, text);
+        itemsUl.add(item);
+        registrations.add(item.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> event) {
                 fireEvent(event);
             }
-        });
+        }));
         items.add(item);
+    }
+    
+    public void reset() {
+        registrations.clear();
+        for (FilterItem<T> item : items) {
+            itemsUl.remove(item);
+        }        
+        items.clear();
+        setExpanded(true);
     }
     
     @Override
@@ -73,25 +113,38 @@ public class FilterPanel extends NavWidget implements HasValueChangeHandlers<Boo
         return addHandler(handler, ValueChangeEvent.getType());
     }
     
-    public List<FilterItem> getFilterItems() {
+    public List<FilterItem<T>> getFilterItems() {
         return items;
     }
     
+    public Set<T> getEnabledFilterEntities() {
+        Set<T> enabledFilterEntities = new HashSet<>();
+        for (FilterItem<T> item : items) {
+            if (item.getValue()) {
+                enabledFilterEntities.add(item.getFilterEntity());
+            }
+        }
+        return enabledFilterEntities;
+    }
+    
     public void setActive(boolean active) {
-    	for (FilterItem item : items) {
+        headerItem.setActive(active);
+    	for (FilterItem<T> item : items) {
     		item.setActive(active);
     	}
     }
     
-    public class FilterItem extends ListItem implements HasValue<Boolean> {
+    public class FilterItem<E> extends ListItem implements HasValue<Boolean> {
         
         private Anchor anchor;
         
         private boolean valueChangeHandlerInitialized;
         private boolean value = false;
         private boolean active = true;
+        private E filterEntity;
         
-        FilterItem(ImageResource imageRes, String bgClass, String text) {
+        FilterItem(E filterEntity, ImageResource imageRes, String bgClass, String text) {
+            this.filterEntity = filterEntity;
             anchor = new Anchor();
             add(anchor);
             Element span = DOM.createElement("span");
@@ -135,6 +188,10 @@ public class FilterPanel extends NavWidget implements HasValueChangeHandlers<Boo
                 valueChangeHandlerInitialized = true;
               }
               return addHandler(handler, ValueChangeEvent.getType());
+        }
+        
+        public E getFilterEntity() {
+            return filterEntity;
         }
         
         public void setActive(boolean active) {

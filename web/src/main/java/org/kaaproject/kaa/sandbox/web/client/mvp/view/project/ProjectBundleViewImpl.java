@@ -22,6 +22,7 @@ import org.kaaproject.kaa.examples.common.projects.Complexity;
 import org.kaaproject.kaa.examples.common.projects.Feature;
 import org.kaaproject.kaa.examples.common.projects.Platform;
 import org.kaaproject.kaa.examples.common.projects.Project;
+import org.kaaproject.kaa.examples.common.projects.SdkLanguage;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.HasProjectActionEventHandlers;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.ProjectBundleView;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.base.BaseViewImpl;
@@ -53,7 +54,8 @@ public class ProjectBundleViewImpl extends BaseViewImpl implements ProjectBundle
     private Image bundleImage;
     private Label descriptionLabel;
     private HTML projectDetailsPanel;
-    private HorizontalPanel targetPlatformPanel;
+    private HorizontalPanel sdkLanguagesPanel;
+    private HorizontalPanel platformsPanel;
     private HorizontalPanel featuresPanel;
     private HorizontalPanel complexityPanel;
 
@@ -103,46 +105,59 @@ public class ProjectBundleViewImpl extends BaseViewImpl implements ProjectBundle
         flexTable.getFlexCellFormatter().setVerticalAlignment(1, 0, HasVerticalAlignment.ALIGN_TOP);
 
         FlexTable appDetailsPanel = new FlexTable();
-        appDetailsPanel.getColumnFormatter().setWidth(0, "90px");
+        appDetailsPanel.getColumnFormatter().setWidth(0, "130px");
         appDetailsPanel.getColumnFormatter().setWidth(1, "610px");
+        
+        int row = -1;
         
         descriptionLabel = new Label();
         descriptionLabel.addStyleName(Utils.sandboxStyle.descriptionLabel());
-        appDetailsPanel.setWidget(0, 0, descriptionLabel);
-        appDetailsPanel.getFlexCellFormatter().setColSpan(0, 0, 2);
+        appDetailsPanel.setWidget(++row, 0, descriptionLabel);
+        appDetailsPanel.getFlexCellFormatter().setColSpan(row, 0, 2);
+        
+        Label sdkLanguagesLabel = new Label(Utils.constants.sdkLanguages());
+        sdkLanguagesLabel.addStyleName(Utils.sandboxStyle.contentLabel());
+        appDetailsPanel.setWidget(++row, 0, sdkLanguagesLabel);
+        appDetailsPanel.getFlexCellFormatter().getElement(row, 0).getStyle().setPaddingTop(15, Style.Unit.PX);
+        appDetailsPanel.getFlexCellFormatter().setVerticalAlignment(row, 0, HasVerticalAlignment.ALIGN_TOP);
 
-        Label platformLabel = new Label(Utils.constants.platforms());
-        platformLabel.addStyleName(Utils.sandboxStyle.contentLabel());
-        appDetailsPanel.setWidget(1, 0, platformLabel);
-        appDetailsPanel.getFlexCellFormatter().getElement(1, 0).getStyle().setPaddingTop(15, Style.Unit.PX);
-        appDetailsPanel.getFlexCellFormatter().setVerticalAlignment(1, 0, HasVerticalAlignment.ALIGN_TOP);
+        sdkLanguagesPanel = new HorizontalPanel();
+        appDetailsPanel.setWidget(row, 1, sdkLanguagesPanel);
+        appDetailsPanel.getFlexCellFormatter().getElement(row, 1).getStyle().setPaddingTop(15, Style.Unit.PX);
+        appDetailsPanel.getFlexCellFormatter().setVerticalAlignment(row, 1, HasVerticalAlignment.ALIGN_MIDDLE);
 
-        targetPlatformPanel = new HorizontalPanel();
-        appDetailsPanel.setWidget(1, 1, targetPlatformPanel);
-        appDetailsPanel.getFlexCellFormatter().getElement(1, 1).getStyle().setPaddingTop(15, Style.Unit.PX);
-        appDetailsPanel.getFlexCellFormatter().setVerticalAlignment(1, 1, HasVerticalAlignment.ALIGN_MIDDLE);
+        Label platformsLabel = new Label(Utils.constants.platforms());
+        platformsLabel.addStyleName(Utils.sandboxStyle.contentLabel());
+        appDetailsPanel.setWidget(++row, 0, platformsLabel);
+        appDetailsPanel.getFlexCellFormatter().getElement(row, 0).getStyle().setPaddingTop(15, Style.Unit.PX);
+        appDetailsPanel.getFlexCellFormatter().setVerticalAlignment(row, 0, HasVerticalAlignment.ALIGN_TOP);
+
+        platformsPanel = new HorizontalPanel();
+        appDetailsPanel.setWidget(row, 1, platformsPanel);
+        appDetailsPanel.getFlexCellFormatter().getElement(row, 1).getStyle().setPaddingTop(15, Style.Unit.PX);
+        appDetailsPanel.getFlexCellFormatter().setVerticalAlignment(row, 1, HasVerticalAlignment.ALIGN_MIDDLE);
 
         Label featuresLabel = new Label(Utils.constants.features());
         featuresLabel.addStyleName(Utils.sandboxStyle.contentLabel());
-        appDetailsPanel.setWidget(2, 0, featuresLabel);
-        appDetailsPanel.getFlexCellFormatter().getElement(2, 0).getStyle().setPaddingTop(10, Style.Unit.PX);
-        appDetailsPanel.getFlexCellFormatter().setVerticalAlignment(2, 0, HasVerticalAlignment.ALIGN_TOP);
+        appDetailsPanel.setWidget(++row, 0, featuresLabel);
+        appDetailsPanel.getFlexCellFormatter().getElement(row, 0).getStyle().setPaddingTop(10, Style.Unit.PX);
+        appDetailsPanel.getFlexCellFormatter().setVerticalAlignment(row, 0, HasVerticalAlignment.ALIGN_TOP);
 
         featuresPanel = new HorizontalPanel();
-        appDetailsPanel.setWidget(2, 1, featuresPanel);
-        appDetailsPanel.getFlexCellFormatter().getElement(2, 1).getStyle().setPaddingTop(10, Style.Unit.PX);
-        appDetailsPanel.getFlexCellFormatter().setVerticalAlignment(2, 1, HasVerticalAlignment.ALIGN_MIDDLE);
+        appDetailsPanel.setWidget(row, 1, featuresPanel);
+        appDetailsPanel.getFlexCellFormatter().getElement(row, 1).getStyle().setPaddingTop(10, Style.Unit.PX);
+        appDetailsPanel.getFlexCellFormatter().setVerticalAlignment(row, 1, HasVerticalAlignment.ALIGN_MIDDLE);
 
         Label complexityLabel = new Label(Utils.constants.complexity());
         complexityLabel.addStyleName(Utils.sandboxStyle.contentLabel());
-        appDetailsPanel.setWidget(3, 0, complexityLabel);
-        appDetailsPanel.getFlexCellFormatter().getElement(3, 0).getStyle().setPaddingTop(10, Style.Unit.PX);
-        appDetailsPanel.getFlexCellFormatter().setVerticalAlignment(3, 0, HasVerticalAlignment.ALIGN_MIDDLE);
+        appDetailsPanel.setWidget(++row, 0, complexityLabel);
+        appDetailsPanel.getFlexCellFormatter().getElement(row, 0).getStyle().setPaddingTop(10, Style.Unit.PX);
+        appDetailsPanel.getFlexCellFormatter().setVerticalAlignment(row, 0, HasVerticalAlignment.ALIGN_MIDDLE);
 
         complexityPanel = new HorizontalPanel();
-        appDetailsPanel.setWidget(3, 1, complexityPanel);
-        appDetailsPanel.getFlexCellFormatter().getElement(3, 1).getStyle().setPaddingTop(10, Style.Unit.PX);
-        appDetailsPanel.getFlexCellFormatter().setVerticalAlignment(3, 1, HasVerticalAlignment.ALIGN_MIDDLE);
+        appDetailsPanel.setWidget(row, 1, complexityPanel);
+        appDetailsPanel.getFlexCellFormatter().getElement(row, 1).getStyle().setPaddingTop(10, Style.Unit.PX);
+        appDetailsPanel.getFlexCellFormatter().setVerticalAlignment(row, 1, HasVerticalAlignment.ALIGN_MIDDLE);
 
         flexTable.setWidget(1, 1, appDetailsPanel);
         flexTable.getFlexCellFormatter().setVerticalAlignment(1, 1, HasVerticalAlignment.ALIGN_TOP);
@@ -174,8 +189,8 @@ public class ProjectBundleViewImpl extends BaseViewImpl implements ProjectBundle
 
     @Override
     protected void resetImpl() {
-
-        targetPlatformPanel.clear();
+        sdkLanguagesPanel.clear();
+        platformsPanel.clear();
         featuresPanel.clear();
         complexityPanel.clear();
         descriptionLabel.setText("");
@@ -185,6 +200,27 @@ public class ProjectBundleViewImpl extends BaseViewImpl implements ProjectBundle
 
     }
     
+	@Override
+	public void setSdkLanguages(List<SdkLanguage> sdkLanguages) {
+        for (int i=0;i<sdkLanguages.size();i++) {
+        	SdkLanguage sdkLanguage  = sdkLanguages.get(i);
+            Image image = new Image(Utils.getSdkLanguageIcon(sdkLanguage));
+            image.setTitle(Utils.getSdkLanguageText(sdkLanguage));
+            image.getElement().getStyle().setVerticalAlign(VerticalAlign.MIDDLE);
+            Label label = new Label(Utils.getSdkLanguageText(sdkLanguage));
+            sdkLanguagesPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+            sdkLanguagesPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+            sdkLanguagesPanel.add(image);
+            sdkLanguagesPanel.setCellWidth(image, "32px");
+            sdkLanguagesPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
+            sdkLanguagesPanel.add(label);
+            if (i < sdkLanguages.size()-1) {
+                label.getElement().getStyle().setPaddingRight(10, Unit.PX);
+            }
+            label.getElement().getStyle().setPaddingLeft(8, Unit.PX);
+        }
+	}
+    
     @Override
     public void setPlatforms(List<Platform> platforms) {
         for (int i=0;i<platforms.size();i++) {
@@ -193,17 +229,16 @@ public class ProjectBundleViewImpl extends BaseViewImpl implements ProjectBundle
             image.setTitle(Utils.getPlatformText(platform));
             image.getElement().getStyle().setVerticalAlign(VerticalAlign.MIDDLE);
             Label label = new Label(Utils.getPlatformText(platform));
-            targetPlatformPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-            targetPlatformPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-            targetPlatformPanel.add(image);
-            targetPlatformPanel.setCellWidth(image, "32px");
-            targetPlatformPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
-            targetPlatformPanel.add(label);
+            platformsPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+            platformsPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+            platformsPanel.add(image);
+            platformsPanel.setCellWidth(image, "32px");
+            platformsPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
+            platformsPanel.add(label);
             if (i < platforms.size()-1) {
                 label.getElement().getStyle().setPaddingRight(10, Unit.PX);
             }
             label.getElement().getStyle().setPaddingLeft(8, Unit.PX);
-            
         }
     }
 
