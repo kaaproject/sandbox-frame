@@ -184,8 +184,7 @@ public class Utils {
 			case JAVA:
 				return resources.javaLanguage();
 			case OBJC:
-				//TODO:
-				return resources.javaLanguage();
+				return resources.objcLanguage();
     	}
     	return null;
     }
@@ -203,8 +202,7 @@ public class Utils {
             case ANDROID:
                 return resources.androidPlatform();
     		case IOS:
-    			//TODO:
-    			return resources.androidPlatform();
+    			return resources.iosPlatform();
             case ARTIK_5:
                 return resources.artik5Platform();
             case ESP_8266:
@@ -246,9 +244,8 @@ public class Utils {
             	} else {
             		return resources.java();
             	}
-			case OBJC:
-				//TODO:
-				return resources.android();
+            case OBJC:
+                return resources.objc();
         }
         return null;
     }

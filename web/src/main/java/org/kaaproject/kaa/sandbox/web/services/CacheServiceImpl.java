@@ -139,6 +139,8 @@ public class CacheServiceImpl implements CacheService {
             	} else {
             		return SdkPlatform.JAVA;
             	}
+            case OBJC:
+                return SdkPlatform.OBJC;
             default:
                 throw new IllegalArgumentException("Unsupported language " + project.getSdkLanguage());
         }
