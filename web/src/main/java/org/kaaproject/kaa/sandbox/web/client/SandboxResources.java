@@ -128,7 +128,7 @@ public interface SandboxResources extends ClientBundle {
     @Source("images/android_platform.png")
     ImageResource androidPlatform();
 
-    @ImageOptions(width = 66, height = 28)
+    @ImageOptions(width = 23, height = 28)
     @Source("images/ios_platform.png")
     ImageResource iosPlatform();
 
