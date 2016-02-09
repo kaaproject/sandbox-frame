@@ -1,17 +1,17 @@
-/*
- * Copyright 2014 CyberVision, Inc.
+/**
+ *  Copyright 2014-2016 CyberVision, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 
 package org.kaaproject.kaa.sandbox.web.client;
@@ -71,6 +71,10 @@ public interface SandboxResources extends ClientBundle {
     @ImageOptions(width = 114, height = 128)
     @Source("images/cpp.png")
     ImageResource cpp();
+
+    @ImageOptions(width = 128, height = 128)
+    @Source("images/objc.png")
+    ImageResource objc();
     
     @ImageOptions(width = 32, height = 28)
     @Source("images/config_feature.png")
@@ -107,6 +111,10 @@ public interface SandboxResources extends ClientBundle {
     @ImageOptions(width = 25, height = 28)
     @Source("images/cpp_language.png")
     ImageResource cppLanguage();
+
+    @ImageOptions(width = 32, height = 32)
+    @Source("images/objc_language.png")
+    ImageResource objcLanguage();
     
     @ImageOptions(width = 28, height = 28)
     @Source("images/linux_platform.png")
@@ -119,6 +127,10 @@ public interface SandboxResources extends ClientBundle {
     @ImageOptions(width = 28, height = 28)
     @Source("images/android_platform.png")
     ImageResource androidPlatform();
+
+    @ImageOptions(width = 23, height = 28)
+    @Source("images/ios_platform.png")
+    ImageResource iosPlatform();
 
     @ImageOptions(width = 24, height = 24)
     @Source("images/android_platform.png")
@@ -167,6 +179,5 @@ public interface SandboxResources extends ClientBundle {
     @ImageOptions(width = 21, height = 56)
     @Source("images/complexity_advanced_s.png")
     ImageResource advancedStar();
-    
 
 }

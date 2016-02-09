@@ -1,5 +1,5 @@
 <!--
-  Copyright 2014-2015 CyberVision, Inc.
+  Copyright 2014-2016 CyberVision, Inc.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -51,6 +51,47 @@
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+        </profile>
+        <profile>
+            <id>license</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.mycila.maven-license-plugin</groupId>
+                        <artifactId>maven-license-plugin</artifactId>
+                        <version>1.8.0</version>
+                        <configuration>
+                            <header>copyright.txt</header>
+                            <strictCheck>true</strictCheck>
+                            <mapping>
+                                <txt>SCRIPT_STYLE</txt>
+                                <md>SCRIPT_STYLE</md>
+                                <js>JAVADOC_STYLE</js>
+                                <template>JAVADOC_STYLE</template>
+                            </mapping>
+                            <includes>
+                                <include>**/*.java</include>
+                                <include>**/*.sh</include>
+                                <include>**/*.bat</include>
+                                <include>**/*.xml</include>
+                                <include>**/*.html</include>
+                                <include>**/*.txt</include>
+                                <include>**/*.md</include>
+                                <include>**/*.js</include>
+                                <include>**/*.template</include>
+                            </includes>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>format</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
         <profile>
             <id>repository</id>
