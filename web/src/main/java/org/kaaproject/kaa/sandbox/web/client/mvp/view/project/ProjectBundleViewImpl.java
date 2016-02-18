@@ -178,7 +178,7 @@ public class ProjectBundleViewImpl extends BaseViewImpl implements ProjectBundle
         carouselPanel.add(carousel);
         
         DockLayoutPanel dockPanel = new DockLayoutPanel(Unit.PX);
-        dockPanel.getElement().getStyle().setPropertyPx("minHeight", 350);
+        dockPanel.getElement().getStyle().setPropertyPx("minHeight", 700);
         dockPanel.addSouth(carouselPanel, 350);
         dockPanel.add(new ScrollPanel(flexTable));
         dockPanel.getWidgetContainerElement(carouselPanel).getStyle().setOverflowX(Overflow.AUTO);
