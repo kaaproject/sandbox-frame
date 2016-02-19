@@ -58,7 +58,7 @@ public class FilterPanel<T> extends NavWidget implements HasValueChangeHandlers<
         
         headerItem = new FilterItem<T>(null, Utils.resources.collapse(), null, title);
         headerItem.addStyleName(Utils.sandboxStyle.primary());
-        headerItem.setValue(isExpanded);
+        headerItem.setValue(false);
         headerUl.add(headerItem);
         headerItem.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
             @Override
@@ -73,6 +73,7 @@ public class FilterPanel<T> extends NavWidget implements HasValueChangeHandlers<
     
     public void updateItemsHeight() {
         itemsUl.getElement().getStyle().setPropertyPx("maxHeight", itemsUl.getElement().getClientHeight());
+        setExpanded(false);
     }
     
     public void setExpanded(boolean expanded) {
@@ -104,7 +105,6 @@ public class FilterPanel<T> extends NavWidget implements HasValueChangeHandlers<
             itemsUl.remove(item);
         }        
         items.clear();
-        setExpanded(true);
     }
     
     @Override
