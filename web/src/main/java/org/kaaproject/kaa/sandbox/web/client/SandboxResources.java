@@ -140,6 +140,14 @@ public interface SandboxResources extends ClientBundle {
     @Source("images/artik5_platform.png")
     ImageResource artik5Platform();
 
+    @ImageOptions(width = 29, height = 29)
+    @Source("images/raspberry_pi_platform.png")
+    ImageResource raspberryPiPlatform();
+
+    @ImageOptions(width = 29, height = 29)
+    @Source("images/intel_edison_platform.png")
+    ImageResource intelEdisonPlatform();
+
     @ImageOptions(width = 29, height = 28)
     @Source("images/esp8266_platform.png")
     ImageResource esp8266Platform();

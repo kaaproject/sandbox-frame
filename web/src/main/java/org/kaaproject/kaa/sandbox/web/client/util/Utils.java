@@ -138,55 +138,59 @@ public class Utils {
     }
     
     public static String getSdkLanguageText(SdkLanguage sdkLanguage) {
-    	switch(sdkLanguage) {
-			case C:
-				return constants.c();
-			case CPP:
-				return constants.cpp();
-			case JAVA:
-				return constants.java();
-			case OBJC:
-				return constants.objc();
-    	}
-    	return null;
+        switch(sdkLanguage) {
+            case C:
+                return constants.c();
+            case CPP:
+                return constants.cpp();
+            case JAVA:
+                return constants.java();
+            case OBJC:
+                return constants.objc();
+        }
+        return null;
     }
     
     public static String getPlatformText(Platform platform) {
         switch(platform) {
-			case LINUX_X_86:
-				return constants.linux_x86();
-			case WINDOWS_X_86:
-				return constants.windows_x86();
+            case LINUX_X_86:
+                return constants.linux_x86();
+            case WINDOWS_X_86:
+                return constants.windows_x86();
             case ANDROID:
                 return constants.android();
-			case IOS:
-				return constants.ios();
+            case IOS:
+                return constants.ios();
             case ARTIK_5:
                 return constants.artik5();
             case ESP_8266:
                 return constants.esp8266();
             case CC_32_XX:
                 return constants.cc32xx();
-    		case STM_32:
-    			return constants.stm32();
-			case ECONAIS:
-				return constants.econais();
+            case STM_32:
+                return constants.stm32();
+            case ECONAIS:
+                return constants.econais();
+            case RASPBERRY_PI:
+                return constants.raspberryPi();
+            case INTEL_EDISON:
+                return constants.intelEdison();
         }
         return null;
     }
     
     public static ImageResource getSdkLanguageIcon(SdkLanguage sdkLanguage) {
-    	switch(sdkLanguage) {
-			case C:
-				return resources.cLanguage();
-			case CPP:
-				return resources.cppLanguage();
-			case JAVA:
-				return resources.javaLanguage();
-			case OBJC:
-				return resources.objcLanguage();
-    	}
-    	return null;
+        switch(sdkLanguage) {
+            case C:
+                return resources.cLanguage();
+            case CPP:
+                return resources.cppLanguage();
+            case JAVA:
+                return resources.javaLanguage();
+            case OBJC:
+                return resources.objcLanguage();
+        }
+        return null;
     }
     
     public static String getSdkLanguageBackgroundClass(SdkLanguage sdkLanguage) {
@@ -195,26 +199,30 @@ public class Utils {
     
     public static ImageResource getPlatformIcon(Platform platform) {
         switch(platform) {
-			case LINUX_X_86:
-    			return resources.linuxPlatform();
-			case WINDOWS_X_86:
-    			return resources.windowsPlatform();
+            case LINUX_X_86:
+                return resources.linuxPlatform();
+            case WINDOWS_X_86:
+                return resources.windowsPlatform();
             case ANDROID:
                 return resources.androidPlatform();
-    		case IOS:
-    			return resources.iosPlatform();
+            case IOS:
+                return resources.iosPlatform();
             case ARTIK_5:
                 return resources.artik5Platform();
             case ESP_8266:
                 return resources.esp8266Platform();
             case CC_32_XX:
                 return resources.cc32xxPlatform();
-    		case STM_32:
-    			//TODO:
-    			return resources.androidPlatform();
-			case ECONAIS:
-    			//TODO:
-    			return resources.androidPlatform();
+            case STM_32:
+                //TODO:
+                return resources.androidPlatform();
+            case ECONAIS:
+                //TODO:
+                return resources.androidPlatform();
+            case RASPBERRY_PI:
+                return resources.raspberryPiPlatform();
+            case INTEL_EDISON:
+                return resources.intelEdisonPlatform();
         }
         return null;
     }
@@ -239,11 +247,11 @@ public class Utils {
             case CPP:
                 return resources.cpp();
             case JAVA:
-            	if (project.getPlatforms().contains(Platform.ANDROID)) {
-            		return resources.android();
-            	} else {
-            		return resources.java();
-            	}
+                if (project.getPlatforms().contains(Platform.ANDROID)) {
+                    return resources.android();
+                } else {
+                    return resources.java();
+                }
             case OBJC:
                 return resources.objc();
         }
@@ -251,27 +259,27 @@ public class Utils {
     }
     
     public static ImageResource getFilterComplexityIcon(Complexity complexity) {
-    	switch(complexity) {
+        switch(complexity) {
         case BASIC:
             return resources.basic();
         case REGULAR:
             return resources.regular();
         case ADVANCED:
             return resources.advanced();
-    	}
-    	return null;
+        }
+        return null;
     }
     
     public static ImageResource getComplexityStarIcon(Complexity complexity) {
-    	switch(complexity) {
+        switch(complexity) {
         case BASIC:
             return resources.basicStar();
         case REGULAR:
             return resources.regularStar();
         case ADVANCED:
             return resources.advancedStar();
-    	}
-    	return null;
+        }
+        return null;
     }
     
     public static String getComplexityBackgroundClass(Complexity complexity) {
@@ -291,12 +299,12 @@ public class Utils {
     }
     
     public static void getProjectSourceCode(BaseView view, Project project) {
-    	Analytics.sendProjectEvent(project, Analytics.SOURCE_ACTION);
+        Analytics.sendProjectEvent(project, Analytics.SOURCE_ACTION);
         getProjectData(view, project, ProjectDataType.SOURCE);
     }
     
     public static void getProjectBinary(BaseView view, Project project) {
-    	Analytics.sendProjectEvent(project, Analytics.BINARY_ACTION);
+        Analytics.sendProjectEvent(project, Analytics.BINARY_ACTION);
         getProjectData(view, project, ProjectDataType.BINARY);
     }
     
@@ -306,7 +314,7 @@ public class Utils {
 
             @Override
             public void onFailureImpl(Throwable caught) {
-            	String message = Utils.getErrorMessage(caught);
+                String message = Utils.getErrorMessage(caught);
                 view.setErrorMessage(message);
                 Analytics.sendException(message);
             }
