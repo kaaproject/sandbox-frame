@@ -39,7 +39,7 @@ import java.util.List;
 public class CarouselWidget extends FlexTable implements HasProjectActionEventHandlers,
         ProjectActionEventHandler {
 	
-	public static final int DEFAULT_VISIBLE_RANGE = 5;
+	public static final int DEFAULT_VISIBLE_RANGE = 3;
 
     private final int initialVisibleRange;
     private int visibleRange;
@@ -67,6 +67,7 @@ public class CarouselWidget extends FlexTable implements HasProjectActionEventHa
         goLeftButton.addStyleName(Utils.sandboxStyle.carouselLeftButton());
         goLeftButton.setHeight("100px");
         goLeftButton.setEnabled(false);
+        goLeftButton.getElement().getStyle().setMarginRight(25, Style.Unit.PX);
         goLeftButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent clickEvent) {
