@@ -165,6 +165,7 @@ public class ProjectBundleViewImpl extends BaseViewImpl implements ProjectBundle
         projectDetailsPanel = new HTML();
         projectDetailsPanel.addStyleName(Utils.sandboxStyle.projectDetails());
         projectDetailsPanel.getElement().getStyle().setPaddingTop(15, Style.Unit.PX);
+        projectDetailsPanel.getElement().getStyle().setPaddingBottom(15, Style.Unit.PX);
         flexTable.setWidget(2, 1, projectDetailsPanel);
         flexTable.getFlexCellFormatter().setColSpan(2, 1, 2);
 
@@ -172,17 +173,21 @@ public class ProjectBundleViewImpl extends BaseViewImpl implements ProjectBundle
         carousel = new CarouselWidget();
         HorizontalPanel carouselPanel = new HorizontalPanel();
         carouselPanel.addStyleName(sandboxStyle.bundleProjectsPanel());
+        carouselPanel.getElement().getStyle().setPadding(15, Unit.PX);
         carouselPanel.setHeight("330px");
         carouselPanel.setWidth("100%");
         carouselPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
         carouselPanel.add(carousel);
-        
+
+        VerticalPanel content = new VerticalPanel();
+        content.add(flexTable);
+        content.add(carouselPanel);
+        content.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+        content.getElement().getStyle().setOverflowX(Overflow.AUTO);
+
         DockLayoutPanel dockPanel = new DockLayoutPanel(Unit.PX);
-        dockPanel.getElement().getStyle().setPropertyPx("minHeight", 700);
-        dockPanel.addSouth(carouselPanel, 350);
-        dockPanel.add(new ScrollPanel(flexTable));
-        dockPanel.getWidgetContainerElement(carouselPanel).getStyle().setOverflowX(Overflow.AUTO);
-        
+        dockPanel.add(new ScrollPanel(content));
+
         centerPanel.add(dockPanel);
         centerPanel.getWidgetContainerElement(dockPanel).getStyle().setOverflowY(Overflow.AUTO);
     }
