@@ -31,6 +31,8 @@ import org.kaaproject.kaa.sandbox.web.client.mvp.view.ChangeKaaHostView;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.dialog.ConsoleDialog;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.dialog.ConsoleDialog.ConsoleDialogListener;
 import org.kaaproject.kaa.sandbox.web.client.util.Analytics;
+import org.kaaproject.kaa.sandbox.web.client.util.DomainValidator;
+import org.kaaproject.kaa.sandbox.web.client.util.InetAddressValidator;
 import org.kaaproject.kaa.sandbox.web.client.util.LogLevel;
 import org.kaaproject.kaa.sandbox.web.client.util.Utils;
 
@@ -166,7 +168,7 @@ public class ChangeKaaHostActivity extends AbstractActivity {
     private void changeKaaHost() {
         final String host = view.getKaaHost().getValue();
         Analytics.sendEvent(Analytics.CHANGE_KAA_HOST_ACTION, host);
-        if (host != null && host.length() > 0) {
+        if (validateHost(host)) {
             view.clearError();
             ConsoleDialog.startConsoleDialog("Going to change kaa host to '"
                                             + host + "'...\n", new ConsoleDialogListener() {
@@ -194,9 +196,19 @@ public class ChangeKaaHostActivity extends AbstractActivity {
                             });
                 }
             });
-        } else {
-            view.setErrorMessage(Utils.messages.emptyKaaHostError());
-        }
+        } 
+    }
+    
+    private boolean validateHost(String host) {
+    	if (host == null || host.length() == 0) {
+    		view.setErrorMessage(Utils.messages.emptyKaaHostError());
+    		return false;
+    	} else if (!InetAddressValidator.getInstance().isValid(host) &&
+    		    !DomainValidator.getInstance().isValid(host)) {
+    	    view.setErrorMessage("Invalid hostname/ip address format!");
+    	    return false;
+    	}
+    	return true;
     }
 
     private void getLogs() {
