@@ -511,15 +511,26 @@ nav.navPrimary.collapsed li.primary > a > span.icon > img {
 .demoProjectWidget .title {
 	position: relative;
     width: 160px;
+    max-width: 160px;
+    margin: 0 auto;
 	color: #666;
-    font-size: 20px;
+    font-size: 19px;
     font-variant: normal;
     font-weight: normal;
     line-height: 24px;
+    max-height: 48px;
+    height: 48px;
     overflow: hidden;
     display: block;
+    display: -webkit-box;
     white-space: normal;
     text-align: center;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    -ms-text-overflow: ellipsis;
+    margin-bottom: 0;
 } 
 
 .demoProjectWidget .action {
