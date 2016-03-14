@@ -205,7 +205,7 @@ public class ChangeKaaHostActivity extends AbstractActivity {
     		return false;
     	} else if (!InetAddressValidator.getInstance().isValid(host) &&
     		    !DomainValidator.getInstance().isValid(host)) {
-    	    view.setErrorMessage("Invalid hostname/ip address format!");
+    	    view.setErrorMessage(Utils.messages.invalidKaaHostError());
     	    return false;
     	}
     	return true;
