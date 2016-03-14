@@ -217,7 +217,7 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
     private void prepareAnalytics() throws IOException {
         if (enableAnalytics) {
             try {
-                File f = new File(ANALYTICS_USER_ID_FILE);
+                File f = new File(Environment.getServerHomeDir() + "/" + ANALYTICS_USER_ID_FILE);
                 if (!f.exists()) {
                     f.createNewFile();
                 }
