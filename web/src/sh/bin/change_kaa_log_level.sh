@@ -65,6 +65,25 @@ then
 
     sleep 10
 
+elif [ ${remove_logs} -eq 1 ]
+
+then
+
+    echo "Removing old log files..."
+
+    find /var/log/kaa -type f -name '*[0-9].log' -exec rm {} +
+
+    FILES=/var/log/kaa/*
+
+    for f in $FILES
+    do
+
+	> $f
+
+    done
+
+    echo "Old log files removed!"
+
 fi
 
 echo "Done!"
