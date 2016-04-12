@@ -16,13 +16,9 @@
 
 package org.kaaproject.kaa.sandbox.web.client.mvp.activity;
 
-import com.google.gwt.activity.shared.AbstractActivity;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.shared.EventBus;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.AcceptsOneWidget;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.kaaproject.avro.ui.gwt.client.util.BusyAsyncCallback;
 import org.kaaproject.kaa.sandbox.web.client.Sandbox;
 import org.kaaproject.kaa.sandbox.web.client.mvp.ClientFactory;
@@ -31,13 +27,16 @@ import org.kaaproject.kaa.sandbox.web.client.mvp.view.ChangeKaaHostView;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.dialog.ConsoleDialog;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.dialog.ConsoleDialog.ConsoleDialogListener;
 import org.kaaproject.kaa.sandbox.web.client.util.Analytics;
-import org.kaaproject.kaa.sandbox.web.client.util.DomainValidator;
-import org.kaaproject.kaa.sandbox.web.client.util.InetAddressValidator;
 import org.kaaproject.kaa.sandbox.web.client.util.LogLevel;
 import org.kaaproject.kaa.sandbox.web.client.util.Utils;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.gwt.activity.shared.AbstractActivity;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.AcceptsOneWidget;
 
 public class ChangeKaaHostActivity extends AbstractActivity {
 
@@ -168,47 +167,44 @@ public class ChangeKaaHostActivity extends AbstractActivity {
     private void changeKaaHost() {
         final String host = view.getKaaHost().getValue();
         Analytics.sendEvent(Analytics.CHANGE_KAA_HOST_ACTION, host);
-        if (validateHost(host)) {
-            view.clearError();
-            ConsoleDialog.startConsoleDialog("Going to change kaa host to '"
-                                            + host + "'...\n", new ConsoleDialogListener() {
+        Sandbox.getSandboxService().validateKaaHost(host, new AsyncCallback<Void>() {
+            @Override
+            public void onFailure(Throwable caught) {
+                String message = Utils.getErrorMessage(caught);
+                view.setErrorMessage(message);
+            }
 
-                @Override
-                public void onOk(boolean success) {
-                }
+            @Override
+            public void onSuccess(Void result) {
+                view.clearError();
+                ConsoleDialog.startConsoleDialog("Going to change kaa host to '"
+                                                + host + "'...\n", new ConsoleDialogListener() {
 
-                @Override
-                public void onStart(String uuid, final ConsoleDialog dialog,
-                        final AsyncCallback<Void> callback) {
-                    Sandbox.getSandboxService().changeKaaHost(uuid, host,
-                            new AsyncCallback<Void>() {
-                                @Override
-                                public void onFailure(Throwable caught) {
-                                    callback.onFailure(caught);
-                                }
+                    @Override
+                    public void onOk(boolean success) {
+                    }
 
-                                @Override
-                                public void onSuccess(Void result) {
-                                    dialog.appendToConsoleAtFinish("Successfully changed kaa host to '"
-                                            + host + "'\n");
-                                    callback.onSuccess(result);
-                                }
-                            });
-                }
-            });
-        } 
-    }
-    
-    private boolean validateHost(String host) {
-    	if (host == null || host.length() == 0) {
-    		view.setErrorMessage(Utils.messages.emptyKaaHostError());
-    		return false;
-    	} else if (!InetAddressValidator.getInstance().isValid(host) &&
-    		    !DomainValidator.getInstance().isValid(host)) {
-    	    view.setErrorMessage(Utils.messages.invalidKaaHostError());
-    	    return false;
-    	}
-    	return true;
+                    @Override
+                    public void onStart(String uuid, final ConsoleDialog dialog,
+                            final AsyncCallback<Void> callback) {
+                        Sandbox.getSandboxService().changeKaaHost(uuid, host,
+                                new AsyncCallback<Void>() {
+                                    @Override
+                                    public void onFailure(Throwable caught) {
+                                        callback.onFailure(caught);
+                                    }
+
+                                    @Override
+                                    public void onSuccess(Void result) {
+                                        dialog.appendToConsoleAtFinish("Successfully changed kaa host to '"
+                                                + host + "'\n");
+                                        callback.onSuccess(result);
+                                    }
+                                });
+                    }
+                });
+            }
+        });
     }
 
     private void getLogs() {

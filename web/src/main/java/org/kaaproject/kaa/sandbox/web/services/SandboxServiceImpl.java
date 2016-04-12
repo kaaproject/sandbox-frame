@@ -41,6 +41,8 @@ import javax.xml.bind.Unmarshaller;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.validator.routines.DomainValidator;
+import org.apache.commons.validator.routines.InetAddressValidator;
 import org.apache.tools.ant.taskdefs.Execute;
 import org.apache.tools.ant.taskdefs.PumpStreamHandler;
 import org.atmosphere.client.TrackMessageSizeInterceptor;
@@ -276,6 +278,16 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
     public void changeKaaHostDialogShown() throws SandboxServiceException {
         cacheService.putProperty(CHANGE_KAA_HOST_DIALOG_SHOWN_PROPERTY, Boolean.TRUE);
     }
+    
+    @Override
+    public void validateKaaHost(String host) throws SandboxServiceException {
+        if (host == null || host.length() == 0) {
+            throw new SandboxServiceException("Kaa host field can not be empty!");
+        } else if (!InetAddressValidator.getInstance().isValid(host) &&
+                !DomainValidator.getInstance(true).isValid(host)) {
+            throw new SandboxServiceException("Invalid hostname/ip address format!");
+        }
+    }
 
     @Override
     public void changeKaaHost(String uuid, String host) throws SandboxServiceException {
@@ -300,7 +312,7 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
             }
         }
     }
-
+    
     @Override
     public boolean getLogsEnabled() throws SandboxServiceException {
         return guiGetLogsEnabled;
