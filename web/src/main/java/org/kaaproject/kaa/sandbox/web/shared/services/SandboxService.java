@@ -40,6 +40,8 @@ public interface SandboxService extends RemoteService {
     public boolean showChangeKaaHostDialog() throws SandboxServiceException;
 
     public void changeKaaHostDialogShown() throws SandboxServiceException;
+    
+    public void validateKaaHost(String host) throws SandboxServiceException;
 
     public void changeKaaHost(String uuid, String host) throws SandboxServiceException;
 
