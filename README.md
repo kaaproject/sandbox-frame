@@ -7,10 +7,15 @@ This is sandbox-frame written with React+Redux+Immutable+Webpack
 
 ## How to run?
 1) npm install
+
 2) to run dev build - npm start - go to localhost:3000
+
 3) to get sources(production version) - npm run build, and go to folder dist
+
 4) to run unit test - npm run test(npm test)
+
 5) to run e2e test - npm run test:e2e
+
 6) to get info about test coverage - npm run test:coverage
 
 ## About app
