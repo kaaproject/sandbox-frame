@@ -1,0 +1,2 @@
+serviceClass: org.kaaproject.avro.ui.sandbox.shared.services.AvroUiSandboxService
+path: 1029FC3E2DF3675339F1FC5DA334C68D.gwt.rpc
