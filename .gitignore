@@ -1,3 +1,9 @@
+.DS_Store
+node_modules
+snapshots
+e2eTestLog
+npm-debug.log
+dist
 output/**
 *.class
 *.iml
@@ -17,4 +23,4 @@ target/
 **/dependency-reduced-pom.xml
 web/src/main/java/org/kaaproject/kaa/sandbox/web/shared/Version.java
 pom.xml.versionsBackup
-.DS_Store
+logs
