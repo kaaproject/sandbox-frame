@@ -543,12 +543,8 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
         if (project.getProjectFolder() != null && !project.getProjectFolder().trim().isEmpty()) {
             projectFolder = new File(rootDir, project.getProjectFolder());
         }
-        if (!project.getPlatforms().contains(Platform.ANDROID)) {
-            executeCommand(outStream, new String[]{"ant"}, projectFolder);
-        } else {
-            executeCommand(outStream, new String[]{"./gradlew", "clean", "assembleDebug"}, projectFolder);
-        }
 
+        buildBinaryAntGradle(outStream, project, projectFolder);
         outStream.println("Build finished.");
 
         File binaryFile = new File(rootDir, project.getDestBinaryFile());
@@ -567,6 +563,17 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
             }
         }
         cacheService.putProjectFile(dataKey, binaryFileData);
+    }
+
+    private void buildBinaryAntGradle(ClientMessageOutputStream outStream, Project project, File projectFolder) throws SandboxServiceException {
+        if (project.getPlatforms().contains(Platform.ANDROID) && new File(projectFolder, "/gradlew").exists()) {
+            LOG.info("Build with gradle.");
+            executeCommand(outStream, new String[]{"./gradlew", "clean", "assembleDebug"}, projectFolder);
+            return;
+        }
+
+        LOG.info("Build with ant.");
+        executeCommand(outStream, new String[]{"ant"}, projectFolder);
     }
 
     private void buildSdkSource(ClientMessageOutputStream outStream, File rootDir, String sourceArchiveFile, String rootProjectDir, ProjectDataKey dataKey) throws SandboxServiceException, IOException {
