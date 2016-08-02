@@ -16,28 +16,6 @@
 
 package org.kaaproject.kaa.sandbox.web.services;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.UUID;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -86,6 +64,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.UUID;
+
 @Service("sandboxService")
 @ManagedService(path = "/sandbox/atmosphere/rpc",
         interceptors = {
@@ -133,42 +132,42 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
     private static final int MESSAGE_BROADCAST_TIMEOUT = 10000;
 
     private static final String ANALYTICS_USER_ID_FILE = "analytics_user_id";
-
+    private static String[] sandboxEnv;
+    private static AtmosphereResourceFactory atmosphereResourceFactory;
+    private static String analyticsUserId;
     @Autowired
     private CacheService cacheService;
-
     /**
      * Change host enabled.
      */
     @Value("#{properties[gui_change_host_enabled]}")
     private boolean guiChangeHostEnabled;
-
     /**
      * Get sandbox logs enabled.
      */
     @Value("#{properties[gui_get_logs_enabled]}")
     private boolean guiGetLogsEnabled;
-
     @Value("#{properties[gui_show_change_host_dialog]}")
     private boolean guiShowChangeHostDialog;
-
     @Value("#{properties[kaa_node_web_port]}")
     private int kaaNodeWebPort;
-
     @Value("#{properties[enable_analytics]}")
     private boolean enableAnalytics;
-
     @Value("#{properties[analytics_tracking_id]}")
     private String analyticsTrackingId;
-
     private Map<String, Project> projectsMap = new HashMap<>();
     private Map<String, Bundle> bundlesMap = new HashMap<>();
 
-    private static String[] sandboxEnv;
-
-    private static AtmosphereResourceFactory atmosphereResourceFactory;
-
-    private static String analyticsUserId;
+    public List<Project> getDemoProjectsByBundleId(String bundleId) throws SandboxServiceException {
+        List<Project> bundleProjects = new ArrayList<>();
+        for (Project project : projectsMap.values()) {
+            String bundle = project.getBundleId();
+            if (bundle != null && !bundle.isEmpty() && bundle.equals(bundleId)) {
+                bundleProjects.add(project);
+            }
+        }
+        return bundleProjects;
+    }
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -278,7 +277,7 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
     public void changeKaaHostDialogShown() throws SandboxServiceException {
         cacheService.putProperty(CHANGE_KAA_HOST_DIALOG_SHOWN_PROPERTY, Boolean.TRUE);
     }
-    
+
     @Override
     public void validateKaaHost(String host) throws SandboxServiceException {
         if (host == null || host.length() == 0) {
@@ -312,7 +311,7 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
             }
         }
     }
-    
+
     @Override
     public boolean getLogsEnabled() throws SandboxServiceException {
         return guiGetLogsEnabled;
@@ -386,21 +385,21 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
         }
         return info;
     }
-    
+
     @Override
     public FilterData getFilterData() throws SandboxServiceException {
         Set<Feature> availableFeaturesSet = new HashSet<>();
         Set<SdkLanguage> availableSdkLanguagesSet = new HashSet<>();
         Set<Platform> availablePlatformsSet = new HashSet<>();
         Set<Complexity> availableComplexitiesSet = new HashSet<>();
-        
+
         for (Project project : projectsMap.values()) {
             availableFeaturesSet.addAll(project.getFeatures());
             availableSdkLanguagesSet.add(project.getSdkLanguage());
             availablePlatformsSet.addAll(project.getPlatforms());
             availableComplexitiesSet.add(project.getComplexity());
         }
-        
+
         List<Feature> availableFeatures = new ArrayList<>(availableFeaturesSet);
         Collections.sort(availableFeatures);
         List<SdkLanguage> availableSdkLanguages = new ArrayList<>(availableSdkLanguagesSet);
@@ -409,7 +408,7 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
         Collections.sort(availablePlatforms);
         List<Complexity> availableComplexities = new ArrayList<>(availableComplexitiesSet);
         Collections.sort(availableComplexities);
-        
+
         return new FilterData(availableFeatures, availableSdkLanguages, availablePlatforms, availableComplexities);
     }
 
@@ -434,15 +433,9 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
         return new BundleData(bundlesMap.get(bundleId), getDemoProjectsByBundleId(bundleId));
     }
 
-    public List<Project> getDemoProjectsByBundleId(String bundleId) throws SandboxServiceException {
-        List<Project> bundleProjects = new ArrayList<>();
-        for (Project project : projectsMap.values()) {
-            String bundle = project.getBundleId();
-            if (bundle != null && !bundle.isEmpty() && bundle.equals(bundleId)) {
-                bundleProjects.add(project);
-            }
-        }
-        return bundleProjects;
+    @Override
+    public int getKaaNodeWebPort() throws SandboxServiceException {
+        return kaaNodeWebPort;
     }
 
     @Override
@@ -458,90 +451,29 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
         PrintStream outPrint = null;
         ClientMessageOutputStream outStream = null;
         ByteArrayOutputStream byteOutStream = null;
+
         if (outputData != null) {
             byteOutStream = new ByteArrayOutputStream();
             outPrint = new PrintStream(byteOutStream);
         }
+
+        execute(uuid, outputData, projectId, dataType, outPrint, outStream, byteOutStream);
+    }
+
+    private void execute(String uuid, BuildOutputData outputData, String projectId, ProjectDataType dataType,
+                         PrintStream outPrint, ClientMessageOutputStream outStream, ByteArrayOutputStream byteOutStream)
+            throws SandboxServiceException {
+
         try {
             outStream = new ClientMessageOutputStream(uuid, outPrint);
             Project project = projectsMap.get(projectId);
+
             if (project != null) {
-                String sdkProfileId = project.getSdkProfileId();
-                outStream.println("SDK profile id of project: " + sdkProfileId);
-                outStream.println("Getting SDK for requested project...");
-                FileData sdkFileData = cacheService.getSdk(project.getId());
-                if (sdkFileData != null) {
-                    outStream.println("Successfuly got SDK.");
-                    File rootDir = createTempDirectory("demo-project");
-                    try {
-                        outStream.println("Processing project archive...");
-                        String sourceArchiveFile = Environment.getServerHomeDir() + "/" + DEMO_PROJECTS_FOLDER + "/" + project.getSourceArchive();
-                        String rootProjectDir = rootDir.getAbsolutePath();
-
-                        executeCommand(outStream, new String[]{"tar", "-C", rootProjectDir, "-xzvf", sourceArchiveFile}, null);
-
-                        File sdkFile = new File(rootProjectDir + "/" + project.getSdkLibDir() + "/" + sdkFileData.getFileName());
-                        FileOutputStream fos = FileUtils.openOutputStream(sdkFile);
-                        fos.write(sdkFileData.getFileData());
-                        fos.flush();
-                        fos.close();
-
-                        ProjectDataKey dataKey = new ProjectDataKey(projectId, dataType);
-                        if (dataType == ProjectDataType.SOURCE) {
-                            String sourceArchiveName = FilenameUtils.getName(sourceArchiveFile);
-                            outStream.println("Compressing source project archive...");
-
-                            File sourceFile = new File(rootDir, sourceArchiveName);
-
-                            String[] files = rootDir.list();
-                            String[] command = (String[]) ArrayUtils.addAll(new String[]{"tar", "-czvf", sourceFile.getAbsolutePath(), "-C", rootProjectDir}, files);
-
-                            executeCommand(outStream, command, null);
-
-                            outStream.println("Source project archive compressed.");
-                            byte[] sourceFileBytes = FileUtils.readFileToByteArray(sourceFile);
-                            FileData sourceFileData = new FileData();
-                            sourceFileData.setFileName(sourceArchiveName);
-                            sourceFileData.setFileData(sourceFileBytes);
-                            sourceFileData.setContentType("application/x-compressed");
-                            cacheService.putProjectFile(dataKey, sourceFileData);
-                        } else {
-                            outStream.println("Building binary file...");
-                            File projectFolder = rootDir;
-                            if (project.getProjectFolder() != null && !project.getProjectFolder().trim().isEmpty()) {
-                                projectFolder = new File(rootDir, project.getProjectFolder());
-                            }
-
-                            executeCommand(outStream, new String[]{"ant"}, projectFolder);
-
-                            outStream.println("Build finished.");
-
-                            File binaryFile = new File(rootDir, project.getDestBinaryFile());
-                            byte[] binaryFileBytes = FileUtils.readFileToByteArray(binaryFile);
-                            FileData binaryFileData = new FileData();
-
-                            String binaryFileName = FilenameUtils.getName(binaryFile.getAbsolutePath());
-
-                            binaryFileData.setFileName(binaryFileName);
-                            binaryFileData.setFileData(binaryFileBytes);
-                            if (project.getSdkLanguage() == SdkLanguage.JAVA) {
-                            	if (project.getPlatforms().contains(Platform.ANDROID)) {
-                            		binaryFileData.setContentType("application/vnd.android.package-archive");
-                            	} else {
-                            		binaryFileData.setContentType("application/java-archive");
-                            	}
-                            }
-                            cacheService.putProjectFile(dataKey, binaryFileData);
-                        }
-                    } finally {
-                        FileUtils.deleteDirectory(rootDir);
-                    }
-                } else {
-                    outStream.println("Unable to get/create SDK for requested project!");
-                }
+                buildProject(projectId, dataType, outStream, project);
             } else {
                 outStream.println("No project configuration found!");
             }
+
         } catch (Exception e) {
             if (outStream != null) {
                 outStream.println("Unexpected error occurred: " + e.getMessage());
@@ -557,6 +489,111 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
                 outputData.setOutputData(byteOutStream.toByteArray());
             }
         }
+    }
+
+    private void buildProject(String projectId, ProjectDataType dataType, ClientMessageOutputStream outStream, Project project)
+            throws SandboxServiceException, IOException {
+
+        String sdkProfileId = project.getSdkProfileId();
+        outStream.println("SDK profile id of project: " + sdkProfileId);
+        outStream.println("Getting SDK for requested project...");
+        FileData sdkFileData = cacheService.getSdk(project.getId());
+
+        if (sdkFileData != null) {
+            buildSdk(projectId, dataType, outStream, project, sdkFileData);
+        } else {
+            outStream.println("Unable to get/create SDK for requested project!");
+        }
+    }
+
+    private void buildSdk(String projectId, ProjectDataType dataType, ClientMessageOutputStream outStream,
+                          Project project, FileData sdkFileData) throws IOException, SandboxServiceException {
+
+        outStream.println("Successfully got SDK.");
+        File rootDir = createTempDirectory("demo-project");
+        try {
+            outStream.println("Processing project archive...");
+            String sourceArchiveFile = Environment.getServerHomeDir() + "/" + DEMO_PROJECTS_FOLDER + "/" + project.getSourceArchive();
+            String rootProjectDir = rootDir.getAbsolutePath();
+
+            executeCommand(outStream, new String[]{"tar", "-C", rootProjectDir, "-xzvf", sourceArchiveFile}, null);
+
+            File sdkFile = new File(rootProjectDir + "/" + project.getSdkLibDir() + "/" + sdkFileData.getFileName());
+            FileOutputStream fos = FileUtils.openOutputStream(sdkFile);
+            fos.write(sdkFileData.getFileData());
+            fos.flush();
+            fos.close();
+
+            ProjectDataKey dataKey = new ProjectDataKey(projectId, dataType);
+            if (dataType == ProjectDataType.SOURCE) {
+                buildSdkSource(outStream, rootDir, sourceArchiveFile, rootProjectDir, dataKey);
+            } else {
+                buildBinary(outStream, project, rootDir, dataKey);
+            }
+        } finally {
+            FileUtils.deleteDirectory(rootDir);
+        }
+    }
+
+    private void buildBinary(ClientMessageOutputStream outStream, Project project, File rootDir, ProjectDataKey dataKey)
+            throws SandboxServiceException, IOException {
+
+        outStream.println("Building binary file...");
+        File projectFolder = rootDir;
+        if (project.getProjectFolder() != null && !project.getProjectFolder().trim().isEmpty()) {
+            projectFolder = new File(rootDir, project.getProjectFolder());
+        }
+
+        buildBinaryAntGradle(outStream, project, projectFolder);
+        outStream.println("Build finished.");
+
+        File binaryFile = new File(rootDir, project.getDestBinaryFile());
+        byte[] binaryFileBytes = FileUtils.readFileToByteArray(binaryFile);
+        FileData binaryFileData = new FileData();
+
+        String binaryFileName = FilenameUtils.getName(binaryFile.getAbsolutePath());
+
+        binaryFileData.setFileName(binaryFileName);
+        binaryFileData.setFileData(binaryFileBytes);
+        if (project.getSdkLanguage() == SdkLanguage.JAVA) {
+            if (project.getPlatforms().contains(Platform.ANDROID)) {
+                binaryFileData.setContentType("application/vnd.android.package-archive");
+            } else {
+                binaryFileData.setContentType("application/java-archive");
+            }
+        }
+        cacheService.putProjectFile(dataKey, binaryFileData);
+    }
+
+    private void buildBinaryAntGradle(ClientMessageOutputStream outStream, Project project, File projectFolder) throws SandboxServiceException {
+        if (project.getPlatforms().contains(Platform.ANDROID) && new File(projectFolder, "/gradlew").exists()) {
+            LOG.info("Build with gradle.");
+            executeCommand(outStream, new String[]{"./gradlew", "clean", "assembleDebug"}, projectFolder);
+            return;
+        }
+
+        LOG.info("Build with ant.");
+        executeCommand(outStream, new String[]{"ant"}, projectFolder);
+    }
+
+    private void buildSdkSource(ClientMessageOutputStream outStream, File rootDir, String sourceArchiveFile, String rootProjectDir, ProjectDataKey dataKey) throws SandboxServiceException, IOException {
+        String sourceArchiveName = FilenameUtils.getName(sourceArchiveFile);
+        outStream.println("Compressing source project archive...");
+
+        File sourceFile = new File(rootDir, sourceArchiveName);
+
+        String[] files = rootDir.list();
+        String[] command = (String[]) ArrayUtils.addAll(new String[]{"tar", "-czvf", sourceFile.getAbsolutePath(), "-C", rootProjectDir}, files);
+
+        executeCommand(outStream, command, null);
+
+        outStream.println("Source project archive compressed.");
+        byte[] sourceFileBytes = FileUtils.readFileToByteArray(sourceFile);
+        FileData sourceFileData = new FileData();
+        sourceFileData.setFileName(sourceArchiveName);
+        sourceFileData.setFileData(sourceFileBytes);
+        sourceFileData.setContentType("application/x-compressed");
+        cacheService.putProjectFile(dataKey, sourceFileData);
     }
 
     private static void executeCommand(ClientMessageOutputStream outStream,
@@ -672,11 +709,6 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
             }
         }
 
-    }
-
-    @Override
-    public int getKaaNodeWebPort() throws SandboxServiceException {
-        return kaaNodeWebPort;
     }
 
 }
