@@ -457,11 +457,11 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
             outPrint = new PrintStream(byteOutStream);
         }
 
-        execute(uuid, outputData, projectId, dataType, outPrint, outStream, byteOutStream);
+        buildCheckedData(uuid, outputData, projectId, dataType, outPrint, outStream, byteOutStream);
     }
 
-    private void execute(String uuid, BuildOutputData outputData, String projectId, ProjectDataType dataType,
-                         PrintStream outPrint, ClientMessageOutputStream outStream, ByteArrayOutputStream byteOutStream)
+    private void buildCheckedData(String uuid, BuildOutputData outputData, String projectId, ProjectDataType dataType,
+                                  PrintStream outPrint, ClientMessageOutputStream outStream, ByteArrayOutputStream byteOutStream)
             throws SandboxServiceException {
 
         try {
@@ -500,6 +500,7 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
         FileData sdkFileData = cacheService.getSdk(project.getId());
 
         if (sdkFileData != null) {
+            outStream.println("Successfully got SDK.");
             buildSdk(projectId, dataType, outStream, project, sdkFileData);
         } else {
             outStream.println("Unable to get/create SDK for requested project!");
@@ -509,7 +510,6 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
     private void buildSdk(String projectId, ProjectDataType dataType, ClientMessageOutputStream outStream,
                           Project project, FileData sdkFileData) throws IOException, SandboxServiceException {
 
-        outStream.println("Successfully got SDK.");
         File rootDir = createTempDirectory("demo-project");
         try {
             outStream.println("Processing project archive...");
@@ -544,7 +544,14 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
             projectFolder = new File(rootDir, project.getProjectFolder());
         }
 
-        buildBinaryAntGradle(outStream, project, projectFolder);
+        // Build binary file with ant or gradle (with gradle goes only android projects now)
+        if (project.getPlatforms().contains(Platform.ANDROID) && new File(projectFolder, "/gradlew").exists()) {
+            LOG.info("Build with gradle.");
+            executeCommand(outStream, new String[]{"./gradlew", "clean", "assembleDebug"}, projectFolder);
+        } else {
+            LOG.info("Build with ant.");
+            executeCommand(outStream, new String[]{"ant"}, projectFolder);
+        }
         outStream.println("Build finished.");
 
         File binaryFile = new File(rootDir, project.getDestBinaryFile());
@@ -563,17 +570,6 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
             }
         }
         cacheService.putProjectFile(dataKey, binaryFileData);
-    }
-
-    private void buildBinaryAntGradle(ClientMessageOutputStream outStream, Project project, File projectFolder) throws SandboxServiceException {
-        if (project.getPlatforms().contains(Platform.ANDROID) && new File(projectFolder, "/gradlew").exists()) {
-            LOG.info("Build with gradle.");
-            executeCommand(outStream, new String[]{"./gradlew", "clean", "assembleDebug"}, projectFolder);
-            return;
-        }
-
-        LOG.info("Build with ant.");
-        executeCommand(outStream, new String[]{"ant"}, projectFolder);
     }
 
     private void buildSdkSource(ClientMessageOutputStream outStream, File rootDir, String sourceArchiveFile, String rootProjectDir, ProjectDataKey dataKey) throws SandboxServiceException, IOException {
