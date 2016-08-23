@@ -27,7 +27,7 @@ package org.kaaproject.kaa.sandbox.web.shared;
 public final class Version {
 
     /** The Constant PROJECT_VERSION. */
-    public static final String PROJECT_VERSION = "1.4.0-SNAPSHOT";
+    public static final String PROJECT_VERSION = "1.3.3-SNAPSHOT";
     
     /** The Constant KAA_VERSION. */
     public static final String KAA_VERSION = "0.10.0-SNAPSHOT";
