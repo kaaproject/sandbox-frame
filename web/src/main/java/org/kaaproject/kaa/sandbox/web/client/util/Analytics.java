@@ -34,7 +34,17 @@ public class Analytics {
 	
 	public static final String CHANGE_KAA_HOST_ACTION = "Change Kaa host/IP";
 	public static final String GET_LOGS_ACTION = "Get sandbox logs";
-	
+
+
+	public static final String FEATURE_CATEGORY = "Feature category";
+	public static final String SDK_CATEGORY = "Feature category";
+	public static final String PLATFORMS_CATEGORY = "Feature category";
+
+	public static final String CLICK= "Click";
+
+
+
+
 	private static boolean inited = false;
 	
 	public static void initGA(String trackingId, String userId) {
@@ -126,7 +136,7 @@ public class Analytics {
 		$wnd.ga('send', 'event', category, action);
 	}-*/;
 	
-	private static native void sendEventImpl(String category, String action, String label) /*-{
+	public static native void sendEventImpl(String category, String action, String label) /*-{
 		$wnd.ga('send', 'event', category, action, label);
 	}-*/;
 	

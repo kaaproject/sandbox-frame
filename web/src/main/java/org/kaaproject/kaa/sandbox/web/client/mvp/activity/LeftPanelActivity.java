@@ -16,6 +16,8 @@
 
 package org.kaaproject.kaa.sandbox.web.client.mvp.activity;
 
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +52,26 @@ public class LeftPanelActivity extends AbstractActivity {
     
     @Override
     public void start(AcceptsOneWidget containerWidget, final EventBus eventBus) {
+
+        registrations.add(filterView.getDemoProjectsFeatureFilter().addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<Boolean> valueChangeEvent) {
+                Analytics.sendEventImpl(Analytics.FEATURE_CATEGORY,Analytics.CLICK,Analytics.CLICK);
+            }
+        }));
+        registrations.add(filterView.getDemoProjectsSdkLanguageFilter().addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<Boolean> valueChangeEvent) {
+                Analytics.sendEventImpl(Analytics.SDK_CATEGORY,Analytics.CLICK,Analytics.CLICK);
+            }
+        }));
+        registrations.add(filterView.getDemoProjectsPlatformFilter().addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<Boolean> valueChangeEvent) {
+                Analytics.sendEventImpl(Analytics.PLATFORMS_CATEGORY,Analytics.CLICK,Analytics.CLICK);
+            }
+        }));
+
         registrations.add(filterView.addProjectFilterHandler(new ProjectFilterEventHandler() {
             @Override
             public void onProjectFilter(ProjectFilterEvent event) {

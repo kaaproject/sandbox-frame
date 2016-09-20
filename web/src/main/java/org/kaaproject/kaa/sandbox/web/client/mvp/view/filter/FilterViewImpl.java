@@ -16,6 +16,7 @@
 
 package org.kaaproject.kaa.sandbox.web.client.mvp.view.filter;
 
+import com.google.gwt.dom.client.Style;
 import org.kaaproject.kaa.examples.common.projects.Complexity;
 import org.kaaproject.kaa.examples.common.projects.Feature;
 import org.kaaproject.kaa.examples.common.projects.Platform;
@@ -26,6 +27,7 @@ import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.ProjectFilterEven
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.FilterView;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.widget.FilterPanel;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.widget.LeftPanelWidget;
+import org.kaaproject.kaa.sandbox.web.client.util.Analytics;
 import org.kaaproject.kaa.sandbox.web.client.util.Utils;
 import org.kaaproject.kaa.sandbox.web.shared.dto.FilterData;
 
@@ -101,6 +103,7 @@ public class FilterViewImpl extends LeftPanelWidget implements FilterView, Value
         }
         
         public void addFeature(Feature feature) {
+            Analytics.sendEventImpl(Analytics.FEATURE_CATEGORY,Analytics.CLICK,Utils.getFeatureText(feature));
             addItem(feature, Utils.getFeatureIcon(feature), Utils.getFeatureBackgroundClass(feature), Utils.getFeatureText(feature));
         }
     }
@@ -113,6 +116,7 @@ public class FilterViewImpl extends LeftPanelWidget implements FilterView, Value
         }
         
         public void addSdkLanguage(SdkLanguage sdkLanguage) {
+            Analytics.sendEventImpl(Analytics.SDK_CATEGORY,Analytics.CLICK,Utils.getSdkLanguageText(sdkLanguage));
             addItem(sdkLanguage, Utils.getSdkLanguageIcon(sdkLanguage), Utils.getSdkLanguageBackgroundClass(sdkLanguage), Utils.getSdkLanguageText(sdkLanguage));
         }
     }
@@ -125,6 +129,7 @@ public class FilterViewImpl extends LeftPanelWidget implements FilterView, Value
         }
         
         public void addPlatform(Platform platform) {
+            Analytics.sendEventImpl(Analytics.PLATFORMS_CATEGORY,Analytics.CLICK, Utils.getPlatformText(platform));
             addItem(platform, Utils.getFilterPlatformIcon(platform), Utils.getPlatformBackgroundClass(platform), Utils.getPlatformText(platform));
         }
     }
@@ -178,6 +183,18 @@ public class FilterViewImpl extends LeftPanelWidget implements FilterView, Value
     	complexityFilter.setActive(active);
     }
 
+    @Override
+    public FilterPanel<?> getDemoProjectsFeatureFilter() {
+        return featureFilter;
+    }
 
+    @Override
+    public FilterPanel<?> getDemoProjectsSdkLanguageFilter() {
+        return sdkLanguageFilter;
+    }
 
+    @Override
+    public FilterPanel<?> getDemoProjectsPlatformFilter() {
+        return platformFilter;
+    }
 }
