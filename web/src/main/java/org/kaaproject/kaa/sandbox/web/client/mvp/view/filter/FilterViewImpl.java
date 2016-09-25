@@ -103,8 +103,12 @@ public class FilterViewImpl extends LeftPanelWidget implements FilterView, Value
         }
         
         public void addFeature(Feature feature) {
-            Analytics.sendEventImpl(Analytics.FEATURE_CATEGORY,Analytics.CLICK,Utils.getFeatureText(feature));
             addItem(feature, Utils.getFeatureIcon(feature), Utils.getFeatureBackgroundClass(feature), Utils.getFeatureText(feature));
+        }
+
+        @Override
+        protected void sendAnalytic() {
+            Analytics.sendEvent(Utils.constants.featuresFilter(),Analytics.CLICK,Analytics.CLICK);
         }
     }
     
@@ -116,8 +120,12 @@ public class FilterViewImpl extends LeftPanelWidget implements FilterView, Value
         }
         
         public void addSdkLanguage(SdkLanguage sdkLanguage) {
-            Analytics.sendEventImpl(Analytics.SDK_CATEGORY,Analytics.CLICK,Utils.getSdkLanguageText(sdkLanguage));
             addItem(sdkLanguage, Utils.getSdkLanguageIcon(sdkLanguage), Utils.getSdkLanguageBackgroundClass(sdkLanguage), Utils.getSdkLanguageText(sdkLanguage));
+        }
+
+        @Override
+        protected void sendAnalytic() {
+            Analytics.sendEvent(Utils.constants.sdkLanguagesFilter(),Analytics.CLICK,Analytics.CLICK);
         }
     }
     
@@ -129,8 +137,12 @@ public class FilterViewImpl extends LeftPanelWidget implements FilterView, Value
         }
         
         public void addPlatform(Platform platform) {
-            Analytics.sendEventImpl(Analytics.PLATFORMS_CATEGORY,Analytics.CLICK, Utils.getPlatformText(platform));
             addItem(platform, Utils.getFilterPlatformIcon(platform), Utils.getPlatformBackgroundClass(platform), Utils.getPlatformText(platform));
+        }
+
+        @Override
+        protected void sendAnalytic() {
+            Analytics.sendEvent(Utils.constants.platformsFilter(),Analytics.CLICK,Analytics.CLICK);
         }
     }
 
@@ -143,6 +155,11 @@ public class FilterViewImpl extends LeftPanelWidget implements FilterView, Value
         
         public void addComplexity(Complexity complexity) {
             addItem(complexity, Utils.getFilterComplexityIcon(complexity), Utils.getComplexityBackgroundClass(complexity), Utils.getComplexityText(complexity));
+        }
+
+        @Override
+        protected void sendAnalytic() {
+            Analytics.sendEvent(Utils.constants.complexity(),Analytics.CLICK,Analytics.CLICK);
         }
     }
 
@@ -196,5 +213,10 @@ public class FilterViewImpl extends LeftPanelWidget implements FilterView, Value
     @Override
     public FilterPanel<?> getDemoProjectsPlatformFilter() {
         return platformFilter;
+    }
+
+    @Override
+    public FilterPanel<?> getComplexitiesFilter() {
+        return complexityFilter;
     }
 }

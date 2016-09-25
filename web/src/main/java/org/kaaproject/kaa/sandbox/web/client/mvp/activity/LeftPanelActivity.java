@@ -23,11 +23,13 @@ import java.util.List;
 
 import org.kaaproject.avro.ui.gwt.client.util.BusyAsyncCallback;
 import org.kaaproject.kaa.sandbox.web.client.Sandbox;
+import org.kaaproject.kaa.sandbox.web.client.i18n.SandboxConstants;
 import org.kaaproject.kaa.sandbox.web.client.mvp.ClientFactory;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.ProjectFilterEvent;
 import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.ProjectFilterEventHandler;
 import org.kaaproject.kaa.sandbox.web.client.mvp.place.MainPlace;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.FilterView;
+import org.kaaproject.kaa.sandbox.web.client.mvp.view.widget.FilterPanel;
 import org.kaaproject.kaa.sandbox.web.client.util.Analytics;
 import org.kaaproject.kaa.sandbox.web.client.util.Utils;
 import org.kaaproject.kaa.sandbox.web.shared.dto.FilterData;
@@ -53,24 +55,19 @@ public class LeftPanelActivity extends AbstractActivity {
     @Override
     public void start(AcceptsOneWidget containerWidget, final EventBus eventBus) {
 
-        registrations.add(filterView.getDemoProjectsFeatureFilter().addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-            @Override
-            public void onValueChange(ValueChangeEvent<Boolean> valueChangeEvent) {
-                Analytics.sendEventImpl(Analytics.FEATURE_CATEGORY,Analytics.CLICK,Analytics.CLICK);
-            }
-        }));
-        registrations.add(filterView.getDemoProjectsSdkLanguageFilter().addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-            @Override
-            public void onValueChange(ValueChangeEvent<Boolean> valueChangeEvent) {
-                Analytics.sendEventImpl(Analytics.SDK_CATEGORY,Analytics.CLICK,Analytics.CLICK);
-            }
-        }));
-        registrations.add(filterView.getDemoProjectsPlatformFilter().addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-            @Override
-            public void onValueChange(ValueChangeEvent<Boolean> valueChangeEvent) {
-                Analytics.sendEventImpl(Analytics.PLATFORMS_CATEGORY,Analytics.CLICK,Analytics.CLICK);
-            }
-        }));
+        registrations.add(filterView.getDemoProjectsFeatureFilter().addValueChangeHandler(
+                new AnalyticValueChangeHandler(Utils.constants.featuresFilter(),filterView.getDemoProjectsFeatureFilter())));
+
+        registrations.add(filterView.getDemoProjectsSdkLanguageFilter().addValueChangeHandler(
+                new AnalyticValueChangeHandler(Utils.constants.sdkLanguagesFilter(),filterView.getDemoProjectsSdkLanguageFilter())));
+
+        registrations.add(filterView.getDemoProjectsPlatformFilter().addValueChangeHandler(
+                new AnalyticValueChangeHandler(Utils.constants.platformsFilter(),filterView.getDemoProjectsPlatformFilter())));
+
+        registrations.add(filterView.getComplexitiesFilter().addValueChangeHandler(
+                new AnalyticValueChangeHandler(Utils.constants.complexity(),filterView.getComplexitiesFilter())
+        ));
+
 
         registrations.add(filterView.addProjectFilterHandler(new ProjectFilterEventHandler() {
             @Override
@@ -106,6 +103,28 @@ public class LeftPanelActivity extends AbstractActivity {
     
     public void setPlace(Place place) {
     	filterView.setActive(place != null && place instanceof MainPlace);
+    }
+
+    private static class AnalyticValueChangeHandler implements ValueChangeHandler<Boolean>{
+
+        private final String eventCategory;
+        private final FilterPanel<?> filterPanel;
+
+        public AnalyticValueChangeHandler(String eventCategory, FilterPanel<?> filterPanel) {
+            this.eventCategory = eventCategory;
+            this.filterPanel = filterPanel;
+        }
+        @Override
+        public void onValueChange(ValueChangeEvent<Boolean> valueChangeEvent) {
+            for (FilterPanel<?>.FilterItem<?> widgets : filterPanel.getFilterItems()) {
+                if(widgets.getValue()){
+                    if(widgets.isSendAnalytic()) {
+                        Analytics.sendEvent(eventCategory, Analytics.CLICK, widgets.getFilterEntity().toString());
+                        widgets.setSendAnalytic(false);
+                    }
+                }
+            }
+        }
     }
 
 }

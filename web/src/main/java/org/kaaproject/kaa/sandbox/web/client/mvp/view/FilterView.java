@@ -36,4 +36,6 @@ public interface FilterView extends IsWidget, HasProjectFilterEventHandlers {
 
     FilterPanel<?> getDemoProjectsPlatformFilter();
 
+    FilterPanel<?> getComplexitiesFilter();
+
 }
