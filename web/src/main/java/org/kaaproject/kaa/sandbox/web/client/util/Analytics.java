@@ -34,7 +34,11 @@ public class Analytics {
 	
 	public static final String CHANGE_KAA_HOST_ACTION = "Change Kaa host/IP";
 	public static final String GET_LOGS_ACTION = "Get sandbox logs";
-	
+
+	public static final String CLICK= "Click";
+
+
+
 	private static boolean inited = false;
 	
 	public static void initGA(String trackingId, String userId) {
@@ -102,6 +106,12 @@ public class Analytics {
 	public static void sendEvent(String action, String label) {
 		if (inited) {
 			sendEventImpl(currentScreen, action, label);
+		}
+	}
+
+	public static void sendEvent(String category, String action, String label) {
+		if (inited) {
+			sendEventImpl(category, action, label);
 		}
 	}
 	

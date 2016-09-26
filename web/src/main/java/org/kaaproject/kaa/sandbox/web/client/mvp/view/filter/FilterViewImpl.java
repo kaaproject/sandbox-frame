@@ -16,6 +16,7 @@
 
 package org.kaaproject.kaa.sandbox.web.client.mvp.view.filter;
 
+import com.google.gwt.dom.client.Style;
 import org.kaaproject.kaa.examples.common.projects.Complexity;
 import org.kaaproject.kaa.examples.common.projects.Feature;
 import org.kaaproject.kaa.examples.common.projects.Platform;
@@ -26,6 +27,7 @@ import org.kaaproject.kaa.sandbox.web.client.mvp.event.project.ProjectFilterEven
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.FilterView;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.widget.FilterPanel;
 import org.kaaproject.kaa.sandbox.web.client.mvp.view.widget.LeftPanelWidget;
+import org.kaaproject.kaa.sandbox.web.client.util.Analytics;
 import org.kaaproject.kaa.sandbox.web.client.util.Utils;
 import org.kaaproject.kaa.sandbox.web.shared.dto.FilterData;
 
@@ -103,6 +105,11 @@ public class FilterViewImpl extends LeftPanelWidget implements FilterView, Value
         public void addFeature(Feature feature) {
             addItem(feature, Utils.getFeatureIcon(feature), Utils.getFeatureBackgroundClass(feature), Utils.getFeatureText(feature));
         }
+
+        @Override
+        protected void sendAnalytic() {
+            Analytics.sendEvent(Utils.constants.featuresFilter(),Analytics.CLICK,Analytics.CLICK);
+        }
     }
     
     private class DemoProjectsSdkLanguageFilter extends FilterPanel<SdkLanguage> {
@@ -114,6 +121,11 @@ public class FilterViewImpl extends LeftPanelWidget implements FilterView, Value
         
         public void addSdkLanguage(SdkLanguage sdkLanguage) {
             addItem(sdkLanguage, Utils.getSdkLanguageIcon(sdkLanguage), Utils.getSdkLanguageBackgroundClass(sdkLanguage), Utils.getSdkLanguageText(sdkLanguage));
+        }
+
+        @Override
+        protected void sendAnalytic() {
+            Analytics.sendEvent(Utils.constants.sdkLanguagesFilter(),Analytics.CLICK,Analytics.CLICK);
         }
     }
     
@@ -127,6 +139,11 @@ public class FilterViewImpl extends LeftPanelWidget implements FilterView, Value
         public void addPlatform(Platform platform) {
             addItem(platform, Utils.getFilterPlatformIcon(platform), Utils.getPlatformBackgroundClass(platform), Utils.getPlatformText(platform));
         }
+
+        @Override
+        protected void sendAnalytic() {
+            Analytics.sendEvent(Utils.constants.platformsFilter(),Analytics.CLICK,Analytics.CLICK);
+        }
     }
 
     private class DemoProjectsComplexityFilter extends FilterPanel<Complexity> {
@@ -138,6 +155,11 @@ public class FilterViewImpl extends LeftPanelWidget implements FilterView, Value
         
         public void addComplexity(Complexity complexity) {
             addItem(complexity, Utils.getFilterComplexityIcon(complexity), Utils.getComplexityBackgroundClass(complexity), Utils.getComplexityText(complexity));
+        }
+
+        @Override
+        protected void sendAnalytic() {
+            Analytics.sendEvent(Utils.constants.complexity(),Analytics.CLICK,Analytics.CLICK);
         }
     }
 
@@ -178,6 +200,23 @@ public class FilterViewImpl extends LeftPanelWidget implements FilterView, Value
     	complexityFilter.setActive(active);
     }
 
+    @Override
+    public FilterPanel<?> getDemoProjectsFeatureFilter() {
+        return featureFilter;
+    }
 
+    @Override
+    public FilterPanel<?> getDemoProjectsSdkLanguageFilter() {
+        return sdkLanguageFilter;
+    }
 
+    @Override
+    public FilterPanel<?> getDemoProjectsPlatformFilter() {
+        return platformFilter;
+    }
+
+    @Override
+    public FilterPanel<?> getComplexitiesFilter() {
+        return complexityFilter;
+    }
 }

@@ -38,7 +38,7 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.Image;
 
-public class FilterPanel<T> extends NavWidget implements HasValueChangeHandlers<Boolean> {
+public abstract class FilterPanel<T> extends NavWidget implements HasValueChangeHandlers<Boolean> {
 
     private FilterItem<T> headerItem;
     private UnorderedList itemsUl;
@@ -63,6 +63,7 @@ public class FilterPanel<T> extends NavWidget implements HasValueChangeHandlers<
         headerItem.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> event) {
+                sendAnalytic();
                 setExpanded(event.getValue());
             }
         });
@@ -86,6 +87,8 @@ public class FilterPanel<T> extends NavWidget implements HasValueChangeHandlers<
             }
         }
     }
+
+    abstract protected void sendAnalytic();
     
     public void addItem(T filterEntity, ImageResource imageRes, String bgClass, String text) {
         FilterItem<T> item = new FilterItem<T>(filterEntity, imageRes, bgClass, text);
@@ -133,7 +136,7 @@ public class FilterPanel<T> extends NavWidget implements HasValueChangeHandlers<
     		item.setActive(active);
     	}
     }
-    
+
     public class FilterItem<E> extends ListItem implements HasValue<Boolean> {
         
         private Anchor anchor;
@@ -141,6 +144,7 @@ public class FilterPanel<T> extends NavWidget implements HasValueChangeHandlers<
         private boolean valueChangeHandlerInitialized;
         private boolean value = false;
         private boolean active = true;
+        private boolean isSendAnalytic = true;
         private E filterEntity;
         
         FilterItem(E filterEntity, ImageResource imageRes, String bgClass, String text) {
@@ -200,6 +204,14 @@ public class FilterPanel<T> extends NavWidget implements HasValueChangeHandlers<
         	}
         }
 
+        public boolean isSendAnalytic() {
+            return isSendAnalytic;
+        }
+
+        public void setSendAnalytic(boolean sendAnalytic) {
+            isSendAnalytic = sendAnalytic;
+        }
+
         @Override
         public Boolean getValue() {
             return this.value;
@@ -217,6 +229,7 @@ public class FilterPanel<T> extends NavWidget implements HasValueChangeHandlers<
                 if (this.value) {
                     addStyleName(Utils.sandboxStyle.active());
                 } else {
+                    isSendAnalytic=true;
                     removeStyleName(Utils.sandboxStyle.active());
                 }
             }

@@ -41,6 +41,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import static org.kaaproject.kaa.sandbox.web.client.util.Analytics.*;
+
+
 public class Utils {
 
     public static final SandboxResources resources = GWT.create(
@@ -82,7 +85,7 @@ public class Utils {
             return throwable.getMessage();
         }
     }
-    
+
     public static String getFeatureText(Feature feature) {
         switch (feature) {
             case CONFIGURATION:
