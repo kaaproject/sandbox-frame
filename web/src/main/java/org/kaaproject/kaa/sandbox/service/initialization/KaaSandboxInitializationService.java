@@ -18,6 +18,8 @@ package org.kaaproject.kaa.sandbox.service.initialization;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.rewrite.handler.RewriteHandler;
+import org.eclipse.jetty.rewrite.handler.RewritePatternRule;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.kaaproject.kaa.server.common.Environment;
 import org.slf4j.Logger;
@@ -58,8 +60,18 @@ public class KaaSandboxInitializationService implements InitializationService {
         avroUiSandboxWebAppContext.setDescriptor(webappsDir + "/avroUiSandbox/WEB-INF/web.xml");        
         avroUiSandboxWebAppContext.setResourceBase(webappsDir + "/avroUiSandbox");
         
+        RewriteHandler rewriteRoot2Sandbox = new RewriteHandler();
+        rewrite.setHandler(sandboxWebAppContext);
+        
+        RewritePatternRule rootRule = new RewritePatternRule();
+        rootRule.setPattern("/");
+        rootRule.setReplacement("/sandbox");
+        rootRule.setTerminating(true);
+        rewriteRoot2Sandbox.addRule(rootRule);
+        
         handlers.addHandler(sandboxWebAppContext);
         handlers.addHandler(avroUiSandboxWebAppContext);
+        hardlers.addHandler(rewriteRoot2Sandbox)
         
         server.setHandler(handlers);
         
