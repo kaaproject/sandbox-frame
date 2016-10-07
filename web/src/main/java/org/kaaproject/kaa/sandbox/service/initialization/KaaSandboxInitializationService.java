@@ -71,7 +71,7 @@ public class KaaSandboxInitializationService implements InitializationService {
         
         handlers.addHandler(sandboxWebAppContext);
         handlers.addHandler(avroUiSandboxWebAppContext);
-        hardlers.addHandler(rewriteRoot2Sandbox)
+        hardlers.addHandler(rewriteRoot2Sandbox);
         
         server.setHandler(handlers);
         
