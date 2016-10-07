@@ -547,6 +547,7 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
         // Build binary file with ant or gradle (with gradle goes only android projects now)
         if (project.getPlatforms().contains(Platform.ANDROID) && new File(projectFolder, "/gradlew").exists()) {
             LOG.info("Build with gradle.");
+            executeCommand(outStream, new String[]{"chmod", "+x",  "gradlew"}, projectFolder);
             executeCommand(outStream, new String[]{"./gradlew", "clean", "assembleDebug"}, projectFolder);
         } else {
             LOG.info("Build with ant.");
