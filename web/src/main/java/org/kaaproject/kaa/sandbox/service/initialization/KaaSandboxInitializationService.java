@@ -61,7 +61,7 @@ public class KaaSandboxInitializationService implements InitializationService {
         avroUiSandboxWebAppContext.setResourceBase(webappsDir + "/avroUiSandbox");
         
         RewriteHandler rewriteRoot2Sandbox = new RewriteHandler();
-        rewrite.setHandler(sandboxWebAppContext);
+        rewriteRoot2Sandbox.setHandler(sandboxWebAppContext);
         
         RewritePatternRule rootRule = new RewritePatternRule();
         rootRule.setPattern("/");
