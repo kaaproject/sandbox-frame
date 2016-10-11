@@ -17,9 +17,10 @@
 package org.kaaproject.kaa.sandbox.service.initialization;
 
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.rewrite.handler.RewriteHandler;
-import org.eclipse.jetty.rewrite.handler.RewritePatternRule;
+import org.eclipse.jetty.rewrite.handler.RedirectPatternRule;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.kaaproject.kaa.server.common.Environment;
 import org.slf4j.Logger;
@@ -36,6 +37,23 @@ public class KaaSandboxInitializationService implements InitializationService {
     private Server server;
     private WebAppContext sandboxWebAppContext;
     private WebAppContext avroUiSandboxWebAppContext;
+    
+    private Handler getRedirectRoot2SandboxHandler() {
+        RewriteHandler rewrite = new RewriteHandler();
+        rewrite.setRewriteRequestURI(true);
+        rewrite.setRewritePathInfo(true);
+        
+        String[] redirectArray = {"", "/"};
+        for (String redirect : redirectArray) {
+            RedirectPatternRule rule = new RedirectPatternRule();
+            rule.setTerminating(true);
+            rule.setPattern(redirect);
+            rule.setLocation("/sandbox");
+            rewrite.addRule(rule);
+        }
+        
+        return rewrite;
+    }
     
     public void setWebPort(int webPort) {
     	this.webPort = webPort;
@@ -60,18 +78,9 @@ public class KaaSandboxInitializationService implements InitializationService {
         avroUiSandboxWebAppContext.setDescriptor(webappsDir + "/avroUiSandbox/WEB-INF/web.xml");        
         avroUiSandboxWebAppContext.setResourceBase(webappsDir + "/avroUiSandbox");
         
-        RewriteHandler rewriteRoot2Sandbox = new RewriteHandler();
-        rewriteRoot2Sandbox.setHandler(sandboxWebAppContext);
-        
-        RewritePatternRule rootRule = new RewritePatternRule();
-        rootRule.setPattern("/");
-        rootRule.setReplacement("/sandbox");
-        rootRule.setTerminating(true);
-        rewriteRoot2Sandbox.addRule(rootRule);
-        
         handlers.addHandler(sandboxWebAppContext);
         handlers.addHandler(avroUiSandboxWebAppContext);
-        handlers.addHandler(rewriteRoot2Sandbox);
+        handlers.addHandler(getRedirectRoot2SandboxHandler());
         
         server.setHandler(handlers);
         
