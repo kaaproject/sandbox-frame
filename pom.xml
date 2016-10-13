@@ -282,10 +282,13 @@
             <id>repository.kaaproject.shapshots</id>
             <url>http://repository.kaaproject.org/repository/snapshots/</url>
             <snapshots><enabled>true</enabled></snapshots>
+            <releases><enabled>false</enabled></releases>
         </repository>
         <repository>
             <id>repository.kaaproject</id>
             <url>http://repository.kaaproject.org/repository/internal/</url>
+            <snapshots><enabled>false</enabled></snapshots>
+            <releases><enabled>true</enabled></releases>		
         </repository>
         <repository>
             <id>typesafe</id>
