@@ -279,6 +279,14 @@
 
     <repositories>
         <repository>
+            <id>repository.kaaproject.shapshots</id>
+            <url>http://repository.kaaproject.org/repository/snapshots/</url>
+        </repository>
+        <repository>
+            <id>repository.kaaproject</id>
+            <url>http://repository.kaaproject.org/repository/internal/</url>
+        </repository>
+        <repository>
             <id>typesafe</id>
             <name>Typesafe Repository</name>
             <url>http://repo.typesafe.com/typesafe/releases/</url>
@@ -294,14 +302,6 @@
         <repository>
             <id>twitter-twttr</id>
             <url>http://maven.twttr.com/</url>
-        </repository>
-        <repository>
-            <id>repository.kaaproject</id>
-            <url>http://repository.kaaproject.org/repository/internal/</url>
-        </repository>
-        <repository>
-            <id>repository.kaaproject.shapshots</id>
-            <url>http://repository.kaaproject.org/repository/snapshots/</url>
         </repository>
     </repositories>
 
