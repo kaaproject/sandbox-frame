@@ -281,6 +281,7 @@
         <repository>
             <id>repository.kaaproject.shapshots</id>
             <url>http://repository.kaaproject.org/repository/snapshots/</url>
+            <snapshots><enabled>true</enabled></snapshots>
         </repository>
         <repository>
             <id>repository.kaaproject</id>
