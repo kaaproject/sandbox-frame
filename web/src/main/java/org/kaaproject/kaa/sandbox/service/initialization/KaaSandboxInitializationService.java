@@ -80,7 +80,7 @@ public class KaaSandboxInitializationService implements InitializationService {
         
         handlers.addHandler(sandboxWebAppContext);
         handlers.addHandler(avroUiSandboxWebAppContext);
-        handlers.addHandler(getRedirectRoot2SandboxHandler());
+        //handlers.addHandler(getRedirectRoot2SandboxHandler());
         
         server.setHandler(handlers);
         
