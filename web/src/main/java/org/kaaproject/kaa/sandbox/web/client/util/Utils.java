@@ -100,6 +100,8 @@ public class Utils {
                 return constants.profiling();
             case USER_VERIFIER:
                 return constants.userVerifier();
+            case CREDENTIALS:
+                return constants.credentials();
         }
         return null;
     }
@@ -118,6 +120,8 @@ public class Utils {
                 return resources.profilingFeature();
             case USER_VERIFIER:
                 return resources.userVerifierFeature();
+            case CREDENTIALS:
+                return resources.credentialsFeature();
         }
         return null;
     }
@@ -136,7 +140,9 @@ public class Utils {
             return sandboxStyle.bgFeatureProfiling();
         case USER_VERIFIER:
             return sandboxStyle.bgFeatureUserVerifier();
-    }
+        case CREDENTIALS:
+            return sandboxStyle.bgFeatureCredentials();
+        }
     return null;
     }
     
