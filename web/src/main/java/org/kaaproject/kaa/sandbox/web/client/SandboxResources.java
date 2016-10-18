@@ -100,6 +100,10 @@ public interface SandboxResources extends ClientBundle {
     @Source("images/data_collection_feature.png")
     ImageResource dataCollectionFeature();
 
+    @ImageOptions(width = 32, height = 28)
+    @Source("images/data_collection_feature.png")
+    ImageResource credentialsFeature();
+
     @ImageOptions(width = 28, height = 28)
     @Source("images/java_language.png")
     ImageResource javaLanguage();
