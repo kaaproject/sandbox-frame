@@ -595,6 +595,10 @@ nav.navPrimary.collapsed li.primary > a > span.icon > img {
     background-color: #7E396D;
 }
 
+.bgFeatureCredentials {
+    background-color: #AEAEAE;
+}
+
 .bgPlatformCommon {
     background-color: #46A8BA;
 }
