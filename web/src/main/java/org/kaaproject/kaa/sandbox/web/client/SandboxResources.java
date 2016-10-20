@@ -101,7 +101,7 @@ public interface SandboxResources extends ClientBundle {
     ImageResource dataCollectionFeature();
 
     @ImageOptions(width = 32, height = 28)
-    @Source("images/data_collection_feature.png")
+    @Source("images/credentials_feature.png")
     ImageResource credentialsFeature();
 
     @ImageOptions(width = 28, height = 28)

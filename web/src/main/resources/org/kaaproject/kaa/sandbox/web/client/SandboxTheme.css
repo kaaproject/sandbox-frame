@@ -576,27 +576,27 @@ nav.navPrimary.collapsed li.primary > a > span.icon > img {
 }
 
 .bgFeatureDataCollection {
-    background-color: #22948D;
+    background-color: #455E76;
 }
 
 .bgFeatureEvent {
-    background-color: #FFBA00;
+    background-color: #F39F21;
 }
 
 .bgFeatureNotification {
-    background-color: #FF950C;
+    background-color: #4979B3;
 }
 
 .bgFeatureProfiling {
-    background-color: #46A8BA;
+    background-color: #92C451;
 }
 
 .bgFeatureUserVerifier {
-    background-color: #7E396D;
+    background-color: #3F7060;
 }
 
 .bgFeatureCredentials {
-    background-color: #AEAEAE;
+    background-color: #30A5AC;
 }
 
 .bgPlatformCommon {
