@@ -20,7 +20,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.rewrite.handler.RewriteHandler;
-import org.eclipse.jetty.rewrite.handler.RedirectPatternRule;
+import org.eclipse.jetty.rewrite.handler.RewriteRegexRule;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.kaaproject.kaa.server.common.Environment;
 import org.slf4j.Logger;
@@ -41,16 +41,11 @@ public class KaaSandboxInitializationService implements InitializationService {
     private Handler getRedirectRoot2SandboxHandler() {
         RewriteHandler rewrite = new RewriteHandler();
         rewrite.setRewriteRequestURI(true);
-        rewrite.setRewritePathInfo(true);
         
-        String[] redirectArray = {"", "/"};
-        for (String redirect : redirectArray) {
-            RedirectPatternRule rule = new RedirectPatternRule();
-            rule.setTerminating(true);
-            rule.setPattern(redirect);
-            rule.setLocation("/sandbox");
-            rewrite.addRule(rule);
-        }
+        RewriteRegexRule redirectRoot = new RewriteRegexRule();
+        redirectRoot.setRegex("^/$");
+        redirectRoot.setReplacement("/sandbox");
+        rewrite.addRule(redirectRoot);
         
         return rewrite;
     }
@@ -80,7 +75,7 @@ public class KaaSandboxInitializationService implements InitializationService {
         
         handlers.addHandler(sandboxWebAppContext);
         handlers.addHandler(avroUiSandboxWebAppContext);
-        //handlers.addHandler(getRedirectRoot2SandboxHandler());
+        handlers.addHandler(getRedirectRoot2SandboxHandler());
         
         server.setHandler(handlers);
         
