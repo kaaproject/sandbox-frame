@@ -301,9 +301,10 @@
 }
 
 .navPrimary ul.nav>li:hover>a, .navPrimary ul.nav>li:focus>a, .navPrimary ul.nav>li>a:hover, .navPrimary ul.nav>li>a:focus, .navPrimary ul.nav>li>a:active, .navPrimary ul.nav>li.active>a {
-    color: #fff;
-    background-color: inherit;
-    background-color: rgba(0, 0, 0, 0.05) !important;
+    color: #393939;
+    /*background-color: inherit;
+    background-color: rgba(0, 0, 0, 0.05) !important;*/
+    background-color: #f7ad41;
     text-shadow: none;
 }
 
@@ -563,12 +564,12 @@ nav.navPrimary.collapsed li.primary > a > span.icon > img {
 }
 
 .bgDark {
-    background-color: #F0F5FF;
-    color: #9db1c5;
+    background-color: #4b4b4b;
+    color: #CCCCCC;
 }
 
 .bgDark .nav>li>a {
-  color: #adbece;
+  color: #CCCCCC;
 }
 
 .bgFeatureConfig {
