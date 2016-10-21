@@ -161,15 +161,7 @@ public class ProjectBundleViewImpl extends BaseViewImpl implements ProjectBundle
 
         flexTable.setWidget(1, 1, appDetailsPanel);
         flexTable.getFlexCellFormatter().setVerticalAlignment(1, 1, HasVerticalAlignment.ALIGN_TOP);
-        
-        projectDetailsPanel = new HTML();
-        projectDetailsPanel.addStyleName(Utils.sandboxStyle.projectDetails());
-        projectDetailsPanel.getElement().getStyle().setPaddingTop(15, Style.Unit.PX);
-        projectDetailsPanel.getElement().getStyle().setPaddingBottom(15, Style.Unit.PX);
-        flexTable.setWidget(2, 1, projectDetailsPanel);
-        flexTable.getFlexCellFormatter().setColSpan(2, 1, 2);
 
-        
         carousel = new CarouselWidget();
         HorizontalPanel carouselPanel = new HorizontalPanel();
         carouselPanel.addStyleName(sandboxStyle.bundleProjectsPanel());
@@ -179,9 +171,18 @@ public class ProjectBundleViewImpl extends BaseViewImpl implements ProjectBundle
         carouselPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
         carouselPanel.add(carousel);
 
+        flexTable.setWidget(2, 1, carouselPanel);
+        flexTable.getFlexCellFormatter().setVerticalAlignment(2, 1, HasVerticalAlignment.ALIGN_MIDDLE);
+        
+        projectDetailsPanel = new HTML();
+        projectDetailsPanel.addStyleName(Utils.sandboxStyle.projectDetails());
+        projectDetailsPanel.getElement().getStyle().setPaddingTop(15, Style.Unit.PX);
+        projectDetailsPanel.getElement().getStyle().setPaddingBottom(15, Style.Unit.PX);
+        flexTable.setWidget(3, 1, projectDetailsPanel);
+        flexTable.getFlexCellFormatter().setColSpan(3, 1, 2);
+
         VerticalPanel content = new VerticalPanel();
         content.add(flexTable);
-        content.add(carouselPanel);
         content.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
         content.getElement().getStyle().setOverflowX(Overflow.AUTO);
 
