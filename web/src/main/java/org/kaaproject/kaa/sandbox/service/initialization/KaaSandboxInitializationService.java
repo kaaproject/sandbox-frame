@@ -20,7 +20,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.rewrite.handler.RewriteHandler;
-import org.eclipse.jetty.rewrite.handler.RewriteRegexRule;
+import org.eclipse.jetty.rewrite.handler.RedirectRegexRule;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.kaaproject.kaa.server.common.Environment;
 import org.slf4j.Logger;
@@ -41,8 +41,9 @@ public class KaaSandboxInitializationService implements InitializationService {
     private Handler getRedirectRoot2SandboxHandler() {
         RewriteHandler rewrite = new RewriteHandler();
         rewrite.setRewriteRequestURI(true);
+        rewrite.setRewritePathInfo(true);
         
-        RewriteRegexRule redirectRoot = new RewriteRegexRule();
+        RedirectRegexRule redirectRoot = new RedirectRegexRule();
         redirectRoot.setRegex("^/$");
         redirectRoot.setReplacement("/sandbox");
         rewrite.addRule(redirectRoot);
