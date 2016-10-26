@@ -279,7 +279,7 @@
 
     <repositories>
         <repository>
-            <id>repository.kaaproject.shapshots</id>
+            <id>repository.kaaproject.snapshots</id>
             <url>http://repository.kaaproject.org/repository/snapshots/</url>
             <snapshots><enabled>true</enabled></snapshots>
             <releases><enabled>false</enabled></releases>
