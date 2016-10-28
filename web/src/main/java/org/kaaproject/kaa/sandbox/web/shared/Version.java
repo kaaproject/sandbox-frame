@@ -30,7 +30,7 @@ public final class Version {
     public static final String PROJECT_VERSION = "1.4.0-SNAPSHOT";
     
     /** The Constant KAA_VERSION. */
-    public static final String KAA_VERSION = "0.10.0-SNAPSHOT";
+    public static final String KAA_VERSION = "0.10.0";
 
     /** The Constant KAA_VERSION. */
     public static final String KAA_SAMPLE_APPS_VERSION = "2.0.0-SNAPSHOT";
