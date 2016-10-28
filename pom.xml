@@ -28,7 +28,7 @@
     <properties>
         <main.dir>${basedir}</main.dir>
         <kaa.version>0.10.0</kaa.version>
-        <kaa-sample-apps.version>2.0.0-SNAPSHOT</kaa-sample-apps.version>
+        <kaa-sample-apps.version>2.0.0</kaa-sample-apps.version>
         <avro-ui.version>0.2.1</avro-ui.version>
         <gwt.version>2.7.0</gwt.version>
         <spring.version>4.0.2.RELEASE</spring.version>
