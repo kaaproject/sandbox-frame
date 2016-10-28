@@ -50,17 +50,22 @@ def make_ip_window():
     else:
         if platform == "vbox" and ip == "10.0.2.15":
                 ip_win.addstr(1, 2, "NAT networking mode is detected.") 
+
                 ip_win.addstr(3, 2, "Please, make sure all of the Kaa ports are properly forwarded")
                 ip_win.addstr(4, 2, "(and do not conflict with other services on your machine).")
                 ip_win.addstr(5, 2, "Make sure Kaa \"host/IP\" is set to real host machine's IP address")
                 ip_win.addstr(6, 2, "in \"Sandbox Management\".")
-                ip_win.addstr(8, 2, "The Kaa Sandbox web interface is available at:")
-                ip_win.addstr(9, 2, "http://%s:%s/sandbox" % ("127.0.0.1",sandbox_port))
-                ip_win.addstr(10, 2, "To SSH into this VM use $ ssh kaa@%s -p 2222" % "127.0.0.1")
-                ip_win.addstr(12, 2, "Also you can use bridged adapter networking mode.")
-                ip_win.addstr(13, 2, "Follow this short tutorial for instructions on setting it up:")
-                ip_win.addstr(14, 2, "https://youtu.be/ynbxcRdgXFU")
-                ip_win.addstr(16, 2, "Type 'd' for more details.")
+
+                ip_win.addstr(8, 2, "Also you can use bridged adapter networking mode.")
+                ip_win.addstr(9, 2, "Follow this short tutorial for instructions on setting it up:")
+                ip_win.addstr(10, 2, "https://goo.gl/I7sml2")
+
+                ip_win.addstr(12, 2, "========================================================")
+                ip_win.addstr(13, 2, "Kaa Sandbox Web UI : http://%s:%s/sandbox" % ("127.0.0.1",sandbox_port))
+                ip_win.addstr(14, 2, "SSH access to VM   : ssh kaa@%s -p 2222" % "127.0.0.1")
+                ip_win.addstr(15, 2, "========================================================")
+
+                ip_win.addstr(17, 2, "Type 'd' for more details.")
         else:
                 ip_win.addstr(1, 2, "The Kaa Sandbox web interface is available at:")
                 ip_win.addstr(2, 2, "http://%s:%s/sandbox" % (ip,sandbox_port))
