@@ -513,10 +513,18 @@ public class SandboxServiceImpl implements SandboxService, InitializingBean {
         File rootDir = createTempDirectory("demo-project");
         try {
             outStream.println("Processing project archive...");
-            String sourceArchiveFile = Environment.getServerHomeDir() + "/" + DEMO_PROJECTS_FOLDER + "/" + project.getSourceArchive();
+
+            final String demoProjectsFolderPath = Environment.getServerHomeDir() + "/" + DEMO_PROJECTS_FOLDER;
+
+            String sourceArchiveFile = demoProjectsFolderPath + "/" + project.getSourceArchive();
             String rootProjectDir = rootDir.getAbsolutePath();
 
-            executeCommand(outStream, new String[]{"tar", "-C", rootProjectDir, "-xzvf", sourceArchiveFile}, null);
+            try {
+                executeCommand(outStream, new String[]{"tar", "-C", rootProjectDir, "-xzvf", sourceArchiveFile}, null);
+            } catch (SandboxServiceException e) {
+                executeCommand(outStream, new String[]{"ls", "-R", demoProjectsFolderPath}, null);
+                throw e;
+            }
 
             File sdkFile = new File(rootProjectDir + "/" + project.getSdkLibDir() + "/" + sdkFileData.getFileName());
             FileOutputStream fos = FileUtils.openOutputStream(sdkFile);
