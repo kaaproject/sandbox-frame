@@ -168,7 +168,7 @@ public class ProjectBundleViewImpl extends BaseViewImpl implements ProjectBundle
         carouselPanel.getElement().getStyle().setPadding(15, Unit.PX);
         carouselPanel.setHeight("330px");
         carouselPanel.setWidth("100%");
-        carouselPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+        carouselPanel.getElement().getStyle().setFloat(Style.Float.LEFT);
         carouselPanel.add(carousel);
 
         flexTable.setWidget(2, 2, carouselPanel);
