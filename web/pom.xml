@@ -307,10 +307,6 @@
                     <i18nConstantsWithLookupBundle>org.kaaproject.kaa.sandbox.web.client.i18n.SandboxConstants</i18nConstantsWithLookupBundle>
                     <i18nMessagesBundle>org.kaaproject.kaa.sandbox.web.client.i18n.SandboxMessages</i18nMessagesBundle>
                     <cssFile>org/kaaproject/kaa/sandbox/web/client/SandboxTheme.css</cssFile>
-                    <compileSourcesArtifacts>
-                        <artifact>org.kaaproject.kaa.server.common:dto</artifact>
-                        <artifact>org.kaaproject.kaa.examples:common</artifact>
-                    </compileSourcesArtifacts>
                     <gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
                     <runTarget>Sandbox.html</runTarget>
                     <persistentunitcachedir>${project.build.directory}</persistentunitcachedir>
@@ -609,10 +605,6 @@
 							</execution>
 						</executions>
 						<configuration>
-							<compileSourcesArtifacts>
-								<artifact>org.kaaproject.kaa.server.common:dto</artifact>
-								<artifact>org.kaaproject.kaa.examples:common</artifact>
-							</compileSourcesArtifacts>
 							<gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
 							<runTarget>Sandbox.html</runTarget>
                             <persistentunitcachedir>${project.build.directory}</persistentunitcachedir>
