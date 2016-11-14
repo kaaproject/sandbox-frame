@@ -62,10 +62,11 @@ def make_ip_window():
 
                 ip_win.addstr(12, 2, "========================================================")
                 ip_win.addstr(13, 2, "Kaa Sandbox Web UI : http://%s:%s/sandbox" % ("127.0.0.1",sandbox_port))
-                ip_win.addstr(14, 2, "SSH access to VM   : ssh kaa@%s -p 2222" % "127.0.0.1")
-                ip_win.addstr(15, 2, "========================================================")
+                ip_win.addstr(14, 2, "                     or http://%s:%s" % ("127.0.0.1",sandbox_port))
+                ip_win.addstr(15, 2, "SSH access to VM   : ssh kaa@%s -p 2222" % "127.0.0.1")
+                ip_win.addstr(16, 2, "========================================================")
 
-                ip_win.addstr(17, 2, "Type 'd' for more details.")
+                ip_win.addstr(18, 2, "Type 'd' for more details.")
         else:
                 ip_win.addstr(1, 2, "The Kaa Sandbox web interface is available at:")
                 ip_win.addstr(2, 2, "http://%s:%s/sandbox" % (ip,sandbox_port))
