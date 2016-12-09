@@ -27,13 +27,13 @@ package org.kaaproject.kaa.sandbox.web.shared;
 public final class Version {
 
     /** The Constant PROJECT_VERSION. */
-    public static final String PROJECT_VERSION = "1.4.0";
+    public static final String PROJECT_VERSION = "1.4.1";
     
     /** The Constant KAA_VERSION. */
     public static final String KAA_VERSION = "0.10.0";
 
     /** The Constant KAA_VERSION. */
-    public static final String KAA_SAMPLE_APPS_VERSION = "2.0.0";
+    public static final String KAA_SAMPLE_APPS_VERSION = "2.0.1";
 
     /**
      * Instantiates a new version.
