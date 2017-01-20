@@ -16,6 +16,7 @@
 
 package org.kaaproject.kaa.sandbox.web.controller;
 
+import org.apache.commons.io.IOUtils;
 import org.kaaproject.kaa.examples.common.projects.Project;
 import org.kaaproject.kaa.sandbox.web.shared.dto.BuildOutputData;
 import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectDataType;
@@ -27,12 +28,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -55,7 +57,7 @@ public class SandboxController {
      * The sandbox service.
      */
     @Autowired
-    SandboxService sandboxService;
+    private SandboxService sandboxService;
 
     @ExceptionHandler(SandboxServiceException.class)
     public ResponseEntity<String> handleSandboxServiceException(SandboxServiceException ex) {
@@ -70,6 +72,29 @@ public class SandboxController {
     @ResponseBody
     public List<Project> getDemoProjects() throws SandboxServiceException {
         return sandboxService.getDemoProjects();
+    }
+
+    /**
+     * Downloads a project demo sources.
+     *
+     * @param lang SDK language
+     * @param name Demo project name
+     * @param response standard response
+     * @throws SandboxServiceException if couldn't download a file
+     */
+    @RequestMapping(value = "demoProjects/download/{name}/{lang}", method = RequestMethod.GET)
+    public void downloadProjectSources(@PathVariable String lang, @PathVariable String name, HttpServletResponse response) throws SandboxServiceException {
+        String fileName = name + ".tar.gz";
+        String fullPathName = "/usr/lib/kaa-sandbox/demo_projects/" + lang + "/" + fileName;
+        LOG.info("Downloading file [{}]", fullPathName);
+        response.setHeader("Content-disposition", "attachment; filename=" + fileName);
+        try {
+            IOUtils.copy(Files.newInputStream(Paths.get(fullPathName)), response.getOutputStream());
+            response.flushBuffer();
+        } catch (IOException e) {
+            LOG.error("Couldn't download file [{}]", fullPathName);
+            throw new SandboxServiceException(e);
+        }
     }
 
     /**
