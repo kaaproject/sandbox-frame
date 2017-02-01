@@ -17,6 +17,7 @@
 package org.kaaproject.kaa.sandbox.web.controller;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.tools.ant.DirectoryScanner;
 import org.kaaproject.kaa.examples.common.projects.Project;
 import org.kaaproject.kaa.sandbox.web.shared.dto.BuildOutputData;
 import org.kaaproject.kaa.sandbox.web.shared.dto.ProjectDataType;
@@ -77,8 +78,8 @@ public class SandboxController {
     /**
      * Downloads a project demo sources.
      *
-     * @param lang SDK language
-     * @param name Demo project name
+     * @param lang     SDK language
+     * @param name     Demo project name
      * @param response standard response
      * @throws SandboxServiceException if couldn't download a file
      */
@@ -93,6 +94,38 @@ public class SandboxController {
             response.flushBuffer();
         } catch (IOException e) {
             LOG.error("Couldn't download file [{}]", fullPathName);
+            throw new SandboxServiceException(e);
+        }
+    }
+
+    /**
+     * Downloads an SDK for needed language.
+     *
+     * @param lang     SDK language
+     * @param response standard response
+     * @throws SandboxServiceException if couldn't download
+     */
+    @RequestMapping(value = "demoProjects/download/sdk/{lang}", method = RequestMethod.GET)
+    public void downloadProjectSDK(@PathVariable String lang, HttpServletResponse response) throws SandboxServiceException {
+        String sdkPath = "/usr/lib/kaa-node/sdk/" + lang + "/";
+        DirectoryScanner scanner = new DirectoryScanner();
+        scanner.setIncludes(new String[]{"kaa-*.jar"});
+        scanner.setBasedir(sdkPath);
+        scanner.setCaseSensitive(false);
+        try {
+            scanner.scan();
+            String[] files = scanner.getIncludedFiles();
+            if (files.length == 0) {
+                LOG.warn("No SDK found for language [{}]", lang);
+                return;
+            }
+            String sdkFullName = sdkPath + files[0];
+            LOG.info("Downloading SDK [{}]", sdkFullName);
+            response.setHeader("Content-disposition", "attachment; filename=" + files[0]);
+            IOUtils.copy(Files.newInputStream(Paths.get(sdkFullName)), response.getOutputStream());
+            response.flushBuffer();
+        } catch (IOException e) {
+            LOG.error("Couldn't download SDK for language [{}]", lang);
             throw new SandboxServiceException(e);
         }
     }
