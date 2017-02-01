@@ -109,7 +109,7 @@ public class SandboxController {
     public void downloadProjectSDK(@PathVariable String lang, HttpServletResponse response) throws SandboxServiceException {
         String sdkPath = "/usr/lib/kaa-node/sdk/" + lang + "/";
         DirectoryScanner scanner = new DirectoryScanner();
-        scanner.setIncludes(new String[]{"kaa-*.jar"});
+        scanner.setIncludes(new String[]{"kaa-*"});
         scanner.setBasedir(sdkPath);
         scanner.setCaseSensitive(false);
         try {
